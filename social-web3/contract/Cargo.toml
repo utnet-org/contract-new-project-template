@@ -1,0 +1,13 @@
+[package]
+name = "contract"
+version = "0.11.0"
+authors = ["Eugene The Dream"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+unc-sdk = "0.7.3"
+unc-contract-standards = "0.7.3"
+unc-sys = "0.7.3"

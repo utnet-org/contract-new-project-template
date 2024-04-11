@@ -1,0 +1,22 @@
+[package]
+name = "airdrop"
+version = "0.1.0"
+authors = ["Utility Inc <hello@utnet.org>"]
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+codegen-units = 1
+# Tell `rustc` to optimize for small code size.
+opt-level = "z"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true
+
+[dependencies]
+borsh = "1.4.0"
+unc-sdk = { version = "0.7.3"}

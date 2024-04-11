@@ -1,0 +1,21 @@
+[workspace.package]
+version = "0.1.0"
+authors = ["Unc hello@utnet.org"]
+edition = "2021"
+license = "GPL-2.0-or-later"
+
+[profile.release]
+codegen-units = 1
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true
+
+[workspace]
+resolver = "2"
+members = [
+    "contract",
+    "integration-tests"
+]
