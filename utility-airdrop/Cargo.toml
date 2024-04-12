@@ -19,4 +19,4 @@ overflow-checks = true
 
 [dependencies]
 borsh = "1.4.0"
-unc-sdk = { version = "0.7.3"}
+unc-sdk = { version = "0.7.4"}

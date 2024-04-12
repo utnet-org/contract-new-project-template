@@ -1,6 +1,6 @@
 [workspace.package]
 version = "0.1.0"
-authors = ["Unc hello@utnet.org"]
+authors = ["Utility Inc hello@utnet.org"]
 edition = "2021"
 license = "GPL-2.0-or-later"
 
