@@ -29,7 +29,7 @@ unc dev-tool build
 ## How to Test Locally?
 
 ```bash
-cargo test
+cargo nextest run --nocapture  # cargo test
 ```
 
 ## How to Deploy?
