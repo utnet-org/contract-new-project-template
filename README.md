@@ -24,10 +24,7 @@ Install [`unc`](https://github.com/utnet-org/utility-cli-rs) and run:
 
 ```bash
 # use root account if dev-containers environment
-sudo su - 
-```
-
-```bash
+sudo su -
 unc dev-tool build
 ```
 
