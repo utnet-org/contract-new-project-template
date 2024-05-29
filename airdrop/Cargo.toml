@@ -8,15 +8,6 @@ publish = false
 [lib]
 crate-type = ["cdylib"]
 
-[profile.release]
-codegen-units = 1
-# Tell `rustc` to optimize for small code size.
-opt-level = "z"
-lto = true
-debug = false
-panic = "abort"
-overflow-checks = true
-
 [dependencies]
 borsh = "1.3"
 unc-sdk = { version = "2.0.3"}
