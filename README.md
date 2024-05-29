@@ -23,7 +23,7 @@ Start writing your contract logic in [src/lib.rs](src/lib.rs) and integration te
 Install [`unc`](https://github.com/utnet-org/utility-cli-rs) and run:
 
 ```bash
-unc devtool build
+unc dev-tool build
 ```
 
 ## How to Test Locally?
@@ -38,7 +38,7 @@ Deployment is automated with GitHub Actions CI/CD pipeline.
 To deploy manually, install [`unc`](https://github.com/utnet-org/utility-cli-rs) and run:
 
 ```bash
-unc devtool deploy <account-id>
+unc dev-tool deploy <account-id>
 ```
 
 ## Useful Links

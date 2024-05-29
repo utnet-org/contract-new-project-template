@@ -35,7 +35,7 @@ jobs:
 
       - name: Deploy to develop
         run: |
-          unc devtool deploy "${{ env.UNC_CONTRACT_PR_DEVELOP_ACCOUNT_ID }}" \
+          unc dev-tool deploy "${{ env.UNC_CONTRACT_PR_DEVELOP_ACCOUNT_ID }}" \
             without-init-call \
             network-config "${{ vars.UNC_CONTRACT_DEVELOP_NETWORK }}" \
             sign-with-plaintext-private-key \
