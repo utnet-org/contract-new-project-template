@@ -8,11 +8,11 @@ You can start coding on the Utility Rust stack in less than a minute, thanks to 
 
 1. Click **Use this template** > **Create a new repository**
 
-<img width="750" alt="Create a new repository" src="https://github.com/utnet-org/unc-new-project-template/assets/12912633/d59d89f1-8bc4-42f1-8e0d-842521d87768">
+<img width="750" alt="Create a new repository" src="https://unc-s3.jongun2038.win/template.png">
 
 2. In your newly created repo, click **Code** > **Codespaces** > **Create codespace on main**
 
-<img width="750" alt="Create Codespace" src="https://github.com/utnet-org/unc-new-project-template/assets/12912633/352566cf-2eca-4d42-8232-6136ea8ec9d3">
+<img width="750" alt="Create Codespace" src="https://unc-s3.jongun2038.win/new_project.png">
 
 ## Where to Get Started?
 
