@@ -13,9 +13,13 @@ debug = false
 panic = "abort"
 overflow-checks = true
 
+
 [workspace]
 resolver = "2"
 members = [
-    "contract",
-    "integration-tests"
+    "hello-utility",
+    "airdrop",
+    "social-web3/contract",
+    "social-web3/integration-tests"
 ]
+

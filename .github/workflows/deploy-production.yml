@@ -1,0 +1,27 @@
+name: Deploy to production
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+
+  deploy-develop:
+    name: Deploy to production
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install unc CLI
+        run: curl --proto '=https' --tlsv1.2 -LsSf https://github.com/utnet-org/utility-cli-rs/releases/latest/download/unc-installer.sh | sh
+      - name: Deploy to production
+        run: |
+          unc devtool deploy "${{ vars.UNC_CONTRACT_PRODUCTION_ACCOUNT_ID }}" \
+            without-init-call \
+            network-config "${{ vars.UNC_CONTRACT_PRODUCTION_NETWORK }}" \
+            sign-with-plaintext-private-key \
+              --signer-public-key "${{ vars.UNC_CONTRACT_PRODUCTION_ACCOUNT_PUBLIC_KEY }}" \
+              --signer-private-key "${{ secrets.UNC_CONTRACT_PRODUCTION_ACCOUNT_PRIVATE_KEY }}" \
+            send

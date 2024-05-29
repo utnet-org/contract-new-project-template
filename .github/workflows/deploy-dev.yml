@@ -1,0 +1,52 @@
+name: Deploy to develop
+on:
+  pull_request:
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+
+  deploy-develop:
+    name: Deploy to develop subaccount
+    permissions:
+      pull-requests: write
+    needs: [test]
+    runs-on: ubuntu-latest
+    env:
+      UNC_CONTRACT_PR_STAGING_ACCOUNT_ID: gh-${{ github.event.number }}.${{ vars.UNC_CONTRACT_STAGING_ACCOUNT_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install unc CLI
+        run: curl --proto '=https' --tlsv1.2 -LsSf https://github.com/utnet-org/utility-cli-rs/releases/latest/download/unc-installer.sh | sh
+      - name: Create develop account
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
+        run: |
+          unc account create-account fund-myself "${{ env.UNC_CONTRACT_PR_STAGING_ACCOUNT_ID }}" '10 NEAR' \
+            use-manually-provided-public-key "${{ vars.UNC_CONTRACT_STAGING_ACCOUNT_PUBLIC_KEY }}" \
+            sign-as "${{ vars.UNC_CONTRACT_STAGING_ACCOUNT_ID }}" \
+            network-config "${{ vars.UNC_CONTRACT_STAGING_NETWORK }}" \
+            sign-with-plaintext-private-key \
+              --signer-public-key "${{ vars.UNC_CONTRACT_STAGING_ACCOUNT_PUBLIC_KEY }}" \
+              --signer-private-key "${{ secrets.UNC_CONTRACT_STAGING_ACCOUNT_PRIVATE_KEY }}" \
+            send
+
+      - name: Install unc CLI
+        run: curl --proto '=https' --tlsv1.2 -LsSf https://github.com/utnet-org/utility-cli-rs/releases/latest/download/unc-installer.sh | sh
+      - name: Deploy to develop
+        run: |
+          unc devtool deploy "${{ env.UNC_CONTRACT_PR_STAGING_ACCOUNT_ID }}" \
+            without-init-call \
+            network-config "${{ vars.UNC_CONTRACT_STAGING_NETWORK }}" \
+            sign-with-plaintext-private-key \
+              --signer-public-key "${{ vars.UNC_CONTRACT_STAGING_ACCOUNT_PUBLIC_KEY }}" \
+              --signer-private-key "${{ secrets.UNC_CONTRACT_STAGING_ACCOUNT_PRIVATE_KEY }}" \
+            send
+
+      - name: Comment on pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "${{ github.event.number }}" --body "Staging contract is deployed to ["'`'"${{ env.UNC_CONTRACT_PR_STAGING_ACCOUNT_ID }}"'`'" account](https://explorer.${{ vars.UNC_CONTRACT_STAGING_NETWORK }}.unc.org/accounts/${{ env.UNC_CONTRACT_PR_STAGING_ACCOUNT_ID }})"

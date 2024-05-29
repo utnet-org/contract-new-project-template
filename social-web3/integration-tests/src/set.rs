@@ -11,7 +11,7 @@ use unc_workspaces::types::UncToken;
 
 static CONTRACT_WASM_FILEPATH: &str = "res/social_web3_local.wasm";
 
-//Environment Variables: NEAR_ENABLE_SANDBOX_LOG = 1
+//Environment Variables: UNC_ENABLE_SANDBOX_LOG = 1
 /// Tests the `set` method.
 #[tokio::main]
 async fn main() -> Result<()> {
