@@ -1,6 +1,6 @@
-# unc-new-project-name
+# contract-new-project-name
 
-unc-new-project-description
+contract-new-project-description
 
 ## Quickstart Guide
 
