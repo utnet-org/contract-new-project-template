@@ -10,4 +10,8 @@ for d in $(ls -d */ | grep -v -e "res\/$" -e "target\/$"); do
     (cd "$d"; ./build.sh);
 done
 
+for wasm in res/*.wasm; do
+    du -sh "$wasm"
+done
+
 popd
