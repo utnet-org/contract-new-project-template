@@ -6381,10 +6381,15 @@ dependencies = [
  "serde",
  "serde_json",
  "unc-account-id",
+ "unc-crypto",
  "unc-gas",
+ "unc-parameters",
+ "unc-primitives",
+ "unc-primitives-core",
  "unc-sdk-macros",
  "unc-sys",
  "unc-token",
+ "unc-vm-runner",
  "wee_alloc",
 ]
 
@@ -6419,9 +6424,9 @@ checksum = "7ca1859105e8dc6d593bfe3dbf5f6a224b542c634cd61680b740d4bf955068db"
 
 [[package]]
 name = "unc-token"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d8dc9721a8afa15c0fe44f77ccc96f93fc3b984efb2ef92e8e39a5d7c4acf7f"
+checksum = "452da397f4ff70873fe4dbaf55e6ff2053216a2393f800d54857526ed961ada2"
 dependencies = [
  "borsh 1.3.1",
  "interactive-clap",
@@ -6765,9 +6770,9 @@ dependencies = [
 
 [[package]]
 name = "utility-workspaces"
-version = "0.12.2"
+version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d6a470e10e13dc535652f67bd103cfa556f266b0302bdf09e165534f2c37ea7"
+checksum = "0237f7a6612d77b84e5e4d1eb29682ac49e9324a29b103ede17b5b528c0e5c51"
 dependencies = [
  "async-trait",
  "base64 0.22.1",

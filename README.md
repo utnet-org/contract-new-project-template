@@ -23,6 +23,11 @@ Start writing your contract logic in [src/lib.rs](src/lib.rs) and integration te
 Install [`unc`](https://github.com/utnet-org/utility-cli-rs) and run:
 
 ```bash
+# use root account if dev-containers environment
+sudo su - 
+```
+
+```bash
 unc dev-tool build
 ```
 

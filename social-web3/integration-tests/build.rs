@@ -12,9 +12,9 @@ fn main() {
     println!("cargo:rerun-if-changed={}", contract_dir.to_str().expect("valid UTF-8 path"));
     // Run build_local.sh
     let status = std::process::Command::new("bash")
-        .arg("build_local.sh")
+        .arg("social-web3/build.sh")
         .current_dir(&workspace_dir)
         .status()
-        .expect("failed to execute build_local.sh");
+        .expect("failed to execute build.sh");
     assert!(status.success());
 }

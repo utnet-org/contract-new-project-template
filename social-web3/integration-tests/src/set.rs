@@ -5,11 +5,11 @@ use anyhow::Result;
 use serde_json::json;
 use std::collections::HashMap;
 use std::fs;
-use unc_workspaces::network::Sandbox;
-use unc_workspaces::{Account, Contract, Worker};
-use unc_workspaces::types::UncToken;
+use utility_workspaces::network::Sandbox;
+use utility_workspaces::{Account, Contract, Worker};
+use utility_workspaces::types::UncToken;
 
-static CONTRACT_WASM_FILEPATH: &str = "res/social_web3_local.wasm";
+static CONTRACT_WASM_FILEPATH: &str = "../res/social_web3_local.wasm";
 
 //Environment Variables: UNC_ENABLE_SANDBOX_LOG = 1
 /// Tests the `set` method.
@@ -170,12 +170,12 @@ async fn init_contract_and_user() -> Result<(Worker<Sandbox>, Contract, Account)
 
     // Create a sandboxed environment.
     // NOTE: Each call will create a new sandboxed environment
-    let worker = unc_workspaces::sandbox().await?;
+    let worker = utility_workspaces::sandbox().await?;
     // or for testnet:
-    //let worker = unc_workspaces::testnet().await?;
+    //let worker = utility_workspaces::testnet().await?;
     let wasm = fs::read(wasm_filepath)?;
 
-    //let wasm = unc_workspaces::compile_project(wasm_filepath.).await?;
+    //let wasm = utility_workspaces::compile_project(wasm_filepath.).await?;
 
     let contract = worker.dev_deploy(&wasm).await?;
     contract.call("new").transact().await?.into_result()?;

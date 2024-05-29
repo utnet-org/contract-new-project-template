@@ -271,7 +271,7 @@ mod tests {
             .parse()
             .unwrap();
         // Default the deposit to an extremely small amount
-        let deposit = 1_000_000;
+        let deposit = UncToken::from_attounc(1_000_000);
 
         // Initialize the mocked blockchain
         testing_env!(
@@ -295,7 +295,7 @@ mod tests {
             .parse()
             .unwrap();
         // Default the deposit to an extremely small amount
-        let deposit = 1_000_000;
+        let deposit = UncToken::from_attounc(1_000_000);
 
         // Initialize the mocked blockchain
         testing_env!(
@@ -461,14 +461,14 @@ mod tests {
 
         // Create the airdrop
         contract.send(pk.clone());
-        assert_eq!(contract.get_key_balance(pk.clone()), (deposit.saturating_sub(ACCESS_KEY_ALLOWANCE)).into());
+        assert_eq!(contract.get_key_balance(pk.clone()), &(deposit.saturating_sub(ACCESS_KEY_ALLOWANCE)));
 
         // Re-initialize the mocked blockchain with new params
         testing_env!(
             VMContextBuilder::new()
             .current_account_id(airdrop())
             .account_balance(deposit)
-            .attached_deposit(deposit + 1)
+            .attached_deposit(UncToken::from_attounc(deposit.as_attounc() + 1))
             .context.clone()
         );
 
@@ -489,7 +489,7 @@ mod tests {
             .parse()
             .unwrap();
         // Default the deposit to an extremely small amount
-        let deposit = 1_000_000;
+        let deposit = UncToken::from_attounc(1_000_000);
 
         // Create options for the advanced account creation
         let options: CreateAccountOptions = CreateAccountOptions {
@@ -500,7 +500,7 @@ mod tests {
                 receiver_id: airdrop(),
                 method_names: "send".to_string(),
             }]),
-            contract_bytes: Some(include_bytes!("../target/wasm32-unknown-unknown/release/airdrop.wasm").to_vec()),
+            contract_bytes: Some(include_bytes!("../../target/wasm32-unknown-unknown/release/airdrop.wasm").to_vec()),
         };
 
         // Initialize the mocked blockchain
@@ -521,7 +521,7 @@ mod tests {
         // Create a new instance of the airdrop contract
         let mut contract = AirDrop::new();
         // Default the deposit to an extremely small amount
-        let deposit = 1_000_000;
+        let deposit = UncToken::from_attounc(1_000_000);
 
         // Initialize the mocked blockchain
         testing_env!(

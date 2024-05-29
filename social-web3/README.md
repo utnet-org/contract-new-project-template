@@ -4,9 +4,9 @@
 
 ### Mainnet account ID
 
-Deployed at `social.unc`
+Deployed at `social`
 
-<https://uncblocks.io/address/social.unc#contract>
+<https://uncblocks.io/address/social#contract>
 
 ### About empty keys
 
@@ -14,7 +14,7 @@ If a leaf value was originally string, e.g. `name`
 
 ```json
 {
-  "alex.unc": {
+  "alex": {
     "profile": {
       "name": "Alex"
     }
@@ -27,7 +27,7 @@ will be moved to an empty key under this node. E.g. `name/foo = "bar"` is added.
 
 ```json
 {
-  "alex.unc": {
+  "alex": {
     "profile": {
       "name": {
         "": "Alex",
@@ -67,7 +67,7 @@ Examples:
 ```js
 set({
   data: {
-    "alex.unc": {
+    "alex": {
       "profile": {
         "name": "Alex",
         "image": {
@@ -80,7 +80,7 @@ set({
 
 set({
   data: {
-    "alex.unc": {
+    "alex": {
       "graph": {
         "follow": {
           "root.unc": "",
@@ -130,19 +130,19 @@ Returns the aggregated JSON object.
 Examples:
 
 ```js
-get({keys: ["alex.unc/profile/name"]})
+get({keys: ["alex/profile/name"]})
 
-get({keys: ["alex.unc/profile/name", "root.unc/profile/name"]})
+get({keys: ["alex/profile/name", "root.unc/profile/name"]})
 
-get({keys: ["alex.unc/profile/name", "alex.unc/profile/description"]})
+get({keys: ["alex/profile/name", "alex/profile/description"]})
 
-get({keys: ["alex.unc/profile/tags/*"]})
+get({keys: ["alex/profile/tags/*"]})
 
-get({keys: ["alex.unc/profile/**"]})
+get({keys: ["alex/profile/**"]})
 
 get({keys: ["*/widget/*"]})
 
-get({keys: ["alex.unc/profile/tags/*"], options: {return_deleted: true}})
+get({keys: ["alex/profile/tags/*"], options: {return_deleted: true}})
 ```
 
 ### Reading keys
@@ -190,13 +190,13 @@ Returns the aggregated JSON object.
 Examples:
 
 ```js
-keys({keys: ["alex.unc/profile/*"]})
+keys({keys: ["alex/profile/*"]})
 
 keys({keys: ["*/profile/image/nft"]})
 
-keys({keys: ["alex.unc/widget/*"], options: {return_deleted: true}})
+keys({keys: ["alex/widget/*"], options: {return_deleted: true}})
 
-keys({keys: ["alex.unc/widget/*"], options: {return_type: "BlockHeight", values_only: true}})
+keys({keys: ["alex/widget/*"], options: {return_type: "BlockHeight", values_only: true}})
 ```
 
 ### Permissions
