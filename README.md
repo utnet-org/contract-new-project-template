@@ -4,7 +4,7 @@ unc-new-project-description
 
 ## Quickstart Guide
 
-You can start coding on the NEAR Rust stack in less than a minute, thanks to [NEAR Devcontainers](https://github.com/near/near-devcontainers). How?
+You can start coding on the Utility Rust stack in less than a minute, thanks to [Utility Devcontainers](https://github.com/utnet-org/unc-devcontainers). How?
 
 1. Click **Use this template** > **Create a new repository**
 
