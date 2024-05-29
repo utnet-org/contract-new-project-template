@@ -8,7 +8,7 @@ jobs:
     name: Cleanup develop account
     runs-on: ubuntu-latest
     env:
-      UNC_CONTRACT_PR_STAGING_ACCOUNT_ID: gh-${{ github.event.number }}.${{ vars.UNC_CONTRACT_STAGING_ACCOUNT_ID }}
+      UNC_CONTRACT_PR_DEVELOP_ACCOUNT_ID: gh-${{ github.event.number }}.${{ vars.UNC_CONTRACT_DEVELOP_ACCOUNT_ID }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -16,10 +16,10 @@ jobs:
         run: curl --proto '=https' --tlsv1.2 -LsSf https://github.com/utnet-org/utility-cli-rs/releases/latest/download/unc-installer.sh | sh
       - name: Remove develop account
         run: |
-          unc account delete-account "${{ env.UNC_CONTRACT_PR_STAGING_ACCOUNT_ID }}" \
-            beneficiary "${{ vars.UNC_CONTRACT_STAGING_ACCOUNT_ID }}" \
-            network-config "${{ vars.UNC_CONTRACT_STAGING_NETWORK }}" \
+          unc account delete-account "${{ env.UNC_CONTRACT_PR_DEVELOP_ACCOUNT_ID }}" \
+            beneficiary "${{ vars.UNC_CONTRACT_DEVELOP_ACCOUNT_ID }}" \
+            network-config "${{ vars.UNC_CONTRACT_DEVELOP_NETWORK }}" \
             sign-with-plaintext-private-key \
-              --signer-public-key "${{ vars.UNC_CONTRACT_STAGING_ACCOUNT_PUBLIC_KEY }}" \
-              --signer-private-key "${{ secrets.UNC_CONTRACT_STAGING_ACCOUNT_PRIVATE_KEY }}" \
+              --signer-public-key "${{ vars.UNC_CONTRACT_DEVELOP_ACCOUNT_PUBLIC_KEY }}" \
+              --signer-private-key "${{ secrets.UNC_CONTRACT_DEVELOP_ACCOUNT_PRIVATE_KEY }}" \
             send
