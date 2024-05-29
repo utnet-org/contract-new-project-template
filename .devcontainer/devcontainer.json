@@ -1,7 +1,7 @@
 {
   "name": "Utility Devcontainer Rust",
 
-  "image": "ghcr.io/utnet-org/unc-devcontainer:latest"
+  "image": "ghcr.io/utnet-org/utility-devcontainers-rs:latest"
 
   // Uncomment and modify the following lines if necessary
   // "forwardPorts": [8000],
