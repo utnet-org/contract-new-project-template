@@ -3,6 +3,7 @@ name = "contract"
 version = "0.1.0"
 authors = ["Hello The Dream"]
 edition = "2021"
+license = "GPL-2.0-or-later"
 
 [lib]
 crate-type = ["cdylib"]
