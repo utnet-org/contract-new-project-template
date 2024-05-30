@@ -16,7 +16,7 @@ pub(crate) mod unordered_map_expensive {
 }
 
 #[allow(dead_code)]
-pub(crate) mod u128_dec_format {
+pub mod u128_dec_format {
     use unc_sdk::serde::de;
     use unc_sdk::serde::{Deserialize, Deserializer, Serializer};
 

@@ -39,10 +39,8 @@ fn is_promise_success() -> bool {
         1,
         "Contract expected a result on the callback"
     );
-    match env::promise_result(0) {
-        PromiseResult::Successful(_) => true,
-        _ => false,
-    }
+
+    matches!(env::promise_result(0), PromiseResult::Successful(_))
 }
 
 #[unc_bindgen]
@@ -63,7 +61,7 @@ impl AirDrop {
             env::attached_deposit() > ACCESS_KEY_ALLOWANCE,
             "Attached deposit must be greater than ACCESS_KEY_ALLOWANCE"
         );
-        let pk = public_key.into();
+        let pk = public_key;
         let zero = UncToken::from_unc(0);
         let value = self.accounts.get(&pk).unwrap_or(&zero);
         self.accounts.insert(
@@ -120,7 +118,7 @@ impl AirDrop {
             .expect("Unexpected public key");
         Promise::new(new_account_id)
             .create_account()
-            .add_full_access_key(new_public_key.into())
+            .add_full_access_key(new_public_key)
             .transfer(amount)
             .then(
                 Self::ext(env::current_account_id())
@@ -148,7 +146,7 @@ impl AirDrop {
             .then(
                 Self::ext(env::current_account_id())
                     .with_static_gas(ON_CREATE_ACCOUNT_CALLBACK_GAS)
-                    .on_account_created(env::predecessor_account_id(), amount.into()),
+                    .on_account_created(env::predecessor_account_id(), amount),
             )
     }
 
@@ -199,7 +197,7 @@ impl AirDrop {
         promise.then(
             Self::ext(env::current_account_id())
                 .with_static_gas(ON_CREATE_ACCOUNT_CALLBACK_GAS)
-                .on_account_created(env::predecessor_account_id(), amount.into()),
+                .on_account_created(env::predecessor_account_id(), amount),
         )
     }
 
@@ -217,7 +215,7 @@ impl AirDrop {
         let creation_succeeded = is_promise_success();
         if !creation_succeeded {
             // In case of failure, send funds back.
-            Promise::new(predecessor_account_id).transfer(amount.into());
+            Promise::new(predecessor_account_id).transfer(amount);
         }
         creation_succeeded
     }
@@ -235,7 +233,7 @@ impl AirDrop {
         } else {
             // In case of failure, put the amount back.
             self.accounts
-                .insert(env::signer_account_pk(), amount.into());
+                .insert(env::signer_account_pk(), amount);
         }
         creation_succeeded
     }
@@ -243,9 +241,8 @@ impl AirDrop {
     /// Returns the balance associated with given key.
     pub fn get_key_balance(&self, key: PublicKey) -> &UncToken {
         self.accounts
-            .get(&key.into())
+            .get(&key)
             .expect("Key is missing")
-            .into()
     }
 
     /// Returns information associated with a given key.
