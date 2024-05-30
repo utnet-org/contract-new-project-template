@@ -232,17 +232,14 @@ impl AirDrop {
             Promise::new(env::current_account_id()).delete_key(env::signer_account_pk());
         } else {
             // In case of failure, put the amount back.
-            self.accounts
-                .insert(env::signer_account_pk(), amount);
+            self.accounts.insert(env::signer_account_pk(), amount);
         }
         creation_succeeded
     }
 
     /// Returns the balance associated with given key.
     pub fn get_key_balance(&self, key: PublicKey) -> &UncToken {
-        self.accounts
-            .get(&key)
-            .expect("Key is missing")
+        self.accounts.get(&key).expect("Key is missing")
     }
 
     /// Returns information associated with a given key.
