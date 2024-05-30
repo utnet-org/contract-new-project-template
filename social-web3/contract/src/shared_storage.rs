@@ -34,6 +34,12 @@ pub struct SharedStoragePool {
     pub shared_bytes: StorageUsage,
 }
 
+impl Default for SharedStoragePool {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SharedStoragePool {
     pub fn new() -> Self {
         Self {
@@ -86,7 +92,7 @@ impl Contract {
         &self,
         owner_id: &AccountId,
     ) -> Option<SharedStoragePool> {
-        self.shared_storage_pools.get(&owner_id).map(|p| p.into())
+        self.shared_storage_pools.get(owner_id).map(|p| p.into())
     }
 
     pub fn internal_unwrap_shared_storage_pool(&self, owner_id: &AccountId) -> SharedStoragePool {
@@ -100,7 +106,7 @@ impl Contract {
         shared_storage_pool: SharedStoragePool,
     ) {
         self.shared_storage_pools
-            .insert(&owner_id, &shared_storage_pool.into());
+            .insert(owner_id, &shared_storage_pool.into());
     }
 }
 
@@ -126,7 +132,7 @@ impl Contract {
         let mut storage_tracker = StorageTracker::default();
         let mut shared_storage_pool = self
             .internal_get_shared_storage_pool(&owner_id)
-            .unwrap_or_else(|| SharedStoragePool::new());
+            .unwrap_or_default();
         shared_storage_pool.storage_balance = shared_storage_pool
             .storage_balance
             .saturating_add(attached_deposit);

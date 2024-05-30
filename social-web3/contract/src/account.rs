@@ -188,7 +188,7 @@ impl Contract {
             .children
             .insert(&account_id.to_string(), &NodeValue::Node(account.node_id));
         let mut temp_account = Account::new(account.node_id);
-        temp_account.shared_storage = account.shared_storage.clone();
+        temp_account.shared_storage.clone_from(&account.shared_storage);
         require!(
             !self.internal_set_account(temp_account),
             "Internal bug. Account already exists."
@@ -254,7 +254,7 @@ impl Contract {
     pub fn internal_storage_balance_of(&self, account_id: &AccountId) -> Option<StorageBalance> {
         self.internal_get_account(account_id.as_str())
             .map(|account| StorageBalance {
-                total: account.storage_balance.into(),
+                total: account.storage_balance,
                 available: UncToken::from_attounc(
                     (account.storage_balance.saturating_sub(
                         UncToken::from_attounc(
@@ -279,7 +279,7 @@ impl Contract {
         withdraw_from: &AccountId,
         amount: Option<UncToken>,
     ) -> StorageBalance {
-        if let Some(storage_balance) = self.internal_storage_balance_of(&withdraw_from) {
+        if let Some(storage_balance) = self.internal_storage_balance_of(withdraw_from) {
             let amount = amount.unwrap_or(storage_balance.available);
             if amount > storage_balance.available {
                 env::panic_str("The amount is greater than the available storage balance");
@@ -290,7 +290,7 @@ impl Contract {
                 self.internal_set_account(account);
                 Promise::new(env::predecessor_account_id()).transfer(amount);
             }
-            self.internal_storage_balance_of(&withdraw_from).unwrap()
+            self.internal_storage_balance_of(withdraw_from).unwrap()
         } else {
             env::panic_str(&format!("The account {} is not registered", &withdraw_from));
         }
@@ -308,8 +308,7 @@ impl StorageManagement for Contract {
         self.assert_live();
         let attached_deposit: UncToken = env::attached_deposit();
         let account_id = account_id
-            .map(|a| a.into())
-            .unwrap_or_else(|| env::predecessor_account_id());
+            .unwrap_or_else(env::predecessor_account_id);
         let account = self.internal_get_account(account_id.as_str());
         let registration_only = registration_only.unwrap_or(false);
         if let Some(mut account) = account {

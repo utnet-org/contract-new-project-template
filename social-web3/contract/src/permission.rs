@@ -50,7 +50,7 @@ impl Contract {
                 );
                 PermissionKey::AccountId(a)
             })
-            .or_else(|| public_key.map(|pk| PermissionKey::SignerPublicKey(pk)))
+            .or_else(|| public_key.map(PermissionKey::SignerPublicKey))
             .expect("Neither account_id or public_key is provided");
         let account_id = env::predecessor_account_id();
         let mut account =
@@ -138,7 +138,7 @@ impl Contract {
                 );
                 PermissionKey::AccountId(a)
             })
-            .or_else(|| public_key.map(|pk| PermissionKey::SignerPublicKey(pk)))
+            .or_else(|| public_key.map(PermissionKey::SignerPublicKey))
             .expect("Neither account_id or public_key is provided");
 
         let path: Vec<&str> = key.split(SEPARATOR).collect();
@@ -175,7 +175,7 @@ impl Contract {
                 }
             }
         }
-        return false;
+        false
     }
 }
 
