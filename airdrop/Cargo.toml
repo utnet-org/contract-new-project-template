@@ -11,4 +11,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 borsh = "1.3"
-unc-sdk = { version = "2.0.3", features = ["unit-testing", "unstable"] }
+unc-sdk = { version = "2.0.6", features = ["unit-testing", "unstable"] }

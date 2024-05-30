@@ -9,6 +9,6 @@ license = "GPL-2.0-or-later"
 crate-type = ["cdylib"]
 
 [dependencies]
-unc-sdk = "2.0.3"
-unc-contract-standards = "2.0.3"
-unc-sys = "2.0.3"
+unc-sdk = "2.0.6"
+unc-contract-standards = "2.0.6"
+unc-sys = "2.0.6"
