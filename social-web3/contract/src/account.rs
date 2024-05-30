@@ -188,7 +188,9 @@ impl Contract {
             .children
             .insert(&account_id.to_string(), &NodeValue::Node(account.node_id));
         let mut temp_account = Account::new(account.node_id);
-        temp_account.shared_storage.clone_from(&account.shared_storage);
+        temp_account
+            .shared_storage
+            .clone_from(&account.shared_storage);
         require!(
             !self.internal_set_account(temp_account),
             "Internal bug. Account already exists."
@@ -307,8 +309,7 @@ impl StorageManagement for Contract {
     ) -> StorageBalance {
         self.assert_live();
         let attached_deposit: UncToken = env::attached_deposit();
-        let account_id = account_id
-            .unwrap_or_else(env::predecessor_account_id);
+        let account_id = account_id.unwrap_or_else(env::predecessor_account_id);
         let account = self.internal_get_account(account_id.as_str());
         let registration_only = registration_only.unwrap_or(false);
         if let Some(mut account) = account {

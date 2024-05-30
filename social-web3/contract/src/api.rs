@@ -221,11 +221,11 @@ impl Contract {
                             // Non skipping step in.
                             self.recursive_get(inner_map, &inner_node, keys, options);
                         }
-                    } else if let Some(node_value) = inner_node.children.get(&EMPTY_KEY.to_string()) {
+                    } else if let Some(node_value) = inner_node.children.get(&EMPTY_KEY.to_string())
+                    {
                         if options.with_node_id == Some(true) {
                             let inner_map = json_map_get_inner_object(res, key.clone());
-                            inner_map
-                                .insert(KEY_NODE_ID.to_string(), inner_node.node_id.into());
+                            inner_map.insert(KEY_NODE_ID.to_string(), inner_node.node_id.into());
                         }
                         json_map_set_key(res, key, node_value, options);
                     } else {
