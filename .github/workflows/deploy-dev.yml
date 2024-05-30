@@ -13,7 +13,7 @@ jobs:
     #needs: [test]
     runs-on: ubuntu-latest
     env:
-      UNC_CONTRACT_PR_DEVELOP_ACCOUNT_ID: gh-${{ github.event.number }}.${{ vars.UNC_CONTRACT_DEVELOP_ACCOUNT_ID }}
+      UNC_CONTRACT_PR_DEVELOP_ACCOUNT_ID: gh-${{ github.event.number }}.xyz
 
     steps:
       - name: Checkout repository
