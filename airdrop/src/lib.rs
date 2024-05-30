@@ -1,8 +1,9 @@
 use borsh::{BorshDeserialize, BorshSerialize};
-use unc_sdk::store::LookupMap;
 use unc_sdk::json_types::U128;
+use unc_sdk::store::LookupMap;
 use unc_sdk::{
-    env, ext_contract, unc_bindgen, AccountId, Allowance, Gas, PanicOnDefault, Promise, PromiseResult, PublicKey, UncToken
+    env, ext_contract, unc_bindgen, AccountId, Allowance, Gas, PanicOnDefault, Promise,
+    PromiseResult, PublicKey, UncToken,
 };
 
 mod models;
@@ -49,8 +50,8 @@ impl AirDrop {
     /// Initializes the contract with an empty map for the accounts
     #[init]
     pub fn new() -> Self {
-        Self { 
-            accounts: LookupMap::new(b"a") 
+        Self {
+            accounts: LookupMap::new(b"a"),
         }
     }
 
@@ -67,7 +68,9 @@ impl AirDrop {
         let value = self.accounts.get(&pk).unwrap_or(&zero);
         self.accounts.insert(
             pk.to_owned(),
-            value.saturating_add(env::attached_deposit()).saturating_sub(ACCESS_KEY_ALLOWANCE),
+            value
+                .saturating_add(env::attached_deposit())
+                .saturating_sub(ACCESS_KEY_ALLOWANCE),
         );
         Promise::new(env::current_account_id()).add_access_key_allowance(
             pk,
@@ -122,7 +125,7 @@ impl AirDrop {
             .then(
                 Self::ext(env::current_account_id())
                     .with_static_gas(ON_CREATE_ACCOUNT_CALLBACK_GAS)
-                    .on_account_created_and_claimed(amount.into())
+                    .on_account_created_and_claimed(amount.into()),
             )
     }
 
@@ -145,10 +148,7 @@ impl AirDrop {
             .then(
                 Self::ext(env::current_account_id())
                     .with_static_gas(ON_CREATE_ACCOUNT_CALLBACK_GAS)
-                    .on_account_created(
-                        env::predecessor_account_id(),
-                        amount.into()
-                    )
+                    .on_account_created(env::predecessor_account_id(), amount.into()),
             )
     }
 
@@ -159,14 +159,18 @@ impl AirDrop {
         new_account_id: AccountId,
         options: CreateAccountOptions,
     ) -> Promise {
-        let is_some_option = options.contract_bytes.is_some() || options.full_access_keys.is_some() || options.limited_access_keys.is_some();
+        let is_some_option = options.contract_bytes.is_some()
+            || options.full_access_keys.is_some()
+            || options.limited_access_keys.is_some();
         assert!(is_some_option, "Cannot create account with no options. Please specify either contract bytes, full access keys, or limited access keys.");
 
         let amount = env::attached_deposit();
 
         // Initiate a new promise on the new account we're creating and transfer it any attached deposit
-        let mut promise = Promise::new(new_account_id).create_account().transfer(amount);
-        
+        let mut promise = Promise::new(new_account_id)
+            .create_account()
+            .transfer(amount);
+
         // If there are any full access keys in the options, loop through and add them to the promise
         if let Some(full_access_keys) = options.full_access_keys {
             for key in full_access_keys {
@@ -177,7 +181,12 @@ impl AirDrop {
         // If there are any function call access keys in the options, loop through and add them to the promise
         if let Some(limited_access_keys) = options.limited_access_keys {
             for key_info in limited_access_keys {
-                promise = promise.add_access_key_allowance(key_info.public_key.clone(), Allowance::limited(key_info.allowance).unwrap_or(Allowance::Unlimited), key_info.receiver_id.clone(), key_info.method_names.clone());
+                promise = promise.add_access_key_allowance(
+                    key_info.public_key.clone(),
+                    Allowance::limited(key_info.allowance).unwrap_or(Allowance::Unlimited),
+                    key_info.receiver_id.clone(),
+                    key_info.method_names.clone(),
+                );
             }
         }
 
@@ -190,15 +199,16 @@ impl AirDrop {
         promise.then(
             Self::ext(env::current_account_id())
                 .with_static_gas(ON_CREATE_ACCOUNT_CALLBACK_GAS)
-                .on_account_created(
-                    env::predecessor_account_id(),
-                    amount.into()
-                )
+                .on_account_created(env::predecessor_account_id(), amount.into()),
         )
     }
 
     /// Callback after executing `create_account` or `create_account_advanced`.
-    pub fn on_account_created(&mut self, predecessor_account_id: AccountId, amount: UncToken) -> bool {
+    pub fn on_account_created(
+        &mut self,
+        predecessor_account_id: AccountId,
+        amount: UncToken,
+    ) -> bool {
         assert_eq!(
             env::predecessor_account_id(),
             env::current_account_id(),
@@ -232,7 +242,10 @@ impl AirDrop {
 
     /// Returns the balance associated with given key.
     pub fn get_key_balance(&self, key: PublicKey) -> &UncToken {
-        self.accounts.get(&key.into()).expect("Key is missing").into()
+        self.accounts
+            .get(&key.into())
+            .expect("Key is missing")
+            .into()
     }
 
     /// Returns information associated with a given key.
@@ -240,7 +253,9 @@ impl AirDrop {
     #[handle_result]
     pub fn get_key_information(&self, key: PublicKey) -> Result<KeyInfo, &'static str> {
         match self.accounts.get(&key) {
-            Some(balance) => Ok(KeyInfo { balance: U128::from(balance.as_attounc()) }),
+            Some(balance) => Ok(KeyInfo {
+                balance: U128::from(balance.as_attounc()),
+            }),
             None => Err("Key is missing"),
         }
     }
@@ -274,12 +289,11 @@ mod tests {
         let deposit = UncToken::from_attounc(1_000_000);
 
         // Initialize the mocked blockchain
-        testing_env!(
-            VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .attached_deposit(deposit)
-            .context.clone()
-        );
+            .context
+            .clone());
 
         // Create bob's account with the PK
         contract.create_account(bob(), pk);
@@ -298,12 +312,11 @@ mod tests {
         let deposit = UncToken::from_attounc(1_000_000);
 
         // Initialize the mocked blockchain
-        testing_env!(
-            VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .attached_deposit(deposit)
-            .context.clone()
-        );
+            .context
+            .clone());
 
         // Attempt to create an invalid account with the PK
         contract.create_account("XYZ".parse().unwrap(), pk);
@@ -320,11 +333,10 @@ mod tests {
             .unwrap();
 
         // Initialize the mocked blockchain
-        testing_env!(
-            VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
-            .context.clone()
-        );
+            .context
+            .clone());
 
         contract.get_key_balance(pk);
     }
@@ -339,20 +351,19 @@ mod tests {
             .unwrap();
         // Default the deposit to be 100 times the access key allowance
         let deposit = ACCESS_KEY_ALLOWANCE.saturating_mul(100);
-        
+
         // Initialize the mocked blockchain
-        testing_env!(
-            VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .attached_deposit(deposit)
-            .context.clone()
-        );
+            .context
+            .clone());
 
         // Create the airdrop
         contract.send(pk.clone());
 
         // try getting the balance of the key
-        let balance:u128 = contract.get_key_balance(pk).as_attounc();
+        let balance: u128 = contract.get_key_balance(pk).as_attounc();
         assert_eq!(
             balance,
             u128::from((deposit.saturating_sub(ACCESS_KEY_ALLOWANCE)).as_attounc())
@@ -370,27 +381,25 @@ mod tests {
             .unwrap();
         // Default the deposit to be 100 times the access key allowance
         let deposit = ACCESS_KEY_ALLOWANCE.saturating_mul(100);
-        
+
         // Initialize the mocked blockchain
-        testing_env!(
-            VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .attached_deposit(deposit)
-            .context.clone()
-        );
+            .context
+            .clone());
 
         // Create the airdrop
         contract.send(pk.clone());
 
         // Now, send new transaction to airdrop contract and reinitialize the mocked blockchain with new params
-        testing_env!(
-            VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .predecessor_account_id(airdrop())
             .signer_account_pk(pk.into())
             .account_balance(deposit)
-            .context.clone()
-        );
+            .context
+            .clone());
 
         // Create the second public key
         let pk2 = "2S87aQ1PM9o6eBcEXnTR5yBAVRTiNmvj8J8ngZ6FzSca"
@@ -410,27 +419,25 @@ mod tests {
             .unwrap();
         // Default the deposit to be 100 times the access key allowance
         let deposit = ACCESS_KEY_ALLOWANCE.saturating_mul(100);
-        
+
         // Initialize the mocked blockchain
-        testing_env!(
-            VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .attached_deposit(deposit)
-            .context.clone()
-        );
+            .context
+            .clone());
 
         // Create the airdrop
         contract.send(pk.clone());
 
         // Now, send new transaction to airdrop contract and reinitialize the mocked blockchain with new params
-        testing_env!(
-            VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .predecessor_account_id(airdrop())
             .signer_account_pk(pk.into())
             .account_balance(deposit)
-            .context.clone()
-        );
+            .context
+            .clone());
 
         // Create the second public key
         let pk2 = "2S87aQ1PM9o6eBcEXnTR5yBAVRTiNmvj8J8ngZ6FzSca"
@@ -450,27 +457,28 @@ mod tests {
             .unwrap();
         // Default the deposit to be 100 times the access key allowance
         let deposit = ACCESS_KEY_ALLOWANCE.saturating_mul(100);
-        
+
         // Initialize the mocked blockchain
-        testing_env!(
-            VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .attached_deposit(deposit)
-            .context.clone()
-        );
+            .context
+            .clone());
 
         // Create the airdrop
         contract.send(pk.clone());
-        assert_eq!(contract.get_key_balance(pk.clone()), &(deposit.saturating_sub(ACCESS_KEY_ALLOWANCE)));
+        assert_eq!(
+            contract.get_key_balance(pk.clone()),
+            &(deposit.saturating_sub(ACCESS_KEY_ALLOWANCE))
+        );
 
         // Re-initialize the mocked blockchain with new params
-        testing_env!(
-            VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .account_balance(deposit)
             .attached_deposit(UncToken::from_attounc(deposit.as_attounc() + 1))
-            .context.clone()
-        );
+            .context
+            .clone());
 
         // Attempt to recreate the same airdrop twice
         contract.send(pk.clone());
@@ -500,16 +508,17 @@ mod tests {
                 receiver_id: airdrop(),
                 method_names: "send".to_string(),
             }]),
-            contract_bytes: Some(include_bytes!("../../target/wasm32-unknown-unknown/release/airdrop.wasm").to_vec()),
+            contract_bytes: Some(
+                include_bytes!("../../target/wasm32-unknown-unknown/release/airdrop.wasm").to_vec(),
+            ),
         };
 
         // Initialize the mocked blockchain
-        testing_env!(
-            VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .attached_deposit(deposit)
-            .context.clone()
-        );
+            .context
+            .clone());
 
         // Create bob's account with the advanced options
         contract.create_account_advanced(bob(), options);
@@ -524,14 +533,20 @@ mod tests {
         let deposit = UncToken::from_attounc(1_000_000);
 
         // Initialize the mocked blockchain
-        testing_env!(
-            VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .attached_deposit(deposit)
-            .context.clone()
-        );
+            .context
+            .clone());
 
         // Create bob's account with the advanced options
-        contract.create_account_advanced(bob(), CreateAccountOptions { full_access_keys: None, limited_access_keys: None, contract_bytes: None });
+        contract.create_account_advanced(
+            bob(),
+            CreateAccountOptions {
+                full_access_keys: None,
+                limited_access_keys: None,
+                contract_bytes: None,
+            },
+        );
     }
 }

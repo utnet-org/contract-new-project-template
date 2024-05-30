@@ -1,8 +1,8 @@
 use crate::*;
+use std::collections::HashSet;
 use unc_sdk::borsh::{BorshDeserialize, BorshSerialize};
 use unc_sdk::serde::{Deserialize, Serialize};
 use unc_sdk::{require, PublicKey};
-use std::collections::HashSet;
 
 #[derive(BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
 #[borsh(crate = "unc_sdk::borsh")]
@@ -38,7 +38,10 @@ impl Contract {
     ) {
         self.assert_live();
         let attached_deposit = env::attached_deposit();
-        require!(attached_deposit > UncToken::from_attounc(0), "Requires at least 1 atto");
+        require!(
+            attached_deposit > UncToken::from_attounc(0),
+            "Requires at least 1 atto"
+        );
         let permission_key = predecessor_id
             .map(|a| {
                 require!(

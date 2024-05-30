@@ -27,8 +27,7 @@ impl From<SharedStoragePool> for VSharedStoragePool {
 #[borsh(crate = "unc_sdk::borsh")]
 #[serde(crate = "unc_sdk::serde")]
 pub struct SharedStoragePool {
-    pub storage_balance: UncToken
-    ,
+    pub storage_balance: UncToken,
     pub used_bytes: StorageUsage,
     /// The sum of the maximum number of bytes of storage that are shared between all accounts.
     /// This number might be larger than the total number of bytes of storage that are available.
@@ -45,7 +44,10 @@ impl SharedStoragePool {
     }
 
     pub fn available_bytes(&self) -> StorageUsage {
-        let max_bytes = (self.storage_balance.saturating_div(env::storage_byte_cost().as_attounc())).as_attounc() as StorageUsage;
+        let max_bytes = (self
+            .storage_balance
+            .saturating_div(env::storage_byte_cost().as_attounc()))
+        .as_attounc() as StorageUsage;
         max_bytes - self.used_bytes
     }
 }
@@ -125,7 +127,9 @@ impl Contract {
         let mut shared_storage_pool = self
             .internal_get_shared_storage_pool(&owner_id)
             .unwrap_or_else(|| SharedStoragePool::new());
-        shared_storage_pool.storage_balance = shared_storage_pool.storage_balance.saturating_add(attached_deposit);
+        shared_storage_pool.storage_balance = shared_storage_pool
+            .storage_balance
+            .saturating_add(attached_deposit);
         storage_tracker.start();
         self.internal_set_shared_storage_pool(&owner_id, shared_storage_pool);
         storage_tracker.stop();
@@ -272,8 +276,7 @@ impl Contract {
                     .as_ref()
                     .map(|s| s.used_bytes)
                     .unwrap_or(0);
-                let available_bytes = (account.storage_balance.as_attounc())
-                    as u64
+                let available_bytes = (account.storage_balance.as_attounc()) as u64
                     - (account.used_bytes - used_shared_bytes);
 
                 StorageView {

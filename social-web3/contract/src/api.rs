@@ -1,8 +1,8 @@
 use crate::*;
 use unc_sdk::require;
+use unc_sdk::serde::{Deserialize, Serialize};
 use unc_sdk::serde_json::map::Entry;
 use unc_sdk::serde_json::{Map, Value};
-use unc_sdk::serde::{Deserialize, Serialize};
 
 use std::collections::HashSet;
 
@@ -158,7 +158,9 @@ impl Contract {
             account.storage_tracker.stop();
             self.internal_set_account(account);
 
-            if options.refund_unused_deposit.unwrap_or(false) && attached_balance > UncToken::from_attounc(0) {
+            if options.refund_unused_deposit.unwrap_or(false)
+                && attached_balance > UncToken::from_attounc(0)
+            {
                 // The key is the account id that received the deposit.
                 let account_id: AccountId = key.parse().expect("key is valid account id");
                 if let Some(balance) = self.internal_storage_balance_of(&account_id) {

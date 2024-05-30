@@ -5,8 +5,8 @@ use unc_contract_standards::storage_management::{
 use unc_sdk::borsh::{BorshDeserialize, BorshSerialize};
 use unc_sdk::serde::{Deserialize, Serialize};
 
-use unc_sdk::require;
 use std::convert::TryFrom;
+use unc_sdk::require;
 
 pub const MIN_STORAGE_BYTES: StorageUsage = 2000;
 const MIN_STORAGE_BALANCE: UncToken = UncToken::from_attounc(0);
@@ -79,7 +79,8 @@ impl Account {
             .map(|s| s.used_bytes)
             .unwrap_or(0);
         let storage_balance_needed =
-            (UncToken::from_attounc((self.used_bytes - shared_bytes_used) as u128)).saturating_mul(env::storage_byte_cost().as_attounc());
+            (UncToken::from_attounc((self.used_bytes - shared_bytes_used) as u128))
+                .saturating_mul(env::storage_byte_cost().as_attounc());
         assert!(
             storage_balance_needed <= self.storage_balance,
             "Not enough storage balance"
@@ -118,7 +119,7 @@ impl Contract {
         );
         self.internal_get_account(account_id)
             .map(|mut a| {
-                a.storage_balance =  a.storage_balance.saturating_add(storage_deposit);
+                a.storage_balance = a.storage_balance.saturating_add(storage_deposit);
                 a
             })
             .unwrap_or_else(|| {
@@ -254,17 +255,20 @@ impl Contract {
         self.internal_get_account(account_id.as_str())
             .map(|account| StorageBalance {
                 total: account.storage_balance.into(),
-                available: UncToken::from_attounc((
-                    account.storage_balance
-                        .saturating_sub(UncToken::from_attounc(
+                available: UncToken::from_attounc(
+                    (account.storage_balance.saturating_sub(
+                        UncToken::from_attounc(
                             account.used_bytes as u128
                                 - account
                                     .shared_storage
                                     .as_ref()
                                     .map(|s| s.used_bytes as u128)
                                     .unwrap_or(0u128),
-                        ).saturating_mul(env::storage_byte_cost().as_attounc()),
-                )).as_attounc()),
+                        )
+                        .saturating_mul(env::storage_byte_cost().as_attounc()),
+                    ))
+                    .as_attounc(),
+                ),
             })
     }
 

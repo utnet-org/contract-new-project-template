@@ -3,15 +3,15 @@
 // 对编译合约二进制文件有一个大小限制，约为4.19 MB
 // Modules 为Utility SDK，提供访问执行环境，允许调用其他合同、转移代币等等
 use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use unc_sdk::{env, log, unc_bindgen, AccountId, UncToken, Gas, Promise};
-use unc_sdk::store::LookupMap;
 use unc_sdk::serde_json::json;
+use unc_sdk::store::LookupMap;
+use unc_sdk::{env, log, unc_bindgen, AccountId, Gas, Promise, UncToken};
 //Native Types u8, u16, u32, u64, u128, i8, i16, i32, i64, i128, Vec<T>, HashMap<K,V> ...
 //values larger than 52 bytes (such as u64 and u128), for which string-like alternatives
 //overflow-checks=true Cargo.toml
 const DEFAULT_MESSAGE: &str = "Hello";
 
-//  Collections contract's attributes (state), Always prefer SDK collections over native 
+//  Collections contract's attributes (state), Always prefer SDK collections over native
 //  collections 被设计为将数据分割成chunk, defer reading and writing to the store until needed
 // unc_sdk::collections 将迁移到 unc_sdk::store 并更新API, 在 near-sdk 上启用 unstable 功能使用
 // https://docs.rs/near-sdk/latest/unc_sdk/collections/index.html
@@ -27,9 +27,8 @@ const HELLO_UTILITY: &str = "hello-nearverse.testnet";
 const NO_DEPOSIT: UncToken = UncToken::from_unc(0);
 const CALL_GAS: Gas = Gas::from_tgas(50);
 
-
 const MIN_STORAGE: UncToken = UncToken::from_attounc(100_000_000_000_000_000_000_000u128); //0.1 U
-//const HELLO_CODE: &[u8] = include_bytes!("./hello.wasm");
+                                                                                           //const HELLO_CODE: &[u8] = include_bytes!("./hello.wasm");
 
 // Internal Structures 包括非bindings的内部结构和 bindings的合约结构
 // Utility Bindgen bindings装饰器  Define the contract structure 合约的结构，Borsh 序列化状态存储， json 序列化作为方法的输入输出
@@ -74,7 +73,7 @@ impl Contract {
         }
     }
     // Public: Returns the stored greeting, defaulting to 'Hello'
-    // view方法，任何人都可以自由查看 
+    // view方法，任何人都可以自由查看
     pub fn get_greeting(&self) -> String {
         return self.greeting.clone();
     }
@@ -92,29 +91,33 @@ impl Contract {
     //跨合同调用和回调都不会立即执行
     //cross-contract call method finishes correctly will execute 1 or 2 blocks
     //callback will then execute 1 or 2 blocks after the external method finishes (correctly or not)
-    pub fn call_method(&self){
+    pub fn call_method(&self) {
         let args = json!({ "message": "howdy".to_string() })
-                  .to_string().into_bytes().to_vec();
-    
+            .to_string()
+            .into_bytes()
+            .to_vec();
+
         Promise::new(HELLO_UTILITY.parse().unwrap())
-        .function_call("set_greeting".to_string(), args, NO_DEPOSIT, CALL_GAS)
-        .then(
-          Promise::new(env::current_account_id())
-          .function_call("callback".to_string(), Vec::new(), NO_DEPOSIT, CALL_GAS)
-        );
+            .function_call("set_greeting".to_string(), args, NO_DEPOSIT, CALL_GAS)
+            .then(Promise::new(env::current_account_id()).function_call(
+                "callback".to_string(),
+                Vec::new(),
+                NO_DEPOSIT,
+                CALL_GAS,
+            ));
     }
-    
+
     // Private Methods 方法保持公开，但只能由合约账户调用, 如跨合约回调，设置Owner
     #[private]
-      pub fn callback(&self, #[callback_result] result: Result<(), unc_sdk::PromiseError>){
+    pub fn callback(&self, #[callback_result] result: Result<(), unc_sdk::PromiseError>) {
         // this method can only be called by the contract's account
-        if result.is_err(){
+        if result.is_err() {
             log!("Something went wrong")
             // <TODO:> 状态不会回滚, 手动回滚调用前进行了任何状态更改（即更改或存储数据）
             // attached Utility 到call则需要reset
             // 所有调用都是异步的，独立的，确保在调用和回调之间不要让合约处于可利用空子状态
             // 如果外部调用失败，必须在回调中手动回滚状态更改
-        }else{
+        } else {
             log!("Message changed")
         }
     }
@@ -122,20 +125,19 @@ impl Contract {
     // Cross-Contract Calls are Asynchronous, high level way
 
     #[private]
-    pub fn set_owner(&mut self) { 
-        /* public, panics when caller is not the contract's account */ 
+    pub fn set_owner(&mut self) {
+        /* public, panics when caller is not the contract's account */
     }
 
     // call的时候 附加资金attaches money, 允许tokens在方法调用时进行转移
     #[payable]
-    pub fn deposit_and_stake(&mut self ){
+    pub fn deposit_and_stake(&mut self) {
         // this method can receive money from the user
     }
 
     //Input & Return Types 通过接口使用JSON序列化抽象
     // 优先选择输入和返回类型中的 native types， 用 strings 替换 u64 / u128
     // unc_sdk::json_types::{U64, I64, U128, I128} 表示, json的大整数最大也是52 bytes
-
 
     /*
     Actions 事务原子性保证 Accounts操作相关都语义化为Actions Operation链
@@ -145,51 +147,57 @@ impl Contract {
 
     // costs ~0.45 TGas, 在genesis配置
     // 接收者不存在会转账失败,  留下些余额支付未来的存储需求
-    pub fn transfer(&self, to: AccountId, amount: UncToken){
+    pub fn transfer(&self, to: AccountId, amount: UncToken) {
         Promise::new(to).transfer(amount);
     }
 
     // 创建直接子账户sub.jong, namespace 设计, 有独立的密钥对, 方便组织账户而已
-    pub fn create_sub_account(&self, prefix: String){
+    pub fn create_sub_account(&self, prefix: String) {
         let account_id = prefix + "." + &env::current_account_id().to_string();
         Promise::new(account_id.parse().unwrap())
-        .create_account() // 默认是锁定账户, 没有keypairs密钥对
-        .transfer(MIN_STORAGE);
+            .create_account() // 默认是锁定账户, 没有keypairs密钥对
+            .transfer(MIN_STORAGE);
     }
-    pub fn create_hello(&self, prefix: String, public_key: unc_sdk::PublicKey){
+    pub fn create_hello(&self, prefix: String, public_key: unc_sdk::PublicKey) {
         let account_id = prefix + "." + &env::current_account_id().to_string();
         Promise::new(account_id.parse().unwrap())
-        .create_account()
-        .transfer(MIN_STORAGE)
-        //.deploy_contract(HELLO_CODE.to_vec())
-        .add_full_access_key(public_key);
+            .create_account()
+            .transfer(MIN_STORAGE)
+            //.deploy_contract(HELLO_CODE.to_vec())
+            .add_full_access_key(public_key);
     }
     //root contracts Creating Other Accounts
-    pub fn create_other_account(&self, account_id: String, public_key: String){
+    pub fn create_other_account(&self, account_id: String, public_key: String) {
         let args = json!({
-                    "new_account_id": account_id,
-                    "new_public_key": public_key,
-                  }).to_string().into_bytes().to_vec();
-    
+          "new_account_id": account_id,
+          "new_public_key": public_key,
+        })
+        .to_string()
+        .into_bytes()
+        .to_vec();
+
         // Use "near" to create mainnet accounts
-        Promise::new("testnet".parse().unwrap())
-        .function_call("create_account".to_string(), args, MIN_STORAGE, CALL_GAS);
+        Promise::new("testnet".parse().unwrap()).function_call(
+            "create_account".to_string(),
+            args,
+            MIN_STORAGE,
+            CALL_GAS,
+        );
     }
 
     //Delete Account, Token loss
     // beneficiary account受益人账户不存在, dispersed among validators
     // delete 来尝试fund新账户，导致账户不存在 tokens will be lost
-    pub fn create_delete(&self, prefix: String, beneficiary: AccountId){
+    pub fn create_delete(&self, prefix: String, beneficiary: AccountId) {
         let account_id = prefix + "." + &env::current_account_id().to_string();
         Promise::new(account_id.parse().unwrap())
-        .create_account()
-        .transfer(MIN_STORAGE)
-        .delete_account(beneficiary);
+            .create_account()
+            .transfer(MIN_STORAGE)
+            .delete_account(beneficiary);
     }
-    
-    pub fn self_delete(beneficiary: AccountId){
-        Promise::new(env::current_account_id())
-        .delete_account(beneficiary);
+
+    pub fn self_delete(beneficiary: AccountId) {
+        Promise::new(env::current_account_id()).delete_account(beneficiary);
     }
 }
 
