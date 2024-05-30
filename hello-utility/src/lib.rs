@@ -75,7 +75,7 @@ impl Contract {
     // Public: Returns the stored greeting, defaulting to 'Hello'
     // view方法，任何人都可以自由查看
     pub fn get_greeting(&self) -> String {
-        return self.greeting.clone();
+        self.greeting.clone()
     }
 
     // Public: Takes a greeting, such as 'howdy', and records it
@@ -153,13 +153,13 @@ impl Contract {
 
     // 创建直接子账户sub.jong, namespace 设计, 有独立的密钥对, 方便组织账户而已
     pub fn create_sub_account(&self, prefix: String) {
-        let account_id = prefix + "." + &env::current_account_id().to_string();
+        let account_id = prefix + "." + env::current_account_id().as_ref();
         Promise::new(account_id.parse().unwrap())
             .create_account() // 默认是锁定账户, 没有keypairs密钥对
             .transfer(MIN_STORAGE);
     }
     pub fn create_hello(&self, prefix: String, public_key: unc_sdk::PublicKey) {
-        let account_id = prefix + "." + &env::current_account_id().to_string();
+        let account_id = prefix + "." + env::current_account_id().as_ref();
         Promise::new(account_id.parse().unwrap())
             .create_account()
             .transfer(MIN_STORAGE)
@@ -189,7 +189,7 @@ impl Contract {
     // beneficiary account受益人账户不存在, dispersed among validators
     // delete 来尝试fund新账户，导致账户不存在 tokens will be lost
     pub fn create_delete(&self, prefix: String, beneficiary: AccountId) {
-        let account_id = prefix + "." + &env::current_account_id().to_string();
+        let account_id = prefix + "." + env::current_account_id().as_ref();
         Promise::new(account_id.parse().unwrap())
             .create_account()
             .transfer(MIN_STORAGE)

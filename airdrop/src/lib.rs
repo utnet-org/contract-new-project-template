@@ -125,7 +125,7 @@ impl AirDrop {
             .then(
                 Self::ext(env::current_account_id())
                     .with_static_gas(ON_CREATE_ACCOUNT_CALLBACK_GAS)
-                    .on_account_created_and_claimed(amount.into()),
+                    .on_account_created_and_claimed(amount),
             )
     }
 
@@ -143,7 +143,7 @@ impl AirDrop {
         let amount = env::attached_deposit();
         Promise::new(new_account_id)
             .create_account()
-            .add_full_access_key(new_public_key.into())
+            .add_full_access_key(new_public_key)
             .transfer(amount)
             .then(
                 Self::ext(env::current_account_id())
@@ -366,7 +366,7 @@ mod tests {
         let balance: u128 = contract.get_key_balance(pk).as_attounc();
         assert_eq!(
             balance,
-            u128::from((deposit.saturating_sub(ACCESS_KEY_ALLOWANCE)).as_attounc())
+            (deposit.saturating_sub(ACCESS_KEY_ALLOWANCE)).as_attounc()
         );
     }
 
@@ -396,7 +396,7 @@ mod tests {
         testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .predecessor_account_id(airdrop())
-            .signer_account_pk(pk.into())
+            .signer_account_pk(pk)
             .account_balance(deposit)
             .context
             .clone());
@@ -434,7 +434,7 @@ mod tests {
         testing_env!(VMContextBuilder::new()
             .current_account_id(airdrop())
             .predecessor_account_id(airdrop())
-            .signer_account_pk(pk.into())
+            .signer_account_pk(pk)
             .account_balance(deposit)
             .context
             .clone());
@@ -483,7 +483,7 @@ mod tests {
         // Attempt to recreate the same airdrop twice
         contract.send(pk.clone());
         assert_eq!(
-            contract.accounts.get(&pk.into()).unwrap().as_attounc(),
+            contract.accounts.get(&pk).unwrap().as_attounc(),
             deposit.as_attounc() + deposit.as_attounc() + 1 - 2 * ACCESS_KEY_ALLOWANCE.as_attounc()
         );
     }
@@ -503,7 +503,7 @@ mod tests {
         let options: CreateAccountOptions = CreateAccountOptions {
             full_access_keys: Some(vec![pk.clone()]),
             limited_access_keys: Some(vec![LimitedAccessKey {
-                public_key: pk.clone(),
+                public_key: pk,
                 allowance: UncToken::from_attounc(100),
                 receiver_id: airdrop(),
                 method_names: "send".to_string(),
