@@ -1,8 +1,8 @@
 use crate::*;
 use unc_sdk::require;
+use unc_sdk::serde::{Deserialize, Serialize};
 use unc_sdk::serde_json::map::Entry;
 use unc_sdk::serde_json::{Map, Value};
-use unc_sdk::serde::{Deserialize, Serialize};
 
 use std::collections::HashSet;
 
@@ -158,13 +158,15 @@ impl Contract {
             account.storage_tracker.stop();
             self.internal_set_account(account);
 
-            if options.refund_unused_deposit.unwrap_or(false) && attached_balance > UncToken::from_attounc(0) {
+            if options.refund_unused_deposit.unwrap_or(false)
+                && attached_balance > UncToken::from_attounc(0)
+            {
                 // The key is the account id that received the deposit.
                 let account_id: AccountId = key.parse().expect("key is valid account id");
                 if let Some(balance) = self.internal_storage_balance_of(&account_id) {
                     // We shouldn't refund more than what was deposited in this call.
                     let refund = std::cmp::min(balance.available, attached_balance);
-                    self.internal_storage_withdraw(&account_id, Some(refund.into()));
+                    self.internal_storage_withdraw(&account_id, Some(refund));
                 }
             }
 
@@ -219,22 +221,20 @@ impl Contract {
                             // Non skipping step in.
                             self.recursive_get(inner_map, &inner_node, keys, options);
                         }
-                    } else {
-                        if let Some(node_value) = inner_node.children.get(&EMPTY_KEY.to_string()) {
-                            if options.with_node_id == Some(true) {
-                                let inner_map = json_map_get_inner_object(res, key.clone());
-                                inner_map
-                                    .insert(KEY_NODE_ID.to_string(), inner_node.node_id.into());
-                            }
-                            json_map_set_key(res, key, node_value, &options);
-                        } else {
-                            // mismatch skipping
+                    } else if let Some(node_value) = inner_node.children.get(&EMPTY_KEY.to_string())
+                    {
+                        if options.with_node_id == Some(true) {
+                            let inner_map = json_map_get_inner_object(res, key.clone());
+                            inner_map.insert(KEY_NODE_ID.to_string(), inner_node.node_id.into());
                         }
+                        json_map_set_key(res, key, node_value, options);
+                    } else {
+                        // mismatch skipping
                     }
                 }
                 node_value => {
                     if keys.len() == 1 {
-                        json_map_set_key(res, key, node_value, &options);
+                        json_map_set_key(res, key, node_value, options);
                     }
                 }
             }
@@ -419,12 +419,9 @@ fn json_map_set_value(res: &mut Map<String, Value>, key: String, value: Value) {
             e.insert(value);
         }
         Entry::Occupied(mut e) => {
-            match e.get_mut() {
-                Value::Object(o) => {
-                    o.insert(EMPTY_KEY.to_string(), value);
-                }
-                _ => {}
-            };
+            if let Value::Object(o) = e.get_mut() {
+                o.insert(EMPTY_KEY.to_string(), value);
+            }
         }
     };
 }
@@ -474,7 +471,7 @@ fn json_map_set_key(
 fn json_map_recursive_cleanup(res: &mut Map<String, Value>) -> bool {
     let mut num_special_keys = 0;
     res.retain(|k, v| {
-        if k.starts_with(":") {
+        if k.starts_with(':') {
             num_special_keys += 1;
             return true;
         }

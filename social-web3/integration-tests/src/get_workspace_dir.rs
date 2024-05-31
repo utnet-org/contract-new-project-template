@@ -12,7 +12,6 @@ pub fn get_workspace_dir() -> PathBuf {
         .unwrap()
         .stdout;
     let cargo_path = Path::new(std::str::from_utf8(&output).unwrap().trim());
-    fs::canonicalize(cargo_path.parent().unwrap().to_path_buf()).expect("can canonicalize workspace dir")
+    fs::canonicalize(cargo_path.parent().unwrap().to_path_buf())
+        .expect("can canonicalize workspace dir")
 }
-
-

@@ -9,7 +9,10 @@ fn main() {
     let workspace_dir = get_workspace_dir();
     let contract_dir = workspace_dir.join(CONTRACT_DIR);
     // Tell Cargo to rerun this script if the `contract` source changes.
-    println!("cargo:rerun-if-changed={}", contract_dir.to_str().expect("valid UTF-8 path"));
+    println!(
+        "cargo:rerun-if-changed={}",
+        contract_dir.to_str().expect("valid UTF-8 path")
+    );
     // Run build_local.sh
     let status = std::process::Command::new("bash")
         .arg("social-web3/build.sh")

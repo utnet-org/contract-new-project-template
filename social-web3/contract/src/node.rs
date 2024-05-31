@@ -113,7 +113,7 @@ impl Node {
         } else {
             unreachable!("Invariant: value must be a string or null");
         };
-        let prev_value = self.children.insert(&key, &value);
+        let prev_value = self.children.insert(key, &value);
         require!(
             !matches!(prev_value, Some(NodeValue::Node(_))),
             "Internal error, the replaced value was a node"

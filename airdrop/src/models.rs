@@ -1,6 +1,6 @@
-use unc_sdk::serde::{Serialize, Deserialize};
-use unc_sdk::UncSchema;
 use crate::*;
+use unc_sdk::serde::{Deserialize, Serialize};
+use unc_sdk::UncSchema;
 
 /// Information about a specific public key. Should be returned in the `get_key_information` view method.
 /// Part of the airdrop NEP
@@ -11,7 +11,6 @@ pub struct KeyInfo {
     /// when the key is successfully used.
     pub balance: U128,
 }
-
 
 #[derive(UncSchema, Serialize, Deserialize)]
 #[serde(crate = "unc_sdk::serde")]
@@ -26,7 +25,7 @@ pub struct LimitedAccessKey {
     /// Which methods should this key be allowed to call.
     pub method_names: String,
 }
-    
+
 #[derive(UncSchema, Serialize, Deserialize)]
 #[serde(crate = "unc_sdk::serde")]
 /// Options for `create_account_advanced`.
@@ -35,4 +34,3 @@ pub struct CreateAccountOptions {
     pub limited_access_keys: Option<Vec<LimitedAccessKey>>,
     pub contract_bytes: Option<Vec<u8>>,
 }
-    

@@ -5,8 +5,9 @@ use unc_contract_standards::storage_management::{
 use unc_sdk::borsh::{BorshDeserialize, BorshSerialize};
 use unc_sdk::serde::{Deserialize, Serialize};
 
-use unc_sdk::require;
+use std::cmp::Ordering;
 use std::convert::TryFrom;
+use unc_sdk::require;
 
 pub const MIN_STORAGE_BYTES: StorageUsage = 2000;
 const MIN_STORAGE_BALANCE: UncToken = UncToken::from_attounc(0);
@@ -79,7 +80,8 @@ impl Account {
             .map(|s| s.used_bytes)
             .unwrap_or(0);
         let storage_balance_needed =
-            (UncToken::from_attounc((self.used_bytes - shared_bytes_used) as u128)).saturating_mul(env::storage_byte_cost().as_attounc());
+            (UncToken::from_attounc((self.used_bytes - shared_bytes_used) as u128))
+                .saturating_mul(env::storage_byte_cost().as_attounc());
         assert!(
             storage_balance_needed <= self.storage_balance,
             "Not enough storage balance"
@@ -118,7 +120,7 @@ impl Contract {
         );
         self.internal_get_account(account_id)
             .map(|mut a| {
-                a.storage_balance =  a.storage_balance.saturating_add(storage_deposit);
+                a.storage_balance = a.storage_balance.saturating_add(storage_deposit);
                 a
             })
             .unwrap_or_else(|| {
@@ -187,7 +189,9 @@ impl Contract {
             .children
             .insert(&account_id.to_string(), &NodeValue::Node(account.node_id));
         let mut temp_account = Account::new(account.node_id);
-        temp_account.shared_storage = account.shared_storage.clone();
+        temp_account
+            .shared_storage
+            .clone_from(&account.shared_storage);
         require!(
             !self.internal_set_account(temp_account),
             "Internal bug. Account already exists."
@@ -197,52 +201,60 @@ impl Contract {
     }
 
     pub fn internal_set_account(&mut self, mut account: Account) -> bool {
-        if account.storage_tracker.bytes_added > account.storage_tracker.bytes_released {
-            let extra_bytes_used =
-                account.storage_tracker.bytes_added - account.storage_tracker.bytes_released;
-            account.used_bytes += extra_bytes_used;
-            if let Some(shared_storage) = &mut account.shared_storage {
-                let mut shared_storage_pool =
-                    self.internal_unwrap_shared_storage_pool(&shared_storage.pool_id);
-                let pool_bytes = std::cmp::min(
-                    shared_storage.available_bytes(&shared_storage_pool),
-                    extra_bytes_used,
-                );
-                if pool_bytes > 0 {
-                    shared_storage_pool.used_bytes += pool_bytes;
-                    self.internal_set_shared_storage_pool(
-                        &shared_storage.pool_id,
-                        shared_storage_pool,
-                    );
-                    shared_storage.used_bytes += pool_bytes;
-                }
-            }
-            account.assert_storage_covered();
-        } else if account.storage_tracker.bytes_added < account.storage_tracker.bytes_released {
-            let bytes_released =
-                account.storage_tracker.bytes_released - account.storage_tracker.bytes_added;
-            assert!(
-                account.used_bytes >= bytes_released,
-                "Internal storage accounting bug"
-            );
-            if let Some(shared_storage) = &mut account.shared_storage {
-                let pool_bytes = std::cmp::min(shared_storage.used_bytes, bytes_released);
-                if pool_bytes > 0 {
+        match account
+            .storage_tracker
+            .bytes_added
+            .cmp(&account.storage_tracker.bytes_released)
+        {
+            Ordering::Greater => {
+                let extra_bytes_used =
+                    account.storage_tracker.bytes_added - account.storage_tracker.bytes_released;
+                account.used_bytes += extra_bytes_used;
+                if let Some(shared_storage) = &mut account.shared_storage {
                     let mut shared_storage_pool =
                         self.internal_unwrap_shared_storage_pool(&shared_storage.pool_id);
-                    assert!(
-                        shared_storage_pool.used_bytes >= pool_bytes,
-                        "Internal storage accounting bug"
+                    let pool_bytes = std::cmp::min(
+                        shared_storage.available_bytes(&shared_storage_pool),
+                        extra_bytes_used,
                     );
-                    shared_storage_pool.used_bytes -= pool_bytes;
-                    self.internal_set_shared_storage_pool(
-                        &shared_storage.pool_id,
-                        shared_storage_pool,
-                    );
+                    if pool_bytes > 0 {
+                        shared_storage_pool.used_bytes += pool_bytes;
+                        self.internal_set_shared_storage_pool(
+                            &shared_storage.pool_id,
+                            shared_storage_pool,
+                        );
+                        shared_storage.used_bytes += pool_bytes;
+                    }
                 }
-                shared_storage.used_bytes -= pool_bytes;
+                account.assert_storage_covered();
             }
-            account.used_bytes -= bytes_released;
+            Ordering::Less => {
+                let bytes_released =
+                    account.storage_tracker.bytes_released - account.storage_tracker.bytes_added;
+                assert!(
+                    account.used_bytes >= bytes_released,
+                    "Internal storage accounting bug"
+                );
+                if let Some(shared_storage) = &mut account.shared_storage {
+                    let pool_bytes = std::cmp::min(shared_storage.used_bytes, bytes_released);
+                    if pool_bytes > 0 {
+                        let mut shared_storage_pool =
+                            self.internal_unwrap_shared_storage_pool(&shared_storage.pool_id);
+                        assert!(
+                            shared_storage_pool.used_bytes >= pool_bytes,
+                            "Internal storage accounting bug"
+                        );
+                        shared_storage_pool.used_bytes -= pool_bytes;
+                        self.internal_set_shared_storage_pool(
+                            &shared_storage.pool_id,
+                            shared_storage_pool,
+                        );
+                    }
+                    shared_storage.used_bytes -= pool_bytes;
+                }
+                account.used_bytes -= bytes_released;
+            }
+            Ordering::Equal => {}
         }
         account.storage_tracker.bytes_released = 0;
         account.storage_tracker.bytes_added = 0;
@@ -253,18 +265,21 @@ impl Contract {
     pub fn internal_storage_balance_of(&self, account_id: &AccountId) -> Option<StorageBalance> {
         self.internal_get_account(account_id.as_str())
             .map(|account| StorageBalance {
-                total: account.storage_balance.into(),
-                available: UncToken::from_attounc((
-                    account.storage_balance
-                        .saturating_sub(UncToken::from_attounc(
+                total: account.storage_balance,
+                available: UncToken::from_attounc(
+                    (account.storage_balance.saturating_sub(
+                        UncToken::from_attounc(
                             account.used_bytes as u128
                                 - account
                                     .shared_storage
                                     .as_ref()
                                     .map(|s| s.used_bytes as u128)
                                     .unwrap_or(0u128),
-                        ).saturating_mul(env::storage_byte_cost().as_attounc()),
-                )).as_attounc()),
+                        )
+                        .saturating_mul(env::storage_byte_cost().as_attounc()),
+                    ))
+                    .as_attounc(),
+                ),
             })
     }
 
@@ -275,7 +290,7 @@ impl Contract {
         withdraw_from: &AccountId,
         amount: Option<UncToken>,
     ) -> StorageBalance {
-        if let Some(storage_balance) = self.internal_storage_balance_of(&withdraw_from) {
+        if let Some(storage_balance) = self.internal_storage_balance_of(withdraw_from) {
             let amount = amount.unwrap_or(storage_balance.available);
             if amount > storage_balance.available {
                 env::panic_str("The amount is greater than the available storage balance");
@@ -286,7 +301,7 @@ impl Contract {
                 self.internal_set_account(account);
                 Promise::new(env::predecessor_account_id()).transfer(amount);
             }
-            self.internal_storage_balance_of(&withdraw_from).unwrap()
+            self.internal_storage_balance_of(withdraw_from).unwrap()
         } else {
             env::panic_str(&format!("The account {} is not registered", &withdraw_from));
         }
@@ -303,9 +318,7 @@ impl StorageManagement for Contract {
     ) -> StorageBalance {
         self.assert_live();
         let attached_deposit: UncToken = env::attached_deposit();
-        let account_id = account_id
-            .map(|a| a.into())
-            .unwrap_or_else(|| env::predecessor_account_id());
+        let account_id = account_id.unwrap_or_else(env::predecessor_account_id);
         let account = self.internal_get_account(account_id.as_str());
         let registration_only = registration_only.unwrap_or(false);
         if let Some(mut account) = account {
