@@ -9,7 +9,7 @@ jobs:
 
   deploy-develop:
     name: Deploy to production
-    #needs: [test]
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
