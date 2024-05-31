@@ -201,7 +201,11 @@ impl Contract {
     }
 
     pub fn internal_set_account(&mut self, mut account: Account) -> bool {
-        match account.storage_tracker.bytes_added.cmp(&account.storage_tracker.bytes_released) {
+        match account
+            .storage_tracker
+            .bytes_added
+            .cmp(&account.storage_tracker.bytes_released)
+        {
             Ordering::Greater => {
                 let extra_bytes_used =
                     account.storage_tracker.bytes_added - account.storage_tracker.bytes_released;
