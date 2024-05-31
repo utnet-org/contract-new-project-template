@@ -419,12 +419,9 @@ fn json_map_set_value(res: &mut Map<String, Value>, key: String, value: Value) {
             e.insert(value);
         }
         Entry::Occupied(mut e) => {
-            match e.get_mut() {
-                Value::Object(o) => {
-                    o.insert(EMPTY_KEY.to_string(), value);
-                }
-                _ => {}
-            };
+            if let Value::Object(o) = e.get_mut() {
+                o.insert(EMPTY_KEY.to_string(), value);
+            }
         }
     };
 }

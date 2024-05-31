@@ -5,6 +5,7 @@ use unc_contract_standards::storage_management::{
 use unc_sdk::borsh::{BorshDeserialize, BorshSerialize};
 use unc_sdk::serde::{Deserialize, Serialize};
 
+use std::cmp::Ordering;
 use std::convert::TryFrom;
 use unc_sdk::require;
 
@@ -200,52 +201,56 @@ impl Contract {
     }
 
     pub fn internal_set_account(&mut self, mut account: Account) -> bool {
-        if account.storage_tracker.bytes_added > account.storage_tracker.bytes_released {
-            let extra_bytes_used =
-                account.storage_tracker.bytes_added - account.storage_tracker.bytes_released;
-            account.used_bytes += extra_bytes_used;
-            if let Some(shared_storage) = &mut account.shared_storage {
-                let mut shared_storage_pool =
-                    self.internal_unwrap_shared_storage_pool(&shared_storage.pool_id);
-                let pool_bytes = std::cmp::min(
-                    shared_storage.available_bytes(&shared_storage_pool),
-                    extra_bytes_used,
-                );
-                if pool_bytes > 0 {
-                    shared_storage_pool.used_bytes += pool_bytes;
-                    self.internal_set_shared_storage_pool(
-                        &shared_storage.pool_id,
-                        shared_storage_pool,
-                    );
-                    shared_storage.used_bytes += pool_bytes;
-                }
-            }
-            account.assert_storage_covered();
-        } else if account.storage_tracker.bytes_added < account.storage_tracker.bytes_released {
-            let bytes_released =
-                account.storage_tracker.bytes_released - account.storage_tracker.bytes_added;
-            assert!(
-                account.used_bytes >= bytes_released,
-                "Internal storage accounting bug"
-            );
-            if let Some(shared_storage) = &mut account.shared_storage {
-                let pool_bytes = std::cmp::min(shared_storage.used_bytes, bytes_released);
-                if pool_bytes > 0 {
+        match account.storage_tracker.bytes_added.cmp(&account.storage_tracker.bytes_released) {
+            Ordering::Greater => {
+                let extra_bytes_used =
+                    account.storage_tracker.bytes_added - account.storage_tracker.bytes_released;
+                account.used_bytes += extra_bytes_used;
+                if let Some(shared_storage) = &mut account.shared_storage {
                     let mut shared_storage_pool =
                         self.internal_unwrap_shared_storage_pool(&shared_storage.pool_id);
-                    assert!(
-                        shared_storage_pool.used_bytes >= pool_bytes,
-                        "Internal storage accounting bug"
+                    let pool_bytes = std::cmp::min(
+                        shared_storage.available_bytes(&shared_storage_pool),
+                        extra_bytes_used,
                     );
-                    shared_storage_pool.used_bytes -= pool_bytes;
-                    self.internal_set_shared_storage_pool(
-                        &shared_storage.pool_id,
-                        shared_storage_pool,
-                    );
+                    if pool_bytes > 0 {
+                        shared_storage_pool.used_bytes += pool_bytes;
+                        self.internal_set_shared_storage_pool(
+                            &shared_storage.pool_id,
+                            shared_storage_pool,
+                        );
+                        shared_storage.used_bytes += pool_bytes;
+                    }
                 }
-                shared_storage.used_bytes -= pool_bytes;
+                account.assert_storage_covered();
             }
-            account.used_bytes -= bytes_released;
+            Ordering::Less => {
+                let bytes_released =
+                    account.storage_tracker.bytes_released - account.storage_tracker.bytes_added;
+                assert!(
+                    account.used_bytes >= bytes_released,
+                    "Internal storage accounting bug"
+                );
+                if let Some(shared_storage) = &mut account.shared_storage {
+                    let pool_bytes = std::cmp::min(shared_storage.used_bytes, bytes_released);
+                    if pool_bytes > 0 {
+                        let mut shared_storage_pool =
+                            self.internal_unwrap_shared_storage_pool(&shared_storage.pool_id);
+                        assert!(
+                            shared_storage_pool.used_bytes >= pool_bytes,
+                            "Internal storage accounting bug"
+                        );
+                        shared_storage_pool.used_bytes -= pool_bytes;
+                        self.internal_set_shared_storage_pool(
+                            &shared_storage.pool_id,
+                            shared_storage_pool,
+                        );
+                    }
+                    shared_storage.used_bytes -= pool_bytes;
+                }
+                account.used_bytes -= bytes_released;
+            }
+            Ordering::Equal => {}
         }
         account.storage_tracker.bytes_released = 0;
         account.storage_tracker.bytes_added = 0;
