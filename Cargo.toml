@@ -7,7 +7,7 @@ license = "GPL-2.0-or-later"
 [profile.release]
 codegen-units = 1
 # Tell `rustc` to optimize for small code size.
-opt-level = "s"
+opt-level = "z"
 lto = true
 debug = false
 panic = "abort"
@@ -20,6 +20,8 @@ members = [
     "hello-utility",
     "airdrop",
     "social-web3/contract",
-    "social-web3/integration-tests"
+    "social-web3/integration-tests",
+    "w-unc/contract",
+    "w-unc/integration-tests"
 ]
 

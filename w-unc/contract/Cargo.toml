@@ -1,0 +1,15 @@
+[package]
+name = "w_unc"
+version = "1.0.0"
+authors = ["Utility Inc <hello@utnet.org>", "Vincent <vincent@decentralisedengineeringltd.co.uk>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+unc-sdk = "2.0.6"
+unc-contract-standards = "2.0.6"
+
+[dev-dependencies]
+borsh = { version = "1.3"}
