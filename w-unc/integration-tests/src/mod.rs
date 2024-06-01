@@ -41,18 +41,36 @@ async fn test_ft_transfer() -> Result<()> {
         .await?
         .into_result()?;
 
-    // ft_balance_of(bob)
-    // assert_eq!(alice_balance.0, to_yocto("10"));
     let result = user
         .view(contract.id(), "ft_balance_of")
-        .args_json(json!({ "keys": [name_key] }))
+        .args_json(json!({ "account_id": user_id }))
         .await?
-        .json::<HashMap<String, HashMap<String, HashMap<String, String>>>>()?;
-    
-    // call ft_transfer(bob.valid_account_id(), to_yocto("5").into(), None),
+        .json::<HashMap<String, String>>()?;
+    let alice_balance = result
+    .get(&user_id)
+    .unwrap();
+    assert_eq!(alice_balance.0, to_atto("10"));
 
-    // ft_balance_of(bob)
-    // assert_eq!(bob_balance.0, to_yocto("5"));
+    let second_user = worker.dev_create_account().await?;
+    let bob = second_user.id().to_string();
+    //TODO: call ft_transfer(bob.valid_account_id(), to_atto("5").into(), None),
+    let result = user
+        .view(contract.id(), "ft_transfer")
+        .args_json(json!({ "account_id": bob }))
+        .await?
+        .json::<HashMap<String, String>>()?;
+
+
+    let result = user
+    .view(contract.id(), "ft_balance_of")
+    .args_json(json!({ "account_id": bob }))
+    .await?
+    .json::<HashMap<String, String>>()?;
+
+    let bob_balance = result
+        .get(&bob)
+        .unwrap();
+    assert_eq!(bob_balance.0, to_atto("5"));
 
     assert_eq!(name, result_name);
 
@@ -75,16 +93,15 @@ async fn test_wrap_without_storage_deposit() -> Result<()> {
         .await?
         .into_result()?;
 
-    // assert_eq!(alice_balance.0, to_yocto("10") - STORAGE_BALANCE);
-    // ft_balance_of(alice)
-
-    let prev_balance = user.view_account().await?.balance;
-    let deposit = UncToken::from_unc(1);
-
-    let post_balance = user.view_account().await?.balance;
-
-    assert!(post_balance < prev_balance);
-    assert!(post_balance > prev_balance.checked_sub(deposit).unwrap());
+    let result = user
+        .view(contract.id(), "ft_balance_of")
+        .args_json(json!({ "account_id": user_id }))
+        .await?
+        .json::<HashMap<String, String>>()?;
+    let alice_balance = result
+    .get(&user_id)
+    .unwrap();
+    assert_eq!(alice_balance.0, to_atto("10") - STORAGE_BALANCE);
 
     Ok(())
 }

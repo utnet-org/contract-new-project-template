@@ -5,7 +5,7 @@ use unc_contract_standards::storage_management::StorageManagement;
 
 #[unc_bindgen]
 impl Contract {
-    /// Deposit UNC to mint wNEAR tokens to the predecessor account in this contract.
+    /// Deposit UNC to mint wUNC tokens to the predecessor account in this contract.
     /// Requirements:
     /// * The predecessor account doesn't need to be registered.
     /// * Requires positive attached deposit.
@@ -29,11 +29,11 @@ impl Contract {
         log!("Deposit {} UNC to {}", amount, account_id);
     }
 
-    /// Withdraws wNEAR and send UNC back to the predecessor account.
+    /// Withdraws wUNC and send UNC back to the predecessor account.
     /// Requirements:
     /// * The predecessor account should be registered.
     /// * `amount` must be a positive integer.
-    /// * The predecessor account should have at least the `amount` of wNEAR tokens.
+    /// * The predecessor account should have at least the `amount` of wUnc tokens.
     /// * Requires attached deposit of exactly 1 attoUNC.
     #[payable]
     pub fn unc_withdraw(&mut self, amount: U128) -> Promise {
@@ -45,4 +45,19 @@ impl Contract {
         // Transferring UNC and refunding 1 attoUNC.
         Promise::new(account_id).transfer(UncToken::from_attounc(amount + 1))
     }
+
+    // view 
+    pub fn ft_balance_of(&self, account_id: unc_sdk::AccountId) -> U128 {
+        self.ft.internal_unwrap_balance_of(&account_id).into()
+    }
+
+    pub fn ft_transfer(&mut self, receiver_id: unc_sdk::AccountId, amount: U128, memo: Option<String>) {
+        assert_one_atto();
+        let sender_id = env::predecessor_account_id();
+        self.ft.internal_transfer(&sender_id, &receiver_id, amount.into(), memo);
+    }
+    pub fn ft_total_supply(&self) -> U128 {
+        self.ft.total_supply.into()
+    }
+
 }
