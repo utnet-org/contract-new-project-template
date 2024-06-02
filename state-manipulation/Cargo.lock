@@ -139,14 +139,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "airdrop"
-version = "0.1.0"
-dependencies = [
- "borsh 1.3.1",
- "unc-sdk",
-]
-
-[[package]]
 name = "android-tzdata"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -266,7 +258,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "89b47800b0be77592da0afd425cc03468052844aff33b84e33cc696f64e77b6a"
 dependencies = [
  "concurrent-queue",
- "event-listener-strategy 0.5.2",
+ "event-listener-strategy",
  "futures-core",
  "pin-project-lite",
 ]
@@ -318,17 +310,17 @@ dependencies = [
 
 [[package]]
 name = "async-io"
-version = "2.3.2"
+version = "2.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dcccb0f599cfa2f8ace422d3555572f47424da5648a4382a9dd0310ff8210884"
+checksum = "0d6baa8f0178795da0e71bc42c9e5d13261aac7ee549853162e66a241ba17964"
 dependencies = [
- "async-lock 3.3.0",
+ "async-lock 3.4.0",
  "cfg-if 1.0.0",
  "concurrent-queue",
  "futures-io",
  "futures-lite 2.3.0",
  "parking",
- "polling 3.7.0",
+ "polling 3.7.1",
  "rustix 0.38.34",
  "slab",
  "tracing",
@@ -346,12 +338,12 @@ dependencies = [
 
 [[package]]
 name = "async-lock"
-version = "3.3.0"
+version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d034b430882f8381900d3fe6f0aaa3ad94f2cb4ac519b429692a1bc2dda4ae7b"
+checksum = "ff6e472cdea888a4bd64f342f09b3f50e1886d32afe8df3d663c01140b811b18"
 dependencies = [
- "event-listener 4.0.3",
- "event-listener-strategy 0.4.0",
+ "event-listener 5.3.1",
+ "event-listener-strategy",
  "pin-project-lite",
 ]
 
@@ -385,12 +377,12 @@ dependencies = [
 
 [[package]]
 name = "async-signal"
-version = "0.2.6"
+version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "afe66191c335039c7bb78f99dc7520b0cbb166b3a1cb33a03f53d8a1c6f2afda"
+checksum = "329972aa325176e89114919f2a80fdae4f4c040f66a370b1a1159c6c0f94e7aa"
 dependencies = [
- "async-io 2.3.2",
- "async-lock 3.3.0",
+ "async-io 2.3.3",
+ "async-lock 3.4.0",
  "atomic-waker",
  "cfg-if 1.0.0",
  "futures-core",
@@ -857,9 +849,9 @@ dependencies = [
 
 [[package]]
 name = "cargo-unc"
-version = "0.8.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c5467ef26a769b52ed57c9680d485b67de3f20fa12ea8ac498804bfd508142a4"
+checksum = "3e638b858394ec68fdac8d6cdddb1ae8981e17fc325bbbb981247eed4be041c1"
 dependencies = [
  "atty",
  "bs58 0.4.0",
@@ -883,8 +875,8 @@ dependencies = [
  "serde_json",
  "sha2 0.10.8",
  "shell-words",
- "strum 0.24.1",
- "strum_macros 0.24.3",
+ "strum",
+ "strum_macros",
  "symbolic-debuginfo",
  "unc-abi",
  "utility-cli-rs",
@@ -1112,15 +1104,6 @@ name = "constant_time_eq"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "245097e9a4535ee1e3e3931fcfcd55a796a44c643e8596ff6566d68f09b87bbc"
-
-[[package]]
-name = "contract"
-version = "0.1.0"
-dependencies = [
- "unc-contract-standards",
- "unc-sdk",
- "unc-sys 2.0.6",
-]
 
 [[package]]
 name = "convert_case"
@@ -1719,9 +1702,9 @@ checksum = "53aff6fdc1b181225acdcb5b14c47106726fd8e486707315b1b138baed68ee31"
 
 [[package]]
 name = "easy-ext"
-version = "1.0.1"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49457524c7e65648794c98283282a0b7c73b10018e7091f1cdcfff314fd7ae59"
+checksum = "cc5d6d6a8504f8caedd7de14576464383900cd3840b7033a7a3dce5ac00121ca"
 
 [[package]]
 name = "ed25519"
@@ -1930,33 +1913,12 @@ dependencies = [
 
 [[package]]
 name = "event-listener"
-version = "4.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67b215c49b2b248c855fb73579eb1f4f26c38ffdc12973e20e07b91d78d5646e"
-dependencies = [
- "concurrent-queue",
- "parking",
- "pin-project-lite",
-]
-
-[[package]]
-name = "event-listener"
 version = "5.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6032be9bd27023a771701cc49f9f053c751055f71efb2e0ae5c15809093675ba"
 dependencies = [
  "concurrent-queue",
  "parking",
- "pin-project-lite",
-]
-
-[[package]]
-name = "event-listener-strategy"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "958e4d70b6d5e81971bebec42271ec641e7ff4e170a6fa605f2b8a8b65cb97d3"
-dependencies = [
- "event-listener 4.0.3",
  "pin-project-lite",
 ]
 
@@ -2452,15 +2414,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
-name = "hello"
-version = "1.0.0"
-dependencies = [
- "borsh 1.3.1",
- "uint",
- "unc-sdk",
-]
-
-[[package]]
 name = "hermit-abi"
 version = "0.1.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2818,8 +2771,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7295a8d03a71e15612a524a8e1dec1a913459e0000e530405f20d09fb0f014f7"
 dependencies = [
  "interactive-clap-derive",
- "strum 0.24.1",
- "strum_macros 0.24.3",
+ "strum",
+ "strum_macros",
 ]
 
 [[package]]
@@ -3485,16 +3438,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "51d515d32fb182ee37cda2ccdcb92950d6a3c2893aa280e540671c2cd0f3b1d9"
 
 [[package]]
-name = "num-format"
-version = "0.4.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a652d9771a63711fd3c3deb670acfbe5c30a4072e664d7a3bf5a9e1056ac72c3"
-dependencies = [
- "arrayvec 0.7.4",
- "itoa",
-]
-
-[[package]]
 name = "num-integer"
 version = "0.1.46"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3923,9 +3866,9 @@ checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
 name = "piper"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "464db0c665917b13ebb5d453ccdec4add5658ee1adc7affc7677615356a8afaf"
+checksum = "ae1d5c74c9876f070d3e8fd503d748c7d974c3e48da8f41350fa5222ef9b4391"
 dependencies = [
  "atomic-waker",
  "fastrand 2.1.0",
@@ -3989,9 +3932,9 @@ dependencies = [
 
 [[package]]
 name = "polling"
-version = "3.7.0"
+version = "3.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "645493cf344456ef24219d02a768cf1fb92ddf8c92161679ae3d91b91a637be3"
+checksum = "5e6a007746f34ed64099e88783b0ae369eaa3da6392868ba262e2af9b8fbaea1"
 dependencies = [
  "cfg-if 1.0.0",
  "concurrent-queue",
@@ -4114,9 +4057,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.84"
+version = "1.0.85"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec96c6a92621310b51366f1e28d05ef11489516e93be030060e5fc12024a49d6"
+checksum = "22244ce15aa966053a896d1accb3a6e68469b97c7f33f284b99f0d576879fc23"
 dependencies = [
  "unicode-ident",
 ]
@@ -5257,17 +5200,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b7c388c1b5e93756d0c740965c41e8822f866621d41acbdf6336a6a168f8840c"
 
 [[package]]
-name = "social-integration-tests"
-version = "1.0.0"
-dependencies = [
- "anyhow",
- "serde_json",
- "tokio",
- "unc-units",
- "utility-workspaces",
-]
-
-[[package]]
 name = "socket2"
 version = "0.4.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5334,7 +5266,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
- "unc-sys 0.1.0",
+ "unc-sys",
  "utility-workspaces",
  "wee_alloc",
 ]
@@ -5371,14 +5303,8 @@ version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "063e6045c0e62079840579a7e47a355ae92f60eb74daaf156fb1e84ba164e63f"
 dependencies = [
- "strum_macros 0.24.3",
+ "strum_macros",
 ]
-
-[[package]]
-name = "strum"
-version = "0.26.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d8cec3501a5194c432b2b7976db6b7d10ec95c253208b45f83f7136aa985e29"
 
 [[package]]
 name = "strum_macros"
@@ -5391,19 +5317,6 @@ dependencies = [
  "quote",
  "rustversion",
  "syn 1.0.109",
-]
-
-[[package]]
-name = "strum_macros"
-version = "0.26.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c6cf59daf282c0a494ba14fd21610a0325f9f90ec9d1231dea26bcb1d696c946"
-dependencies = [
- "heck 0.4.1",
- "proc-macro2",
- "quote",
- "rustversion",
- "syn 2.0.66",
 ]
 
 [[package]]
@@ -5665,9 +5578,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.37.0"
+version = "1.38.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1adbebffeca75fcfd058afa480fb6c0b81e165a0323f9c9d39c9697e37c46787"
+checksum = "ba4f4a02a7a80d6f274636f0aa95c7e383b912d41fe721a31f29e29698585a4a"
 dependencies = [
  "backtrace",
  "bytes",
@@ -5694,9 +5607,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-macros"
-version = "2.2.0"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b8a1e28f2deaa14e508979454cb3a223b10b938b45af148bc0986de36f1923b"
+checksum = "5f5ae998a069d4b5aba8ee9dad856af7d520c3699e6159b185c2acd48155d39a"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -6154,15 +6067,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "unc-contract-standards"
-version = "2.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ef44d0e8b733855ca6fb16e1e95a2523c25c11c2e98ed5c18948999e68ea9c5"
-dependencies = [
- "unc-sdk",
-]
-
-[[package]]
 name = "unc-crypto"
 version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6263,7 +6167,7 @@ dependencies = [
  "prometheus",
  "serde",
  "serde_json",
- "strum 0.24.1",
+ "strum",
  "thiserror",
  "tokio",
  "tracing",
@@ -6288,7 +6192,7 @@ dependencies = [
  "serde",
  "serde_repr",
  "serde_yaml",
- "strum 0.24.1",
+ "strum",
  "thiserror",
  "unc-account-id",
  "unc-primitives-core",
@@ -6322,7 +6226,7 @@ dependencies = [
  "serde_yaml",
  "sha3",
  "smart-default 0.6.0",
- "strum 0.24.1",
+ "strum",
  "thiserror",
  "time",
  "tracing",
@@ -6353,7 +6257,7 @@ dependencies = [
  "serde_repr",
  "serde_with",
  "sha2 0.10.8",
- "strum 0.24.1",
+ "strum",
  "thiserror",
  "unc-account-id",
 ]
@@ -6396,48 +6300,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "unc-sdk"
-version = "2.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3325f54d478ca54dffd7c8a0be01cf91a81b837ae4c6a44d2a400fa431a641b"
-dependencies = [
- "base64 0.22.1",
- "borsh 1.3.1",
- "bs58 0.5.1",
- "once_cell",
- "serde",
- "serde_json",
- "unc-account-id",
- "unc-crypto",
- "unc-gas",
- "unc-parameters",
- "unc-primitives",
- "unc-primitives-core",
- "unc-sdk-macros",
- "unc-sys 2.0.6",
- "unc-token",
- "unc-vm-runner",
- "wee_alloc",
-]
-
-[[package]]
-name = "unc-sdk-macros"
-version = "2.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b723567f87ef36b3c7f47253ab49dcee308e1f80c414f7e54a661b58d0f27e92"
-dependencies = [
- "Inflector",
- "darling",
- "proc-macro2",
- "quote",
- "serde",
- "serde_json",
- "strum 0.26.2",
- "strum_macros 0.26.2",
- "syn 2.0.66",
-]
-
-[[package]]
 name = "unc-stdx"
 version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6450,12 +6312,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "91664f4cb44f7d4f8fc9cd1d50aa50f04be8a3aa75a1e487f1b15fe9b9481c2c"
 
 [[package]]
-name = "unc-sys"
-version = "2.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1e2cf3e643550acc589de4c79eaeedff77f3369d0118d9acbd90068191826e4"
-
-[[package]]
 name = "unc-token"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6464,38 +6320,6 @@ dependencies = [
  "borsh 1.3.1",
  "interactive-clap",
  "serde",
-]
-
-[[package]]
-name = "unc-units"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a12e0164baefb1b378abbadb78d09c87cad7d1dc6dab5028a96b64fb7a85ba4"
-dependencies = [
- "unc-units-core",
- "unc-units-macro",
-]
-
-[[package]]
-name = "unc-units-core"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1663780ca7cfb1dda4eeff02202a16160238e9c030f1cbaf047e99d63fd9cdc"
-dependencies = [
- "num-format",
- "regex",
-]
-
-[[package]]
-name = "unc-units-macro"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b125c82c647d0d8678ab1a924854699cb934878e8f2eaf03c002753d5dca921"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
- "unc-units-core",
 ]
 
 [[package]]
@@ -6531,7 +6355,7 @@ dependencies = [
  "more-asserts",
  "rayon",
  "smallvec",
- "strum 0.24.1",
+ "strum",
  "tracing",
  "unc-vm-compiler",
  "unc-vm-types",
@@ -6590,7 +6414,7 @@ dependencies = [
  "serde_with",
  "sha2 0.10.8",
  "sha3",
- "strum 0.24.1",
+ "strum",
  "thiserror",
  "tracing",
  "unc-crypto",
@@ -6761,7 +6585,7 @@ dependencies = [
  "color-eyre",
  "derive_more",
  "dirs",
- "easy-ext 1.0.1",
+ "easy-ext 1.0.2",
  "ed25519-dalek 1.0.1",
  "futures",
  "hex",
@@ -6783,8 +6607,8 @@ dependencies = [
  "shellexpand",
  "slip10",
  "smart-default 0.7.1",
- "strum 0.24.1",
- "strum_macros 0.24.3",
+ "strum",
+ "strum_macros",
  "textwrap",
  "thiserror",
  "tokio",
@@ -6803,9 +6627,9 @@ dependencies = [
 
 [[package]]
 name = "utility-workspaces"
-version = "0.12.3"
+version = "0.12.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0237f7a6612d77b84e5e4d1eb29682ac49e9324a29b103ede17b5b528c0e5c51"
+checksum = "3ea3854c2983308d8834c1256917e567a929ee9282400ac521ba7277667166d3"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -6873,34 +6697,6 @@ name = "void"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a02e4885ed3bc0f2de90ea6dd45ebcbb66dacffe03547fadbb0eeae2770887d"
-
-[[package]]
-name = "voting-contract"
-version = "0.2.0"
-dependencies = [
- "borsh 1.3.1",
- "unc-sdk",
-]
-
-[[package]]
-name = "wUNC-integration-tests"
-version = "1.0.0"
-dependencies = [
- "anyhow",
- "serde_json",
- "tokio",
- "unc-units",
- "utility-workspaces",
-]
-
-[[package]]
-name = "w_unc"
-version = "1.0.0"
-dependencies = [
- "borsh 1.3.1",
- "unc-contract-standards",
- "unc-sdk",
-]
 
 [[package]]
 name = "waker-fn"
@@ -7506,14 +7302,6 @@ dependencies = [
  "home",
  "once_cell",
  "rustix 0.38.34",
-]
-
-[[package]]
-name = "whitelist"
-version = "0.2.0"
-dependencies = [
- "borsh 1.3.1",
- "unc-sdk",
 ]
 
 [[package]]
