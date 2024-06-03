@@ -1,0 +1,29 @@
+[{
+        "contract_dir": "lockup",
+        "contract_name": "lockup_contract"
+    },
+    {
+        "contract_dir": "lockup-factory",
+        "contract_name": "lockup_factory"
+    },
+    {
+        "contract_dir": "voting",
+        "contract_name": "voting_contract"
+    },
+    {
+        "contract_dir": "whitelist",
+        "contract_name": "whitelist"
+    },
+    {
+        "contract_dir": "w-unc",
+        "contract_name": "w_unc"
+    },
+    {
+        "contract_dir": "multisig2",
+        "contract_name": "multisig2"
+    },
+    {
+        "contract_dir": "multisig-factory",
+        "contract_name": "multisig_factory"
+    }
+]

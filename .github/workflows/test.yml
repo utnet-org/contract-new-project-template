@@ -28,5 +28,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: check artifacts
+        run: | 
+          rustup target add wasm32-unknown-unknown
+          build_all_docker.sh --check
+
       - name: Run cargo test
         run: cargo test
+
+      - name: check artifacts
+        run: | 
+          rustup target add wasm32-unknown-unknown
+          test_all.sh
