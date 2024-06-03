@@ -21,6 +21,8 @@ members = [
     "airdrop",
     "social-web3/contract",
     "social-web3/integration-tests",
+    "multisig",
+    "multisig-factory",
     "state-manipulation",
     "voting",
     "w-unc/contract",
