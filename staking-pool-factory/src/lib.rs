@@ -173,7 +173,7 @@ impl StakingPoolFactory {
         Promise::new(staking_pool_account_id.clone())
             .create_account()
             .transfer(env::attached_deposit())
-            .deploy_contract(include_bytes!("../../staking-pool/res/staking_pool.wasm").to_vec())
+            .deploy_contract(include_bytes!("../../res/staking_pool.wasm").to_vec())
             .function_call(
                 "new".to_string(),
                 unc_sdk::serde_json::to_vec(&StakingPoolArgs {
