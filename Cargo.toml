@@ -21,6 +21,8 @@ members = [
     "airdrop",
     "social-web3/contract",
     "social-web3/integration-tests",
+    "lockup",
+    "lockup-factory",
     "staking-pool",
     "staking-pool-factory",
     "multisig",
