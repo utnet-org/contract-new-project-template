@@ -7,7 +7,7 @@ use unc_sdk::json_types::{Base58PublicKey, U128};
 use unc_sdk::serde_json::json;
 use unc_sdk::{AccountId, Balance};
 use unc_sdk_sim::runtime::GenesisConfig;
-use unc_sdk_sim::{deploy, init_simulator, to_yocto, UserAccount};
+use unc_sdk_sim::{deploy, init_simulator, to_atto, UserAccount};
 use quickcheck_macros::quickcheck;
 use std::convert::TryInto;
 
@@ -37,10 +37,10 @@ pub fn assert_almost_eq_with_max_delta(left: u128, right: u128, max_delta: u128)
 }
 
 pub fn assert_eq_with_gas(left: u128, right: u128) {
-    assert_almost_eq_with_max_delta(left, right, to_yocto("0.005"));
+    assert_almost_eq_with_max_delta(left, right, to_atto("0.005"));
 }
 
-pub fn assert_yocto_eq(left: u128, right: u128) {
+pub fn assert_atto_eq(left: u128, right: u128) {
     assert_almost_eq_with_max_delta(left, right, 1);
 }
 
@@ -96,7 +96,7 @@ fn lockup(lockup_amount: Balance, lockup_duration: u64, lockup_timestamp: u64) {
 
 #[test]
 fn staking() {
-    let lockup_amount = to_yocto("1000");
+    let lockup_amount = to_atto("1000");
     let (root, foundation, owner, staking_pool) = basic_setup();
 
     let lockup = deploy!(
@@ -148,7 +148,7 @@ fn staking() {
     assert_eq!(res.0, 0);
 
     // Depositing to the staking pool
-    let staking_amount = lockup_amount - to_yocto("100");
+    let staking_amount = lockup_amount - to_atto("100");
     owner_staking_account
         .function_call(
             lockup
@@ -178,7 +178,7 @@ fn staking() {
                 .into_bytes(),
         )
         .unwrap_json();
-    assert_yocto_eq(res.0, staking_amount);
+    assert_atto_eq(res.0, staking_amount);
 
     // Refreshing staking balance. Should be NOOP
     owner_staking_account
@@ -188,11 +188,11 @@ fn staking() {
     let res: U128 = owner
         .view_method_call(lockup.contract.get_known_deposited_balance())
         .unwrap_json();
-    assert_yocto_eq(res.0, staking_amount);
+    assert_atto_eq(res.0, staking_amount);
 
     // Simulating rewards
     foundation
-        .transfer(STAKING_POOL_ACCOUNT_ID.to_string(), to_yocto("10"))
+        .transfer(STAKING_POOL_ACCOUNT_ID.to_string(), to_atto("10"))
         .assert_success();
 
     // Pinging the staking pool
@@ -303,7 +303,7 @@ fn staking() {
 
 #[test]
 fn staking_with_helpers() {
-    let lockup_amount = to_yocto("1000");
+    let lockup_amount = to_atto("1000");
     let (root, foundation, owner, staking_pool) = basic_setup();
 
     let lockup = deploy!(
@@ -355,7 +355,7 @@ fn staking_with_helpers() {
     assert_eq!(res.0, 0);
 
     // Depositing and staking on the staking pool
-    let staking_amount = lockup_amount - to_yocto("100");
+    let staking_amount = lockup_amount - to_atto("100");
     owner_staking_account
         .function_call(
             lockup.contract.deposit_and_stake(U128(staking_amount)),
@@ -378,7 +378,7 @@ fn staking_with_helpers() {
                 .into_bytes(),
         )
         .unwrap_json();
-    assert_yocto_eq(res.0, staking_amount);
+    assert_atto_eq(res.0, staking_amount);
 
     // Refreshing staking balance. Should be NOOP
     owner_staking_account
@@ -388,11 +388,11 @@ fn staking_with_helpers() {
     let res: U128 = owner
         .view_method_call(lockup.contract.get_known_deposited_balance())
         .unwrap_json();
-    assert_yocto_eq(res.0, staking_amount);
+    assert_atto_eq(res.0, staking_amount);
 
     // Simulating rewards
     foundation
-        .transfer(STAKING_POOL_ACCOUNT_ID.to_string(), to_yocto("10"))
+        .transfer(STAKING_POOL_ACCOUNT_ID.to_string(), to_atto("10"))
         .assert_success();
 
     // Pinging the staking pool
@@ -498,7 +498,7 @@ fn staking_with_helpers() {
 
 #[test]
 fn termination_with_staking_hashed() {
-    let lockup_amount = to_yocto("1000");
+    let lockup_amount = to_atto("1000");
     let (root, foundation, owner, staking_pool) = basic_setup();
 
     let start_timestamp = root.borrow_runtime().cur_block.block_timestamp;
@@ -571,7 +571,7 @@ fn termination_with_staking_hashed() {
     assert_eq!(res.0, 0);
 
     // Depositing and staking on the staking pool
-    let staking_amount = lockup_amount - to_yocto("100");
+    let staking_amount = lockup_amount - to_atto("100");
     owner_staking_account
         .function_call(
             lockup.contract.deposit_and_stake(U128(staking_amount)),
@@ -587,7 +587,7 @@ fn termination_with_staking_hashed() {
 
     // Simulating rewards
     foundation
-        .transfer(STAKING_POOL_ACCOUNT_ID.to_string(), to_yocto("10"))
+        .transfer(STAKING_POOL_ACCOUNT_ID.to_string(), to_atto("10"))
         .assert_success();
 
     // Pinging the staking pool
@@ -665,7 +665,7 @@ fn termination_with_staking_hashed() {
         .view_method_call(lockup.contract.get_terminated_unvested_balance_deficit())
         .unwrap_json();
     // The rest of the tokens are on the staking pool.
-    assert_eq_with_gas(res.0, unvested_balance - to_yocto("100"));
+    assert_eq_with_gas(res.0, unvested_balance - to_atto("100"));
 
     let res: U128 = owner
         .view(
@@ -694,7 +694,7 @@ fn termination_with_staking_hashed() {
     let res: WrappedBalance = owner
         .view_method_call(lockup.contract.get_terminated_unvested_balance_deficit())
         .unwrap_json();
-    assert_eq_with_gas(res.0, unvested_balance - to_yocto("100"));
+    assert_eq_with_gas(res.0, unvested_balance - to_atto("100"));
 
     let res: U128 = owner
         .view(
@@ -840,7 +840,7 @@ fn termination_with_staking_hashed() {
 
 #[test]
 fn termination_with_staking() {
-    let lockup_amount = to_yocto("1000");
+    let lockup_amount = to_atto("1000");
     let (root, foundation, owner, staking_pool) = basic_setup();
 
     let start_timestamp = root.borrow_runtime().cur_block.block_timestamp;
@@ -902,7 +902,7 @@ fn termination_with_staking() {
     assert_eq!(res.0, 0);
 
     // Depositing and staking on the staking pool
-    let staking_amount = lockup_amount - to_yocto("100");
+    let staking_amount = lockup_amount - to_atto("100");
     owner_staking_account
         .function_call(
             lockup.contract.deposit_and_stake(U128(staking_amount)),
@@ -918,7 +918,7 @@ fn termination_with_staking() {
 
     // Simulating rewards
     foundation
-        .transfer(STAKING_POOL_ACCOUNT_ID.to_string(), to_yocto("10"))
+        .transfer(STAKING_POOL_ACCOUNT_ID.to_string(), to_atto("10"))
         .assert_success();
 
     // Pinging the staking pool
@@ -987,7 +987,7 @@ fn termination_with_staking() {
         .view_method_call(lockup.contract.get_terminated_unvested_balance_deficit())
         .unwrap_json();
     // The rest of the tokens are on the staking pool.
-    assert_eq_with_gas(res.0, unvested_balance - to_yocto("100"));
+    assert_eq_with_gas(res.0, unvested_balance - to_atto("100"));
 
     let res: U128 = owner
         .view(
@@ -1016,7 +1016,7 @@ fn termination_with_staking() {
     let res: WrappedBalance = owner
         .view_method_call(lockup.contract.get_terminated_unvested_balance_deficit())
         .unwrap_json();
-    assert_eq_with_gas(res.0, unvested_balance - to_yocto("100"));
+    assert_eq_with_gas(res.0, unvested_balance - to_atto("100"));
 
     let res: U128 = owner
         .view(
@@ -1162,14 +1162,14 @@ fn termination_with_staking() {
 
 #[test]
 fn test_release_schedule_unlock_transfers() {
-    let lockup_amount = to_yocto("1000");
+    let lockup_amount = to_atto("1000");
     let (root, foundation, owner, _staking_pool) = basic_setup();
 
     // Initializing fake voting contract
     let _voting = root.deploy(
         &FAKE_VOTING_WASM_BYTES,
         TRANSFER_POLL_ACCOUNT_ID.to_string(),
-        to_yocto("30"),
+        to_atto("30"),
     );
 
     // Unlock timestamp from fake voting contract.
@@ -1225,7 +1225,7 @@ fn test_release_schedule_unlock_transfers() {
     assert_eq!(res.0, 0);
 
     // Depositing and staking on the staking pool
-    let staking_amount = lockup_amount - to_yocto("100");
+    let staking_amount = lockup_amount - to_atto("100");
     owner_staking_account
         .function_call(
             lockup.contract.deposit_and_stake(U128(staking_amount)),
@@ -1241,7 +1241,7 @@ fn test_release_schedule_unlock_transfers() {
 
     // Simulating rewards
     foundation
-        .transfer(STAKING_POOL_ACCOUNT_ID.to_string(), to_yocto("10"))
+        .transfer(STAKING_POOL_ACCOUNT_ID.to_string(), to_atto("10"))
         .assert_success();
 
     // Pinging the staking pool
@@ -1299,7 +1299,7 @@ fn test_release_schedule_unlock_transfers() {
         .unwrap_json();
     assert_eq_with_gas(res.0, full_lockup_amount + received_reward);
 
-    let transfer_amount = to_yocto("5");
+    let transfer_amount = to_atto("5");
     assert!(transfer_amount < received_reward);
     let owner_balance = owner.account().unwrap().amount;
 
@@ -1381,7 +1381,7 @@ fn test_release_schedule_unlock_transfers() {
         .unwrap_json();
     assert_eq_with_gas(res.0, full_lockup_amount + liquid_balance);
 
-    let transfer_amount = to_yocto("15");
+    let transfer_amount = to_atto("15");
     assert!(transfer_amount > liquid_balance);
 
     let owner_balance = new_owner_balance;
@@ -1498,7 +1498,7 @@ fn test_release_schedule_unlock_transfers() {
         .view_method_call(lockup.contract.get_liquid_owners_balance())
         .unwrap_json();
     // The account balance is `100`. `+3.5` for storage and `-20` for transfers.
-    assert_eq_with_gas(res.0, to_yocto("80"));
+    assert_eq_with_gas(res.0, to_atto("80"));
 
     let res: WrappedBalance = owner
         .view_method_call(lockup.contract.get_owners_balance())
@@ -1538,7 +1538,7 @@ fn test_release_schedule_unlock_transfers() {
     let res: WrappedBalance = owner
         .view_method_call(lockup.contract.get_liquid_owners_balance())
         .unwrap_json();
-    assert_eq_with_gas(res.0, to_yocto("80"));
+    assert_eq_with_gas(res.0, to_atto("80"));
 
     let res: WrappedBalance = owner
         .view_method_call(lockup.contract.get_owners_balance())
@@ -1559,7 +1559,7 @@ fn test_release_schedule_unlock_transfers() {
         )
         .assert_success();
 
-    let mut lockup_account = root.create_user("tmp".to_string(), to_yocto("100"));
+    let mut lockup_account = root.create_user("tmp".to_string(), to_atto("100"));
     lockup_account.account_id = LOCKUP_ACCOUNT_ID.to_string();
     lockup_account.signer = owner.signer.clone();
 
@@ -1578,9 +1578,9 @@ fn basic_setup() -> (UserAccount, UserAccount, UserAccount, UserAccount) {
     genesis_config.block_prod_time = 0;
     let root = init_simulator(Some(genesis_config));
 
-    let foundation = root.create_user("foundation".to_string(), to_yocto("10000"));
+    let foundation = root.create_user("foundation".to_string(), to_atto("10000"));
 
-    let owner = root.create_user("owner".to_string(), to_yocto("30"));
+    let owner = root.create_user("owner".to_string(), to_atto("30"));
 
     // Creating whitelist account
     let _whitelist = root.deploy_and_init(
@@ -1592,7 +1592,7 @@ fn basic_setup() -> (UserAccount, UserAccount, UserAccount, UserAccount) {
         })
         .to_string()
         .into_bytes(),
-        to_yocto("30"),
+        to_atto("30"),
         MAX_GAS,
     );
 
@@ -1626,7 +1626,7 @@ fn basic_setup() -> (UserAccount, UserAccount, UserAccount, UserAccount) {
         })
         .to_string()
         .into_bytes(),
-        to_yocto("40"),
+        to_atto("40"),
         MAX_GAS,
     );
 

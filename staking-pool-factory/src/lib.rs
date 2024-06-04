@@ -8,7 +8,7 @@ use unc_sdk::{env, ext_contract, unc_bindgen, AccountId, UncToken, PublicKey, Pr
 mod utils;
 use crate::utils::*;
 
-/// The 30 NEAR tokens required for the storage of the staking pool.
+/// The 30 UNC tokens required for the storage of the staking pool.
 const MIN_ATTACHED_BALANCE: UncToken = UncToken::from_attounc(30_000_000_000_000_000_000_000_000);
 
 pub mod gas {

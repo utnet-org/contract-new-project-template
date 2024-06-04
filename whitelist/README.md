@@ -1,22 +1,22 @@
 # Whitelist contract for staking pools
 
 The purpose of this contract is to maintain the whitelist of the staking pool contracts account IDs that are approved
-by NEAR Foundation.
+by UNC Foundation.
 
 In order for the lockup contracts to be able delegate to a staking pool, the staking pool should faithfully implement the spec.
 The staking pool should guarantee that the delegated tokens can not be lost or locked, such as the lockup contract should be
 able to recover delegated tokens back to the lockup from a staking pool. In order to enforce this, only approved (whitelisted)
 accounts of staking pool contracts can receive delegated tokens from lockup contracts.
 
-If NEAR Foundation has to approve every single staking pool account it might lead to a bottleneck and centralization
-To address this NEAR Foundation can whitelist the account IDs of staking pool factory contracts.
+If UNC Foundation has to approve every single staking pool account it might lead to a bottleneck and centralization
+To address this UNC Foundation can whitelist the account IDs of staking pool factory contracts.
 
 The whitelisted staking pool factory contract will be able to whitelist accounts of staking pool contracts.
 A factory contract creates and initializes a staking pool contract in a secure and permissionless way.
-This allows anyone on the network to be able to create a staking pool contract for themselves without needing approval from the NEAR
+This allows anyone on the network to be able to create a staking pool contract for themselves without needing approval from the UNC
 Foundation. This is important to maintain the decentralization of the decision making and network governance.
 
-To be able to address mistakes, NEAR Foundation has the ability to remove staking pools and staking pool factories from the whitelists.
+To be able to address mistakes, UNC Foundation has the ability to remove staking pools and staking pool factories from the whitelists.
 
 ## Requirements and guarantees
 
@@ -37,7 +37,7 @@ and methods that can only be called by the foundation.
 - Internally updated to use `LockupSet` instead of `UnorderedSet`.
 
 ```rust
-/// Initializes the contract with the given NEAR foundation account ID.
+/// Initializes the contract with the given UNC foundation account ID.
 #[init]
 pub fn new(foundation_account_id: AccountId) -> Self;
 
@@ -57,7 +57,7 @@ pub fn is_factory_whitelisted(&self, factory_account_id: AccountId) -> bool;
 
 /// Adds the given staking pool account ID to the whitelist.
 /// Returns `true` if the staking pool was not in the whitelist before, `false` otherwise.
-/// This method can be called either by the NEAR foundation or by a whitelisted factory.
+/// This method can be called either by the UNC foundation or by a whitelisted factory.
 pub fn add_staking_pool(&mut self, staking_pool_account_id: AccountId) -> bool;
 
 /**************/
@@ -66,16 +66,16 @@ pub fn add_staking_pool(&mut self, staking_pool_account_id: AccountId) -> bool;
 
 /// Removes the given staking pool account ID from the whitelist.
 /// Returns `true` if the staking pool was present in the whitelist before, `false` otherwise.
-/// This method can only be called by the NEAR foundation.
+/// This method can only be called by the UNC foundation.
 pub fn remove_staking_pool(&mut self, staking_pool_account_id: AccountId) -> bool;
 
 /// Adds the given staking pool factory contract account ID to the factory whitelist.
 /// Returns `true` if the factory was not in the whitelist before, `false` otherwise.
-/// This method can only be called by the NEAR foundation.
+/// This method can only be called by the UNC foundation.
 pub fn add_factory(&mut self, factory_account_id: AccountId) -> bool;
 
 /// Removes the given staking pool factory account ID from the factory whitelist.
 /// Returns `true` if the factory was present in the whitelist before, `false` otherwise.
-/// This method can only be called by the NEAR foundation.
+/// This method can only be called by the UNC foundation.
 pub fn remove_factory(&mut self, factory_account_id: AccountId) -> bool;
 ```

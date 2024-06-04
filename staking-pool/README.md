@@ -37,9 +37,9 @@ The fraction can be at most `1`. The denumerator can't be `0`.
 During the initialization the contract checks validity of the input and initializes the contract.
 The contract shouldn't have locked balance during the initialization.
 
-At the initialization the contract allocates one trillion yocto NEAR tokens towards "stake" share price guarantees.
+At the initialization the contract allocates one trillion atto UNC tokens towards "stake" share price guarantees.
 This fund is later used to adjust the the amount of staked and unstaked tokens due to rounding error.
-For each stake and unstake action, the contract may spend at most 1 yocto NEAR from this fund (implicitly).
+For each stake and unstake action, the contract may spend at most 1 atto UNC from this fund (implicitly).
 
 The current total balance (except for the "stake" share price guarantee amount) is converted to shares and will be staked (after the next action).
 This balance can never be unstaked or withdrawn from the contract.
@@ -124,7 +124,7 @@ Contract owner can do the following:
 
 - Change public staking key. This action restakes with the new key.
 - Change reward fee fraction.
-- Vote on behalf of the pool. This is needed for the NEAR chain governance, and can be discussed in the following NEP: <https://github.com/utility/NEPs/pull/62>
+- Vote on behalf of the pool. This is needed for the UNC chain governance, and can be discussed in the following NEP: <https://github.com/utility/NEPs/pull/62>
 - Pause and resume staking. When paused, the pool account unstakes everything (stakes 0) and doesn't restake.
 It doesn't affect the staking shares or reward distribution. Pausing is useful for node maintenance. Note, the contract is not paused by default.
 
@@ -402,8 +402,8 @@ npm install -g unc-cli
 <https://wallet.betanet.utility.com/create/>
 
 ```bash
-#Set the NEAR environment to the target network (betanet,testnet,mainnet)
-export NEAR_ENV=betanet
+#Set the UNC environment to the target network (betanet,testnet,mainnet)
+export UNC_ENV=betanet
 
 unc login
 ```
@@ -481,7 +481,7 @@ unc deploy --accountId=my_validator --wasmFile=res/staking_pool.wasm
 
 #### Create a new node
 
-**Note** after you NEAR is unstaked stop your node and create a new one to run as the contract account
+**Note** after you UNC is unstaked stop your node and create a new one to run as the contract account
 
 ##### Stop your node
 
@@ -525,7 +525,7 @@ unc validators next| grep "seat price"
 
 -- <https://wallet.betanet.utnet.org>
 -- backup your seed phrase
--- transfer NEAR from your MasterAccount to the delegator account
+-- transfer UNC from your MasterAccount to the delegator account
 
 #### Login and authorize the delegator
 
@@ -533,7 +533,7 @@ unc validators next| grep "seat price"
 unc login
 ```
 
-#### Deposit NEAR from the delegator account to the valdiator contract
+#### Deposit UNC from the delegator account to the valdiator contract
 
 ```bash
 unc call my_validator deposit '{}' --accountId user1 --amount 100
@@ -545,7 +545,7 @@ unc call my_validator deposit '{}' --accountId user1 --amount 100
 unc call my_validator stake '{"amount": "100000000000000000000000000"}' --accountId user1
 ```
 
-#### Check that your validator proposal was (Accepted) or deposit and stake more NEAR
+#### Check that your validator proposal was (Accepted) or deposit and stake more UNC
 
 ```bash
 unc proposals | grep my_validator

@@ -23,7 +23,7 @@ pub mod owner;
 /// Indicates there are no deposit for a cross contract call for better readability.
 const NO_DEPOSIT: UncToken = UncToken::from_attounc(0);
 
-/// The contract keeps at least 3.5 NEAR in the account to avoid being transferred out to cover
+/// The contract keeps at least 3.5 UNC in the account to avoid being transferred out to cover
 /// contract code storage and some internal state.
 pub const MIN_BALANCE_FOR_STORAGE: u128 = 3_500_000_000_000_000_000_000_000;
 
@@ -131,7 +131,7 @@ pub struct LockupContract {
     /// `None` means there is no staking pool selected.
     pub staking_information: Option<StakingInformation>,
 
-    /// The account ID that the NEAR Foundation, that has the ability to terminate vesting.
+    /// The account ID that the UNC Foundation, that has the ability to terminate vesting.
     pub foundation_account_id: Option<AccountId>,
 }
 
@@ -159,7 +159,7 @@ impl LockupContract {
     ///    are currently disabled and it contains the account ID of the transfer poll contract.
     /// - `vesting_schedule` - If provided, then it's either a base64 encoded hash of vesting
     ///    schedule with salt or an explicit vesting schedule.
-    ///    Vesting schedule affects the amount of tokens the NEAR Foundation will get in case of
+    ///    Vesting schedule affects the amount of tokens the UNC Foundation will get in case of
     ///    employment termination as well as the amount of tokens available for transfer by
     ///    the employee. If Hash provided, it's expected that vesting started before lockup and
     ///    it only needs to be revealed in case of termination.
@@ -170,7 +170,7 @@ impl LockupContract {
     ///    If it's used in addition to the vesting schedule, then the amount of tokens available to
     ///    transfer is subject to the minimum between vested tokens and released tokens.
     /// - `staking_pool_whitelist_account_id` - the Account ID of the staking pool whitelist contract.
-    /// - `foundation_account_id` - the account ID of the NEAR Foundation, that has the ability to
+    /// - `foundation_account_id` - the account ID of the UNC Foundation, that has the ability to
     ///    terminate vesting schedule.
     #[init]
     pub fn new(
@@ -258,7 +258,7 @@ mod tests {
     fn basic_context() -> VMContext {
         get_context(
             system_account(),
-            to_yocto(LOCKUP_NEAR),
+            to_atto(LOCKUP_UNC),
             0,
             to_ts(GENESIS_TIME_IN_DAYS),
             false,
@@ -356,7 +356,7 @@ mod tests {
         assert_eq!(contract.get_owners_balance().0, 0);
         assert_eq!(
             contract.get_locked_vested_amount(no_vesting_schedule()).0,
-            to_yocto(LOCKUP_NEAR)
+            to_atto(LOCKUP_UNC)
         );
 
         // Checking values in 1 day after genesis time
@@ -368,7 +368,7 @@ mod tests {
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR + 1);
         testing_env!(context.clone());
 
-        assert_almost_eq(contract.get_owners_balance().0, to_yocto(LOCKUP_NEAR));
+        assert_almost_eq(contract.get_owners_balance().0, to_atto(LOCKUP_UNC));
     }
 
     #[test]
@@ -510,7 +510,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Can only be called by NEAR Foundation")]
+    #[should_panic(expected = "Can only be called by UNC Foundation")]
     fn test_call_by_non_foundation() {
         let mut context = basic_context();
         testing_env!(context.clone());
@@ -537,7 +537,7 @@ mod tests {
         context.is_view = false;
         testing_env!(context.clone());
 
-        contract.transfer(to_yocto(100).into(), non_owner());
+        contract.transfer(to_atto(100).into(), non_owner());
     }
 
     #[test]
@@ -577,13 +577,13 @@ mod tests {
         // Unlocked yet
         assert_eq!(
             contract.get_owners_balance().0,
-            to_yocto(LOCKUP_NEAR).into()
+            to_atto(LOCKUP_UNC).into()
         );
 
         context.is_view = false;
         context.predecessor_account_id = account_owner();
         testing_env!(context.clone());
-        contract.transfer(to_yocto(100).into(), non_owner());
+        contract.transfer(to_atto(100).into(), non_owner());
     }
 
     #[test]
@@ -623,7 +623,7 @@ mod tests {
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR + 1);
         context.is_view = true;
         testing_env!(context.clone());
-        assert_almost_eq(contract.get_owners_balance().0, to_yocto(LOCKUP_NEAR));
+        assert_almost_eq(contract.get_owners_balance().0, to_atto(LOCKUP_UNC));
 
         context.predecessor_account_id = account_owner();
         context.signer_account_id = account_owner();
@@ -631,9 +631,9 @@ mod tests {
         context.is_view = false;
         testing_env!(context.clone());
 
-        assert_eq!(env::account_balance(), to_yocto(LOCKUP_NEAR));
-        contract.transfer(to_yocto(100).into(), non_owner());
-        assert_almost_eq(env::account_balance(), to_yocto(LOCKUP_NEAR - 100));
+        assert_eq!(env::account_balance(), to_atto(LOCKUP_UNC));
+        contract.transfer(to_atto(100).into(), non_owner());
+        assert_almost_eq(env::account_balance(), to_atto(LOCKUP_UNC - 100));
     }
 
     #[test]
@@ -644,7 +644,7 @@ mod tests {
         context.signer_account_id = account_owner();
         context.signer_account_pk = public_key(2).try_into().unwrap();
 
-        let amount = to_yocto(LOCKUP_NEAR - 100);
+        let amount = to_atto(LOCKUP_UNC - 100);
         testing_env!(context.clone());
         contract.deposit_to_staking_pool(amount.into());
     }
@@ -675,12 +675,12 @@ mod tests {
         context.is_view = false;
 
         // Deposit to the staking_pool
-        let amount = to_yocto(LOCKUP_NEAR - 100);
+        let amount = to_atto(LOCKUP_UNC - 100);
         context.predecessor_account_id = account_owner();
         testing_env!(context.clone());
         contract.deposit_to_staking_pool(amount.into());
         context.account_balance = env::account_balance();
-        assert_eq!(context.account_balance, to_yocto(LOCKUP_NEAR) - amount);
+        assert_eq!(context.account_balance, to_atto(LOCKUP_UNC) - amount);
 
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
@@ -699,8 +699,8 @@ mod tests {
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         contract.on_staking_pool_stake(amount.into());
 
-        // Assuming there are 20 NEAR tokens in rewards. Unstaking.
-        let unstake_amount = amount + to_yocto(20);
+        // Assuming there are 20 UNC tokens in rewards. Unstaking.
+        let unstake_amount = amount + to_atto(20);
         context.predecessor_account_id = account_owner();
         testing_env!(context.clone());
         contract.unstake(unstake_amount.into());
@@ -750,12 +750,12 @@ mod tests {
         contract.on_whitelist_is_whitelisted(true, staking_pool.clone());
 
         // Deposit to the staking_pool
-        let amount = to_yocto(LOCKUP_NEAR - 100);
+        let amount = to_atto(LOCKUP_UNC - 100);
         context.predecessor_account_id = account_owner();
         testing_env!(context.clone());
         contract.deposit_to_staking_pool(amount.into());
         context.account_balance = env::account_balance();
-        assert_eq!(context.account_balance, to_yocto(LOCKUP_NEAR) - amount);
+        assert_eq!(context.account_balance, to_atto(LOCKUP_UNC) - amount);
 
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
@@ -777,8 +777,8 @@ mod tests {
         assert_eq!(contract.get_known_deposited_balance().0, amount);
         context.is_view = false;
 
-        // Assuming there are 20 NEAR tokens in rewards. Refreshing balance.
-        let total_balance = amount + to_yocto(20);
+        // Assuming there are 20 UNC tokens in rewards. Refreshing balance.
+        let total_balance = amount + to_atto(20);
         context.predecessor_account_id = account_owner();
         testing_env!(context.clone());
         contract.refresh_staking_pool_balance();
@@ -791,22 +791,22 @@ mod tests {
         context.is_view = true;
         testing_env!(context.clone());
         assert_eq!(contract.get_known_deposited_balance().0, total_balance);
-        assert_eq!(contract.get_owners_balance().0, to_yocto(20));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(20));
+        assert_eq!(contract.get_owners_balance().0, to_atto(20));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(20));
         context.is_view = false;
 
         // Withdrawing these tokens
         context.predecessor_account_id = account_owner();
         testing_env!(context.clone());
-        let transfer_amount = to_yocto(15);
+        let transfer_amount = to_atto(15);
         contract.transfer(transfer_amount.into(), non_owner());
         context.account_balance = env::account_balance();
 
         context.is_view = true;
         testing_env!(context.clone());
         assert_eq!(contract.get_known_deposited_balance().0, total_balance);
-        assert_eq!(contract.get_owners_balance().0, to_yocto(5));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(5));
+        assert_eq!(contract.get_owners_balance().0, to_atto(5));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(5));
         context.is_view = false;
     }
 
@@ -892,7 +892,7 @@ mod tests {
         contract.on_whitelist_is_whitelisted(true, staking_pool.clone());
 
         // Deposit to the staking_pool
-        let amount = to_yocto(LOCKUP_NEAR - 100);
+        let amount = to_atto(LOCKUP_UNC - 100);
         context.predecessor_account_id = account_owner();
         testing_env!(context.clone());
         contract.deposit_to_staking_pool(amount.into());
@@ -916,7 +916,7 @@ mod tests {
         context.signer_account_pk = public_key(2).try_into().unwrap();
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR + 1);
 
-        let lockup_amount = to_yocto(LOCKUP_NEAR);
+        let lockup_amount = to_atto(LOCKUP_UNC);
         context.is_view = true;
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, lockup_amount);
@@ -936,7 +936,7 @@ mod tests {
 
         // Deposit to the staking_pool
         let mut total_amount = 0;
-        let amount = to_yocto(100);
+        let amount = to_atto(100);
         for _ in 1..=5 {
             total_amount += amount;
             context.predecessor_account_id = account_owner();
@@ -1016,12 +1016,12 @@ mod tests {
         assert_eq!(contract.get_liquid_owners_balance().0, 0);
         assert_eq!(
             contract.get_locked_vested_amount(no_vesting_schedule()).0,
-            to_yocto(1000)
+            to_atto(1000)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(1000));
+        assert_eq!(contract.get_locked_amount().0, to_atto(1000));
         assert_eq!(
             contract.get_unvested_amount(no_vesting_schedule()).0,
-            to_yocto(0)
+            to_atto(0)
         );
         assert!(!contract.are_transfers_enabled());
 
@@ -1031,12 +1031,12 @@ mod tests {
         assert_eq!(contract.get_liquid_owners_balance().0, 0);
         assert_eq!(
             contract.get_locked_vested_amount(no_vesting_schedule()).0,
-            to_yocto(1000)
+            to_atto(1000)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(1000));
+        assert_eq!(contract.get_locked_amount().0, to_atto(1000));
         assert_eq!(
             contract.get_unvested_amount(no_vesting_schedule()).0,
-            to_yocto(0)
+            to_atto(0)
         );
     }
 
@@ -1060,19 +1060,19 @@ mod tests {
         context.is_view = true;
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(1000));
+        assert_eq!(contract.get_owners_balance().0, to_atto(1000));
         assert_eq!(
             contract.get_liquid_owners_balance().0,
-            to_yocto(1000) - MIN_BALANCE_FOR_STORAGE
+            to_atto(1000) - MIN_BALANCE_FOR_STORAGE
         );
         assert_eq!(
             contract.get_locked_vested_amount(no_vesting_schedule()).0,
-            to_yocto(0)
+            to_atto(0)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(0));
+        assert_eq!(contract.get_locked_amount().0, to_atto(0));
         assert_eq!(
             contract.get_unvested_amount(no_vesting_schedule()).0,
-            to_yocto(0)
+            to_atto(0)
         );
     }
 
@@ -1108,38 +1108,38 @@ mod tests {
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(1000));
+        assert_eq!(contract.get_locked_amount().0, to_atto(1000));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(750)
+            to_atto(750)
         );
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(500));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(500));
+        assert_eq!(contract.get_owners_balance().0, to_atto(500));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(500));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(0)
+            to_atto(0)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(500));
+        assert_eq!(contract.get_locked_amount().0, to_atto(500));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(500)
+            to_atto(500)
         );
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 2 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(750));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(750));
-        assert_eq!(contract.get_locked_amount().0, to_yocto(250));
+        assert_eq!(contract.get_owners_balance().0, to_atto(750));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(750));
+        assert_eq!(contract.get_locked_amount().0, to_atto(250));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(250)
+            to_atto(250)
         );
 
         // Terminating
@@ -1154,21 +1154,21 @@ mod tests {
         assert_eq!(
             contract.get_vesting_information(),
             VestingInformation::Terminating(TerminationInformation {
-                unvested_amount: to_yocto(250).into(),
+                unvested_amount: to_atto(250).into(),
                 status: TerminationStatus::ReadyToWithdraw,
             })
         );
-        assert_eq!(contract.get_owners_balance().0, to_yocto(750));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(750));
-        assert_eq!(contract.get_locked_amount().0, to_yocto(250));
+        assert_eq!(contract.get_owners_balance().0, to_atto(750));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(750));
+        assert_eq!(contract.get_locked_amount().0, to_atto(250));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(250)
+            to_atto(250)
         );
-        assert_eq!(contract.get_terminated_unvested_balance().0, to_yocto(250));
+        assert_eq!(contract.get_terminated_unvested_balance().0, to_atto(250));
         assert_eq!(
             contract.get_terminated_unvested_balance_deficit().0,
-            to_yocto(0)
+            to_atto(0)
         );
         assert_eq!(
             contract.get_termination_status(),
@@ -1184,20 +1184,20 @@ mod tests {
 
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
-        contract.on_withdraw_unvested_amount(to_yocto(250).into(), receiver_id);
+        contract.on_withdraw_unvested_amount(to_atto(250).into(), receiver_id);
 
         context.is_view = true;
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(750));
+        assert_eq!(contract.get_owners_balance().0, to_atto(750));
         assert_eq!(
             contract.get_liquid_owners_balance().0,
-            to_yocto(750) - MIN_BALANCE_FOR_STORAGE
+            to_atto(750) - MIN_BALANCE_FOR_STORAGE
         );
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(0)
+            to_atto(0)
         );
-        assert_eq!(contract.get_terminated_unvested_balance().0, to_yocto(0));
+        assert_eq!(contract.get_terminated_unvested_balance().0, to_atto(0));
         assert_eq!(contract.get_termination_status(), None);
         assert_eq!(contract.get_vesting_information(), VestingInformation::None);
     }
@@ -1214,49 +1214,49 @@ mod tests {
         assert_eq!(contract.get_liquid_owners_balance().0, 0);
         assert_eq!(
             contract.get_locked_vested_amount(no_vesting_schedule()).0,
-            to_yocto(1000)
+            to_atto(1000)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(1000));
+        assert_eq!(contract.get_locked_amount().0, to_atto(1000));
         assert_eq!(
             contract.get_unvested_amount(no_vesting_schedule()).0,
-            to_yocto(0)
+            to_atto(0)
         );
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(0));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(0));
+        assert_eq!(contract.get_owners_balance().0, to_atto(0));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(0));
         assert_eq!(
             contract.get_locked_vested_amount(no_vesting_schedule()).0,
-            to_yocto(1000)
+            to_atto(1000)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(1000));
+        assert_eq!(contract.get_locked_amount().0, to_atto(1000));
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 2 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(250));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(250));
+        assert_eq!(contract.get_owners_balance().0, to_atto(250));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(250));
         assert_eq!(
             contract.get_locked_vested_amount(no_vesting_schedule()).0,
-            to_yocto(750)
+            to_atto(750)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(750));
+        assert_eq!(contract.get_locked_amount().0, to_atto(750));
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 3 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(500));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(500));
+        assert_eq!(contract.get_owners_balance().0, to_atto(500));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(500));
         assert_eq!(
             contract.get_locked_vested_amount(no_vesting_schedule()).0,
-            to_yocto(500)
+            to_atto(500)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(500));
+        assert_eq!(contract.get_locked_amount().0, to_atto(500));
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 4 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(750));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(750));
-        assert_eq!(contract.get_locked_amount().0, to_yocto(250));
+        assert_eq!(contract.get_owners_balance().0, to_atto(750));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(750));
+        assert_eq!(contract.get_locked_amount().0, to_atto(250));
     }
 
     #[test]
@@ -1280,79 +1280,79 @@ mod tests {
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(1000));
+        assert_eq!(contract.get_locked_amount().0, to_atto(1000));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(750)
+            to_atto(750)
         );
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(250));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(250));
+        assert_eq!(contract.get_owners_balance().0, to_atto(250));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(250));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(750));
+        assert_eq!(contract.get_locked_amount().0, to_atto(750));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(500)
+            to_atto(500)
         );
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 2 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(500));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(500));
+        assert_eq!(contract.get_owners_balance().0, to_atto(500));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(500));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(500));
+        assert_eq!(contract.get_locked_amount().0, to_atto(500));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(250)
+            to_atto(250)
         );
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 3 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(750));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(750));
+        assert_eq!(contract.get_owners_balance().0, to_atto(750));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(750));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(250));
+        assert_eq!(contract.get_locked_amount().0, to_atto(250));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(0)
+            to_atto(0)
         );
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 4 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(1000));
+        assert_eq!(contract.get_owners_balance().0, to_atto(1000));
         assert_eq!(
             contract.get_liquid_owners_balance().0,
-            to_yocto(1000) - MIN_BALANCE_FOR_STORAGE
+            to_atto(1000) - MIN_BALANCE_FOR_STORAGE
         );
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(0)
+            to_atto(0)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(0));
+        assert_eq!(contract.get_locked_amount().0, to_atto(0));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(0)
+            to_atto(0)
         );
     }
 
@@ -1383,97 +1383,97 @@ mod tests {
         assert_eq!(contract.get_liquid_owners_balance().0, 0);
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(1000)
+            to_atto(1000)
         );
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(0)
+            to_atto(0)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(1000));
+        assert_eq!(contract.get_locked_amount().0, to_atto(1000));
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(0));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(0));
+        assert_eq!(contract.get_owners_balance().0, to_atto(0));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(0));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(0)
+            to_atto(0)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(1000));
+        assert_eq!(contract.get_locked_amount().0, to_atto(1000));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(1000)
+            to_atto(1000)
         );
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 2 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(250));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(250));
+        assert_eq!(contract.get_owners_balance().0, to_atto(250));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(250));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(0)
+            to_atto(0)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(750));
+        assert_eq!(contract.get_locked_amount().0, to_atto(750));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(750)
+            to_atto(750)
         );
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 3 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(500));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(500));
+        assert_eq!(contract.get_owners_balance().0, to_atto(500));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(500));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(0)
+            to_atto(0)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(500));
+        assert_eq!(contract.get_locked_amount().0, to_atto(500));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(500)
+            to_atto(500)
         );
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 4 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(750));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(750));
+        assert_eq!(contract.get_owners_balance().0, to_atto(750));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(750));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(0)
+            to_atto(0)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(250));
+        assert_eq!(contract.get_locked_amount().0, to_atto(250));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(250)
+            to_atto(250)
         );
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 5 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(1000));
+        assert_eq!(contract.get_owners_balance().0, to_atto(1000));
         assert_eq!(
             contract.get_liquid_owners_balance().0,
-            to_yocto(1000) - MIN_BALANCE_FOR_STORAGE
+            to_atto(1000) - MIN_BALANCE_FOR_STORAGE
         );
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(0)
+            to_atto(0)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(0));
+        assert_eq!(contract.get_locked_amount().0, to_atto(0));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(0)
+            to_atto(0)
         );
     }
 
@@ -1498,28 +1498,28 @@ mod tests {
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(1000));
+        assert_eq!(contract.get_locked_amount().0, to_atto(1000));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(750)
+            to_atto(750)
         );
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 2 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(500));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(500));
+        assert_eq!(contract.get_owners_balance().0, to_atto(500));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(500));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(500));
+        assert_eq!(contract.get_locked_amount().0, to_atto(500));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(250)
+            to_atto(250)
         );
 
         // Terminating
@@ -1534,23 +1534,23 @@ mod tests {
 
         context.is_view = true;
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(500));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(500));
+        assert_eq!(contract.get_owners_balance().0, to_atto(500));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(500));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
-        assert_eq!(contract.get_locked_amount().0, to_yocto(500));
+        assert_eq!(contract.get_locked_amount().0, to_atto(500));
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(250)
+            to_atto(250)
         );
-        assert_eq!(contract.get_terminated_unvested_balance().0, to_yocto(250));
+        assert_eq!(contract.get_terminated_unvested_balance().0, to_atto(250));
         assert_eq!(
             contract.get_terminated_unvested_balance_deficit().0,
-            to_yocto(0)
+            to_atto(0)
         );
         assert_eq!(
             contract.get_termination_status(),
@@ -1566,43 +1566,43 @@ mod tests {
 
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
-        contract.on_withdraw_unvested_amount(to_yocto(250).into(), receiver_id);
+        contract.on_withdraw_unvested_amount(to_atto(250).into(), receiver_id);
 
         context.is_view = true;
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(500));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(500));
+        assert_eq!(contract.get_owners_balance().0, to_atto(500));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(500));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(0)
+            to_atto(0)
         );
-        assert_eq!(contract.get_terminated_unvested_balance().0, to_yocto(0));
+        assert_eq!(contract.get_terminated_unvested_balance().0, to_atto(0));
         assert_eq!(contract.get_termination_status(), None);
 
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + 3 * YEAR);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(750));
+        assert_eq!(contract.get_owners_balance().0, to_atto(750));
         assert_eq!(
             contract.get_liquid_owners_balance().0,
-            to_yocto(750) - MIN_BALANCE_FOR_STORAGE
+            to_atto(750) - MIN_BALANCE_FOR_STORAGE
         );
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(0)
+            to_atto(0)
         );
     }
 
     #[test]
     fn test_termination_before_cliff() {
-        let lockup_amount = to_yocto(1000);
+        let lockup_amount = to_atto(1000);
         let mut context = basic_context();
         testing_env!(context.clone());
         let vesting_schedule = new_vesting_schedule(YEAR);
@@ -1722,7 +1722,7 @@ mod tests {
 
     #[test]
     fn test_termination_with_staking() {
-        let lockup_amount = to_yocto(1000);
+        let lockup_amount = to_atto(1000);
         let mut context = basic_context();
         testing_env!(context.clone());
         let vesting_schedule = new_vesting_schedule(0);
@@ -1730,18 +1730,18 @@ mod tests {
 
         context.is_view = true;
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(0));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(0));
+        assert_eq!(contract.get_owners_balance().0, to_atto(0));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(0));
         assert_eq!(contract.get_locked_amount().0, lockup_amount);
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(750)
+            to_atto(750)
         );
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
         context.is_view = false;
 
@@ -1762,7 +1762,7 @@ mod tests {
         contract.on_whitelist_is_whitelisted(true, staking_pool.clone());
 
         // Deposit to the staking_pool
-        let stake_amount = to_yocto(LOCKUP_NEAR - 100);
+        let stake_amount = to_atto(LOCKUP_UNC - 100);
         context.predecessor_account_id = account_owner();
         testing_env!(context.clone());
         contract.deposit_to_staking_pool(stake_amount.into());
@@ -1783,19 +1783,19 @@ mod tests {
 
         context.is_view = true;
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(0));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(0));
+        assert_eq!(contract.get_owners_balance().0, to_atto(0));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(0));
         assert_eq!(contract.get_known_deposited_balance().0, stake_amount);
         assert_eq!(contract.get_locked_amount().0, lockup_amount);
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(750)
+            to_atto(750)
         );
         context.is_view = false;
 
@@ -1811,23 +1811,23 @@ mod tests {
 
         context.is_view = true;
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(0));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(0));
+        assert_eq!(contract.get_owners_balance().0, to_atto(0));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(0));
         assert_eq!(contract.get_locked_amount().0, lockup_amount);
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(750)
+            to_atto(750)
         );
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
-        assert_eq!(contract.get_terminated_unvested_balance().0, to_yocto(750));
+        assert_eq!(contract.get_terminated_unvested_balance().0, to_atto(750));
         assert_eq!(
             contract.get_terminated_unvested_balance_deficit().0,
-            to_yocto(650) + MIN_BALANCE_FOR_STORAGE
+            to_atto(650) + MIN_BALANCE_FOR_STORAGE
         );
         assert_eq!(
             contract.get_termination_status(),
@@ -1843,7 +1843,7 @@ mod tests {
             Some(TerminationStatus::UnstakingInProgress)
         );
 
-        let stake_amount_with_rewards = stake_amount + to_yocto(50);
+        let stake_amount_with_rewards = stake_amount + to_atto(50);
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(
             context.clone(),
@@ -1871,7 +1871,7 @@ mod tests {
             Some(TerminationStatus::WithdrawingFromStakingPoolInProgress)
         );
 
-        let withdraw_amount_with_extra_rewards = stake_amount_with_rewards + to_yocto(1);
+        let withdraw_amount_with_extra_rewards = stake_amount_with_rewards + to_atto(1);
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(
             context.clone(),
@@ -1889,19 +1889,19 @@ mod tests {
 
         context.is_view = true;
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(51));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(51));
+        assert_eq!(contract.get_owners_balance().0, to_atto(51));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(51));
         assert_eq!(contract.get_locked_amount().0, lockup_amount);
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
-            to_yocto(750)
+            to_atto(750)
         );
-        assert_eq!(contract.get_terminated_unvested_balance().0, to_yocto(750));
+        assert_eq!(contract.get_terminated_unvested_balance().0, to_atto(750));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
         assert_eq!(contract.get_terminated_unvested_balance_deficit().0, 0);
         assert_eq!(contract.get_known_deposited_balance().0, 0);
@@ -1917,22 +1917,22 @@ mod tests {
         let receiver_id = account_foundation();
         contract.termination_withdraw(receiver_id.clone());
         context.account_balance = env::account_balance();
-        assert_eq!(context.account_balance, to_yocto(250 + 51));
+        assert_eq!(context.account_balance, to_atto(250 + 51));
 
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
-        contract.on_withdraw_unvested_amount(to_yocto(750).into(), receiver_id);
+        contract.on_withdraw_unvested_amount(to_atto(750).into(), receiver_id);
 
         context.is_view = true;
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(51));
-        assert_eq!(contract.get_liquid_owners_balance().0, to_yocto(51));
-        assert_eq!(contract.get_locked_amount().0, to_yocto(250));
+        assert_eq!(contract.get_owners_balance().0, to_atto(51));
+        assert_eq!(contract.get_liquid_owners_balance().0, to_atto(51));
+        assert_eq!(contract.get_locked_amount().0, to_atto(250));
         assert_eq!(
             contract
                 .get_locked_vested_amount(vesting_schedule.clone())
                 .0,
-            to_yocto(250)
+            to_atto(250)
         );
         assert_eq!(contract.get_unvested_amount(vesting_schedule.clone()).0, 0);
         assert_eq!(contract.get_terminated_unvested_balance().0, 0);
@@ -1942,10 +1942,10 @@ mod tests {
         // Checking the balance becomes unlocked later
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR + 1);
         testing_env!(context.clone());
-        assert_eq!(contract.get_owners_balance().0, to_yocto(301));
+        assert_eq!(contract.get_owners_balance().0, to_atto(301));
         assert_eq!(
             contract.get_liquid_owners_balance().0,
-            to_yocto(301) - MIN_BALANCE_FOR_STORAGE
+            to_atto(301) - MIN_BALANCE_FOR_STORAGE
         );
         assert_eq!(
             contract

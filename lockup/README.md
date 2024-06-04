@@ -4,7 +4,7 @@
 
 This contract acts as an escrow that locks and holds an owner's tokens for a lockup period.
 The contract consists of lockup and vesting processes that go simultaneously.
-A high-level overview could be found [in NEAR wiki](https://wiki.utnet.org/overview/tokenomics/lockups).
+A high-level overview could be found [in Utility wiki](https://wiki.utnet.org/overview/tokenomics/lockups).
 
 A lockup period starts from the specified timestamp and lasts for the specified duration.
 Tokens will be unlocked liuncly.
@@ -80,7 +80,7 @@ If neither of the mechanisms is initialized, the tokens will become liquid after
 
 ### Staking
 
-NEAR is the proof of stake network. The owner of the lockup contract might hold a large percentage of the network tokens.
+Utility is the proof of stake network. The owner of the lockup contract might hold a large percentage of the network tokens.
 The owner may want to stake these tokens (including locked/unvested tokens) to help secure the network and also earn staking rewards that are distributed to the network validator.
 This contract doesn't allow to directly stake from this account, so the owner can delegate tokens to a [staking pool contract](https://github.com/unc/initial-contracts/tree/master/staking-pool).
 
@@ -210,7 +210,7 @@ unc call lockup1 select_staking_pool '{"staking_pool_account_id": "staking_pool_
 
 #### Deposit and stake to the staking pool
 
-Deposit and stake `1000` NEAR tokens.
+Deposit and stake `1000` UNC tokens.
 
 ```bash
 unc call lockup1 deposit_and_stake '{"amount": "1000000000000000000000000000"}' --accountId=owner1 --gas=125000000000000
@@ -228,7 +228,7 @@ unc call lockup1 refresh_staking_pool_balance '{}' --accountId=owner1 --gas=7500
 
 #### Checking owner's balance
 
-If the owner has accumulated 10 NEAR in the rewards, after refreshing the staking pool balance, the owner should see
+If the owner has accumulated 10 UNC in the rewards, after refreshing the staking pool balance, the owner should see
 the local balance to increase as well.
 
 ```bash
@@ -245,7 +245,7 @@ unc call lockup1 unstake_all '{}' --accountId=owner1 --gas=125000000000000
 
 #### Withdraw from the staking pool
 
-Wait for 4 epochs (about 48 hours) and withdraw all NEAR tokens from the staking pool.
+Wait for 4 epochs (about 48 hours) and withdraw all UNC tokens from the staking pool.
 
 ```bash
 unc call lockup1 withdraw_all_from_staking_pool '{}' --accountId=owner1 --gas=175000000000000
@@ -259,13 +259,13 @@ unc call lockup1 check_transfers_vote '{}' --accountId=owner1 --gas=750000000000
 
 Let's assume transfers are enabled now.
 
-#### Check liquid balance and transfer 10 NEAR
+#### Check liquid balance and transfer 10 UNC
 
 ```bash
 unc view lockup1 get_liquid_owners_balance '{}'
 ```
 
-Transfer 10 NEAR to `owner-sub-account`.
+Transfer 10 UNC to `owner-sub-account`.
 
 ```bash
 unc call lockup1 transfer '{"amount": "10000000000000000000000000", "receiver_id": "owner-sub-account"}' --accountId=owner1 --gas=50000000000000
@@ -356,7 +356,7 @@ In case of successful withdrawal, the unvested balance will become `0` and the o
 
 ### `3.1.0`
 
-- Reduced minimum required balance for the lockups from 35 NEAR to 3.5 NEAR;
+- Reduced minimum required balance for the lockups from 35 UNC to 3.5 UNC;
 - Improved the documentation.
 
 ### `3.0.0`
@@ -394,7 +394,7 @@ In case of successful withdrawal, the unvested balance will become `0` and the o
 
 ### `0.2.0`
 
-- Replaced owner's access keys with the owner's account. The access is now controlled through the predecessor account ID similar to NEAR foundation access.
+- Replaced owner's access keys with the owner's account. The access is now controlled through the predecessor account ID similar to UNC foundation access.
   This allows being more flexible with the account access including multi-sig implementation.
 - The lockup contract account should not have any access keys until the account is fully vested and unlocked.
   Only then the owner can add the full access key.

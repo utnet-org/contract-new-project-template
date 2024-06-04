@@ -24,7 +24,7 @@ fn setup_and_remove_multisig() {
     genesis.state_records.push(StateRecord::Account {
         account_id: accounts(1),
         account: PrimitiveAccount {
-            amount: to_yocto("100"),
+            amount: to_atto("100"),
             locked: 0,
             code_hash: Default::default(),
             storage_usage: 0,

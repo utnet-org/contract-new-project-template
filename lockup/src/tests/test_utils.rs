@@ -1,6 +1,6 @@
 use unc_sdk::AccountId;
 
-pub const LOCKUP_NEAR: u128 = 1000;
+pub const LOCKUP_UNC: u128 = 1000;
 pub const GENESIS_TIME_IN_DAYS: u64 = 500;
 pub const YEAR: u64 = 365;
 
@@ -24,7 +24,7 @@ pub fn account_foundation() -> AccountId {
     "unc".to_string()
 }
 
-pub fn to_yocto(unc_balance: u128) -> u128 {
+pub fn to_atto(unc_balance: u128) -> u128 {
     unc_balance * 10u128.pow(24)
 }
 
@@ -49,5 +49,5 @@ pub fn assert_almost_eq_with_max_delta(left: u128, right: u128, max_delta: u128)
 }
 
 pub fn assert_almost_eq(left: u128, right: u128) {
-    assert_almost_eq_with_max_delta(left, right, to_yocto(10));
+    assert_almost_eq_with_max_delta(left, right, to_atto(10));
 }

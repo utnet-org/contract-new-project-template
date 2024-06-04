@@ -29,7 +29,7 @@ pub type Hash = Vec<u8>;
 pub struct LockupInformation {
     /// The amount in atto-UNC tokens locked for this account.
     pub lockup_amount: u128,
-    /// The amount of tokens that were withdrawn by NEAR foundation due to early termination
+    /// The amount of tokens that were withdrawn by UNC foundation due to early termination
     /// of vesting.
     /// This amount has to be accounted separately from the lockup_amount to make sure
     /// liunc release is not being affected.
@@ -142,7 +142,7 @@ pub enum VestingScheduleOrHash {
 pub enum VestingInformation {
     None,
     /// [deprecated] After transfers are enabled, only public schedule is used.
-    /// Vesting schedule is hashed for privacy and only will be revealed if the NEAR foundation
+    /// Vesting schedule is hashed for privacy and only will be revealed if the UNC foundation
     /// has to terminate vesting.
     /// The contract assume the vesting schedule doesn't affect lockup release and duration, because
     /// the vesting started before transfers were enabled and the duration is shorter or the same.
@@ -180,7 +180,7 @@ pub enum TerminationStatus {
 #[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize, PartialEq, Clone, Debug)]
 #[serde(crate = "unc_sdk::serde")]
 pub struct TerminationInformation {
-    /// The amount of tokens that are unvested and has to be transferred back to NEAR Foundation.
+    /// The amount of tokens that are unvested and has to be transferred back to UNC Foundation.
     /// These tokens are effectively locked and can't be transferred out and can't be restaked.
     pub unvested_amount: WrappedBalance,
 

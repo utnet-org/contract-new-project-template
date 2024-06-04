@@ -49,7 +49,7 @@ See [CHANGELOG.md](CHANGELOG.md)
 The top level keys of the objects should be account IDs under which the data is stored. Those accounts are covering storage for the underlying data.
 
 The predecessor_id or the signer public key should have permission to write under those keys.
-If the predecessor_id matches the top level key, then it can write any data under that key, as long as it has a permission or at least 1 yoctoNEAR is attached.
+If the predecessor_id matches the top level key, then it can write any data under that key, as long as it has a permission or at least 1 attoUNC is attached.
 
 The attached deposit will be transferred to the first key. If the account doesn't exist, it will be created (the predecessor_id should match).
 

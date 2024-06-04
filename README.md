@@ -2,6 +2,9 @@
 
 ## contracts template
 
+- [Hello / OnBoarding contract](./hello-utility/)
+- [Drop / Base contract](./airdrop/)
+- [Social / Web3 contract](./social-web3/)
 - [Lockup / Vesting contract](./lockup/)
 - [Lockup Factory](./lockup-factory/)
 - [Multisig contract](./multisig/)

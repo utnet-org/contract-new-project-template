@@ -19,8 +19,8 @@ pub fn ntoy(unc_amount: u128) -> u128 {
 }
 
 /// Rounds to uncest
-pub fn yton(yocto_amount: u128) -> u128 {
-    (yocto_amount + (5 * 10u128.pow(23))) / 10u128.pow(24)
+pub fn yton(atto_amount: u128) -> u128 {
+    (atto_amount + (5 * 10u128.pow(23))) / 10u128.pow(24)
 }
 
 #[macro_export]

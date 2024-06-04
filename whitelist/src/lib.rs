@@ -5,7 +5,7 @@ use unc_sdk::{env, unc_bindgen, AccountId};
 #[unc_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct WhitelistContract {
-    /// The account ID of the NEAR Foundation. It allows to whitelist new staking pool accounts.
+    /// The account ID of the UNC Foundation. It allows to whitelist new staking pool accounts.
     /// It also allows to whitelist new Staking Pool Factories, which can whitelist staking pools.
     pub foundation_account_id: AccountId,
 
@@ -25,13 +25,13 @@ impl Default for WhitelistContract {
 
 #[unc_bindgen]
 impl WhitelistContract {
-    /// Initializes the contract with the given NEAR foundation account ID.
+    /// Initializes the contract with the given UNC foundation account ID.
     #[init]
     pub fn new(foundation_account_id: AccountId) -> Self {
         assert!(!env::state_exists(), "Already initialized");
         assert!(
             env::is_valid_account_id(foundation_account_id.as_bytes()),
-            "The NEAR Foundation account ID is invalid"
+            "The UNC Foundation account ID is invalid"
         );
         Self {
             foundation_account_id,
@@ -68,7 +68,7 @@ impl WhitelistContract {
 
     /// Adds the given staking pool account ID to the whitelist.
     /// Returns `true` if the staking pool was not in the whitelist before, `false` otherwise.
-    /// This method can be called either by the NEAR foundation or by a whitelisted factory.
+    /// This method can be called either by the UNC foundation or by a whitelisted factory.
     pub fn add_staking_pool(&mut self, staking_pool_account_id: AccountId) -> bool {
         assert!(
             env::is_valid_account_id(staking_pool_account_id.as_bytes()),
@@ -90,7 +90,7 @@ impl WhitelistContract {
 
     /// Removes the given staking pool account ID from the whitelist.
     /// Returns `true` if the staking pool was present in the whitelist before, `false` otherwise.
-    /// This method can only be called by the NEAR foundation.
+    /// This method can only be called by the UNC foundation.
     pub fn remove_staking_pool(&mut self, staking_pool_account_id: AccountId) -> bool {
         self.assert_called_by_foundation();
         assert!(
@@ -102,7 +102,7 @@ impl WhitelistContract {
 
     /// Adds the given staking pool factory contract account ID to the factory whitelist.
     /// Returns `true` if the factory was not in the whitelist before, `false` otherwise.
-    /// This method can only be called by the NEAR foundation.
+    /// This method can only be called by the UNC foundation.
     pub fn add_factory(&mut self, factory_account_id: AccountId) -> bool {
         assert!(
             env::is_valid_account_id(factory_account_id.as_bytes()),
@@ -114,7 +114,7 @@ impl WhitelistContract {
 
     /// Removes the given staking pool factory account ID from the factory whitelist.
     /// Returns `true` if the factory was present in the whitelist before, `false` otherwise.
-    /// This method can only be called by the NEAR foundation.
+    /// This method can only be called by the UNC foundation.
     pub fn remove_factory(&mut self, factory_account_id: AccountId) -> bool {
         self.assert_called_by_foundation();
         assert!(
@@ -128,12 +128,12 @@ impl WhitelistContract {
     /* Internal */
     /************/
 
-    /// Internal method to verify the predecessor was the NEAR Foundation account ID.
+    /// Internal method to verify the predecessor was the UNC Foundation account ID.
     fn assert_called_by_foundation(&self) {
         assert_eq!(
             &env::predecessor_account_id(),
             &self.foundation_account_id,
-            "Can only be called by NEAR Foundation"
+            "Can only be called by UNC Foundation"
         );
     }
 }
@@ -247,7 +247,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Can only be called by NEAR Foundation")]
+    #[should_panic(expected = "Can only be called by UNC Foundation")]
     fn test_factory_whitelist_fail() {
         testing_env!(VMContextBuilder::new()
             .current_account_id(account_whitelist())
@@ -266,7 +266,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Can only be called by NEAR Foundation")]
+    #[should_panic(expected = "Can only be called by UNC Foundation")]
     fn test_trying_to_whitelist_factory() {
         testing_env!(VMContextBuilder::new()
             .current_account_id(account_whitelist())
@@ -275,7 +275,7 @@ mod tests {
 
         let mut contract = WhitelistContract::new(account_unc());
 
-        // Trying ot whitelist the factory not by the NEAR Foundation.
+        // Trying ot whitelist the factory not by the UNC Foundation.
         testing_env!(VMContextBuilder::new()
         .current_account_id(account_whitelist())
         .predecessor_account_id(account_factory())
@@ -285,7 +285,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Can only be called by NEAR Foundation")]
+    #[should_panic(expected = "Can only be called by UNC Foundation")]
     fn test_trying_to_remove_by_factory() {
         testing_env!(VMContextBuilder::new()
             .current_account_id(account_whitelist())
@@ -359,7 +359,7 @@ mod tests {
         .build());
         assert!(contract.is_whitelisted(account_pool()));
 
-        // Removing the pool from the whitelisted by the NEAR foundation.
+        // Removing the pool from the whitelisted by the UNC foundation.
         testing_env!(VMContextBuilder::new()
         .current_account_id(account_whitelist())
         .predecessor_account_id(account_unc())

@@ -29,13 +29,13 @@ Usage example to put and remove only the "STATE" item using [unc-cli](https://gi
 unc-cli add contract-code network testnet account nesdie.testnet contract-file ./res/state_manipulation.wasm no-initialize sign-with-keychain
 
 # Add state item for "STATE" key
-unc-cli execute change-method network testnet contract nesdie.testnet call replace '{"entries":[["U1RBVEU=", "dGVzdA=="]]}' --prepaid-gas '100.000 TeraGas' --attached-deposit '0 NEAR' signer nesdie.testnet sign-with-keychain
+unc-cli execute change-method network testnet contract nesdie.testnet call replace '{"entries":[["U1RBVEU=", "dGVzdA=="]]}' --prepaid-gas '100.000 TeraGas' --attached-deposit '0 UNC' signer nesdie.testnet sign-with-keychain
 
 # View Added state item
 unc-cli view contract-state network testnet account nesdie.testnet at-final-block
 
 # Clear added state item
-unc-cli execute change-method network testnet contract nesdie.testnet call clean '{"keys":["U1RBVEU="]}' --prepaid-gas '100.000 TeraGas' --attached-deposit '0 NEAR' signer nesdie.testnet sign-with-keychain
+unc-cli execute change-method network testnet contract nesdie.testnet call clean '{"keys":["U1RBVEU="]}' --prepaid-gas '100.000 TeraGas' --attached-deposit '0 UNC' signer nesdie.testnet sign-with-keychain
 
 # View that item was removed
 unc-cli view contract-state network testnet account nesdie.testnet at-final-block

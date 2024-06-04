@@ -85,7 +85,7 @@ const config = {
         .reduce((s, a) => s.add(Big(a[1].storage_balance)), Big(0))
         .div(Big(10).pow(24))
         .toFixed(3) +
-      " NEAR"
+      " UNC"
   );
 
   console.log("Initializing node count");
