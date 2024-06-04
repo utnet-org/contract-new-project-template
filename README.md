@@ -36,6 +36,8 @@ Install [`unc`](https://github.com/utnet-org/utility-cli-rs) and run:
 ```bash
 # use root account if dev-containers environment
 sudo su -
+cd <contracts template> # cd social-web3
+
 unc dev-tool build
 ```
 
