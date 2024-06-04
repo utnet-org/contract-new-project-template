@@ -122,7 +122,7 @@ pub enum StorageKeys {
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 #[borsh(crate = "unc_sdk::borsh")]
 pub struct MultiSigContract {
-    /// Members of the multisig.
+    /// Fix: Members of the multisig. use Set instead of Vec to avoid duplicates.
     members: Vector<MultisigMember>,
     /// Number of confirmations required.
     num_confirmations: u32,
