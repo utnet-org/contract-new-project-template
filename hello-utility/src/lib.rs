@@ -13,8 +13,7 @@ const DEFAULT_MESSAGE: &str = "Hello";
 
 //  Collections contract's attributes (state), Always prefer SDK collections over native
 //  collections 被设计为将数据分割成chunk, defer reading and writing to the store until needed
-// unc_sdk::collections 将迁移到 unc_sdk::store 并更新API, 在 near-sdk 上启用 unstable 功能使用
-// https://docs.rs/near-sdk/latest/unc_sdk/collections/index.html
+//  unc_sdk::collections 将迁移到 unc_sdk::store 并更新API, 在 near-sdk 上启用 unstable 功能使用
 /*
 vector: Vector::new(b"vec-uid-1".to_vec()),
 map: LookupMap::new(b"map-uid-1".to_vec()),
