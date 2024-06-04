@@ -3,7 +3,7 @@ use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use unc_sdk::store::UnorderedSet;
 use unc_sdk::json_types::U128;
 use unc_sdk::serde::{Deserialize, Serialize};
-use unc_sdk::{env, ext_contract, unc_bindgen, AccountId, UncToken, PublicKey, Promise, PromiseOrValue};
+use unc_sdk::{env, ext_contract, unc_bindgen, AccountId, UncToken, UncSchema, PublicKey, Promise, PromiseOrValue};
 
 mod utils;
 use crate::utils::*;
@@ -51,7 +51,7 @@ impl Default for StakingPoolFactory {
 }
 
 /// Rewards fee fraction structure for the staking pool contract.
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, UncSchema, Clone)]
 #[serde(crate = "unc_sdk::serde")]
 pub struct RewardFeeFraction {
     pub numerator: u32,

@@ -3110,7 +3110,7 @@ dependencies = [
 
 [[package]]
 name = "lockup-factory"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "borsh 1.3.1",
  "hex",
@@ -3302,7 +3302,7 @@ checksum = "e5ce46fe64a9d73be07dcbe690a38ce1b293be448fd8ce1e6c1b8062c9f72c6a"
 
 [[package]]
 name = "multisig"
-version = "0.4.0"
+version = "0.1.0"
 dependencies = [
  "borsh 1.3.1",
  "unc-primitives-core",
@@ -5327,7 +5327,7 @@ checksum = "b7c388c1b5e93756d0c740965c41e8822f866621d41acbdf6336a6a168f8840c"
 
 [[package]]
 name = "social-integration-tests"
-version = "1.0.0"
+version = "0.1.0"
 dependencies = [
  "anyhow",
  "serde_json",
@@ -5392,7 +5392,7 @@ checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
 name = "staking-pool"
-version = "0.4.1"
+version = "0.1.0"
 dependencies = [
  "borsh 1.3.1",
  "env_logger 0.7.1",

@@ -5,7 +5,7 @@ use unc_sdk::store::TreeMap;
 use unc_sdk::json_types::U128;
 use unc_sdk::serde::{Deserialize, Serialize};
 use unc_sdk::{
-    env, ext_contract, unc_bindgen, AccountId, UncToken, Gas, EpochHeight, Promise, PromiseResult,
+    env, ext_contract, unc_bindgen, AccountId, UncToken, UncSchema, Gas, EpochHeight, Promise, PromiseResult,
     PublicKey,
 };
 use uint::construct_uint;
@@ -53,7 +53,7 @@ pub struct Account {
 }
 
 /// Represents an account structure readable by humans.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, UncSchema)]
 #[serde(crate = "unc_sdk::serde")]
 pub struct HumanReadableAccount {
     pub account_id: AccountId,
@@ -119,7 +119,7 @@ impl Default for StakingContract {
     }
 }
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, UncSchema, Clone)]
 #[serde(crate = "unc_sdk::serde")]
 pub struct RewardFeeFraction {
     pub numerator: u32,
