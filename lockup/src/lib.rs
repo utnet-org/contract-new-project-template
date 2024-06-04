@@ -3,11 +3,6 @@
 use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use unc_sdk::{env, ext_contract, unc_bindgen, AccountId, UncToken, Gas};
 
-
-
-
-
-
 pub use crate::types::*;
 
 pub mod foundation;

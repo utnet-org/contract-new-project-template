@@ -24,7 +24,7 @@ const MULTISIG_METHOD_NAMES: &str = "add_request,delete_request,confirm,add_and_
 pub type RequestId = u32;
 
 /// Permissions for function call access key.
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, UncSchema)]
 #[cfg_attr(test, derive(PartialEq, Clone))]
 #[borsh(crate = "unc_sdk::borsh")]
 #[serde(crate = "unc_sdk::serde")]
@@ -35,7 +35,7 @@ pub struct FunctionCallPermission {
 }
 
 /// Lowest level action that can be performed by the multisig contract.
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, UncSchema)]
 #[cfg_attr(test, derive(PartialEq, Clone))]
 #[borsh(crate = "unc_sdk::borsh")]
 #[serde(tag = "type", crate = "unc_sdk::serde")]
