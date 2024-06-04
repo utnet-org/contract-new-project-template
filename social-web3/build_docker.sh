@@ -17,7 +17,7 @@ docker create \
      -w /host \
      -e RUSTFLAGS='-C link-arg=-s' \
      -it \
-     unc/contract-builder \
+     ruster2024/contract-builder \
      /bin/bash
 fi
 

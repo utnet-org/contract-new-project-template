@@ -2,7 +2,7 @@
 name = "multisig-factory"
 version = "0.1.0"
 authors = ["Utility Inc <hello@utnet.org>"]
-edition = "2018"
+edition = "2021"
 publish = false
 
 [lib]

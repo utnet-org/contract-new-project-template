@@ -2,7 +2,8 @@
 name = "whitelist"
 version = "0.2.0"
 authors = ["Utility Inc <hello@utnet.org>"]
-edition = "2018"
+license = "GPL-2.0-or-later"
+edition = "2021"
 publish = false
 
 [lib]

@@ -1,8 +1,9 @@
 [package]
 name = "w_unc"
 version = "1.0.0"
-authors = ["Utility Inc <hello@utnet.org>", "Vincent <vincent@decentralisedengineeringltd.co.uk>"]
-edition = "2018"
+authors = ["Utility Inc <hello@utnet.org>", "Jongun <jongun@gmail.com>"]
+license = "GPL-2.0-or-later"
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
