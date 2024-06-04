@@ -1,7 +1,7 @@
 use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use unc_sdk::json_types::{Base64VecU8, U128, U64};
 use unc_sdk::serde::{Deserialize, Serialize};
-use unc_sdk::{env, AccountId};
+use unc_sdk::{env, AccountId, UncSchema};
 
 /// Raw type for duration in nanoseconds
 pub type Duration = u64;
@@ -81,7 +81,7 @@ pub struct StakingInformation {
 }
 
 /// Contains information about vesting schedule.
-#[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize, Clone, PartialEq, Debug)]
+#[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize, UncSchema, Clone, PartialEq, Debug)]
 #[serde(crate = "unc_sdk::serde")]
 pub struct VestingSchedule {
     /// The timestamp in nanosecond when the vesting starts. E.g. the start date of employment.
@@ -112,7 +112,7 @@ impl VestingSchedule {
 }
 
 /// Initialization argument type to define the vesting schedule
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, UncSchema, Debug)]
 #[serde(crate = "unc_sdk::serde")]
 pub enum VestingScheduleOrHash {
     /// The vesting schedule is private and this is a hash of (vesting_schedule, salt).

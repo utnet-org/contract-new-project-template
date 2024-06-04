@@ -1,7 +1,7 @@
 use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use unc_sdk::serde::{Deserialize, Serialize};
 use unc_sdk::serde_json::json;
-use unc_sdk::{env, unc_bindgen, AccountId, Gas, Promise, PublicKey, UncToken};
+use unc_sdk::{env, unc_bindgen, AccountId, Gas, Promise, PublicKey, UncSchema, UncToken};
 
 
 const CODE: &[u8] = include_bytes!("../../res/multisig.wasm");
@@ -9,7 +9,7 @@ const CODE: &[u8] = include_bytes!("../../res/multisig.wasm");
 /// This gas spent on the call & account creation, the rest goes to the `new` call.
 const CREATE_CALL_GAS: Gas = Gas::from_gas(50_000_000_000_000);
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, UncSchema)]
 #[serde(crate = "unc_sdk::serde", untagged)]
 pub enum MultisigMember {
     AccessKey { public_key: PublicKey },

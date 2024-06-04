@@ -6,7 +6,7 @@ use unc_sdk::store::{LookupMap, TreeMap, Vector};
 use unc_sdk::json_types::{Base64VecU8, U128, U64};
 use unc_sdk::serde::{Deserialize, Serialize};
 use unc_sdk::{
-    env, serde_json, unc_bindgen, AccountId, Allowance, BorshStorageKey, Gas, PanicOnDefault, Promise, PromiseOrValue, PublicKey, UncToken
+    env, serde_json, unc_bindgen, UncSchema, AccountId, Allowance, BorshStorageKey, Gas, PanicOnDefault, Promise, PromiseOrValue, PublicKey, UncToken
 };
 
 /// Unlimited allowance for multisig keys.
@@ -74,7 +74,7 @@ pub enum MultiSigRequestAction {
 }
 
 /// The request the user makes specifying the receiving account and actions they want to execute (1 tx)
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, UncSchema)]
 #[cfg_attr(test, derive(PartialEq, Clone))]
 #[borsh(crate = "unc_sdk::borsh")]
 #[serde(crate = "unc_sdk::serde")]
@@ -95,7 +95,7 @@ pub struct MultiSigRequestWithSigner {
 }
 
 /// Represents member of the multsig: either account or access key to given account.
-#[derive(Debug, BorshDeserialize, BorshSerialize, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, BorshDeserialize, BorshSerialize, UncSchema, Clone, PartialEq, Serialize, Deserialize)]
 #[borsh(crate = "unc_sdk::borsh")]
 #[serde(crate = "unc_sdk::serde", untagged)]
 pub enum MultisigMember {
