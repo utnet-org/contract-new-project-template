@@ -9,6 +9,7 @@ CONTRACT_ACCOUNT_ID="lockup-whitelist-${MASTER_ACCOUNT_ID}"
 echo "Deploying whitelist contract to $CONTRACT_ACCOUNT_ID with 20 unc"
 
 #1. create account and transfer funds
+(
 unc account create-account fund-myself $CONTRACT_ACCOUNT_ID '20 unc' \
     use-manually-provided-public-key "ed25519:AYU8UsZZJM5pXpYafzpwvizJk3rZitsVTyK4nqhMfvXx" \
     sign-as $MASTER_ACCOUNT_ID \
@@ -17,8 +18,23 @@ unc account create-account fund-myself $CONTRACT_ACCOUNT_ID '20 unc' \
         --signer-public-key "ed25519:2yMvZrTtjgFMtcpE12G3tdt7KsYKdKE6jufRnz4Yyxw3" \
         --signer-private-key "ed25519:3NVx4sHxBJciEH2wZoMig8YiMx1Q84Ur2RWTd2GQ7JNfWdyDxwwYrUR6XtJR3YcYeWh9NzVEmsnYe2keB97mVExZ" \
     send
-
-#sleep 180
+) &
+wait
+# Wait for the account to be created
+while [ true ]
+do
+    (
+    AMOUNT=$(unc account view-account-summary $CONTRACT_ACCOUNT_ID network-config $CHAIN_ID now | grep "balance")
+    ) &
+    wait
+    if [ -z "$AMOUNT" ]; then
+        echo "Failed to get account summary for $CONTRACT_ACCOUNT_ID"
+        sleep 30
+    else
+        echo "Contract account ${CONTRACT_ACCOUNT_ID} has been created with balance $AMOUNT"
+        break
+    fi
+done
 #2. deploy contract and call new method initializing the contract
 unc contract deploy $CONTRACT_ACCOUNT_ID \
     use-file ../../res/whitelist.wasm \
