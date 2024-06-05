@@ -1,6 +1,6 @@
 #!/bin/bash
 CHAIN_ID="${CHAIN_ID:-testnet}"
-MASTER_ACCOUNT_ID="${MASTER_ACCOUNT_ID:-master}"
+MASTER_ACCOUNT_ID="${MASTER_ACCOUNT_ID:-7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376}"
 LOCKUP_MASTER_ACCOUNT_ID="${LOCKUP_MASTER_ACCOUNT_ID:-lockup}"
 set -e
 
@@ -31,7 +31,7 @@ if [ "$RES" = "BAD" ]; then
   exit 1
 fi
 
-read -p "Enter account ID (prefix) to create: " ACCOUNT_PREFIX
+read -p "Enter account ID: " ACCOUNT_PREFIX
 
 PREFIX_RE=$(grep -qE '^([a-z0-9]+[-_])*[a-z0-9]+$' <<< "$ACCOUNT_PREFIX" && echo "OK" || echo "BAD")
 
