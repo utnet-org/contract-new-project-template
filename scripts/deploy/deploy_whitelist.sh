@@ -9,32 +9,24 @@ CONTRACT_ACCOUNT_ID="lockup-whitelist-${MASTER_ACCOUNT_ID}"
 echo "Deploying whitelist contract to $CONTRACT_ACCOUNT_ID with 20 unc"
 
 #1. create account and transfer funds
-(
-unc account create-account fund-myself $CONTRACT_ACCOUNT_ID '20 unc' \
-    use-manually-provided-public-key "ed25519:5FF38DhwzfavJxR4FULScKMZ3qn9rFeeTcDPYbyW8egN" \
-    sign-as $MASTER_ACCOUNT_ID \
-    network-config $CHAIN_ID \
-    sign-with-plaintext-private-key \
-        --signer-public-key "ed25519:9DbmnSYXws5hB7KHBLD6YwuDYCxCTX9b4MSEQhZzgTp1" \
-        --signer-private-key "ed25519:4JoG9dVMwPp869VXPaWYwAfT7cLYDoZifk48FwK7gVCWXrpytrT4uyQcLQNS6vGNQZVfAHWUGTeos6fhHTsWskv9" \
-    send
-) &
-wait
-# Wait for the account to be created
-while [ true ]
-do
-    (
-    AMOUNT=$(unc account view-account-summary $CONTRACT_ACCOUNT_ID network-config $CHAIN_ID now | grep "balance")
-    ) &
-    wait
-    if [ -z "$AMOUNT" ]; then
-        echo "Failed to get account summary for $CONTRACT_ACCOUNT_ID"
-        sleep 30
-    else
-        echo "Contract account ${CONTRACT_ACCOUNT_ID} has been created with balance $AMOUNT"
-        break
-    fi
-done
+## whitelist
+##1.$ unc account create-account fund-later use-auto-generation save-to-folder $HOME/.unc-credentials/implicit
+##2.$ cat $HOME/.unc-credentials/implicit/e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773.json
+
+## {"account_id":"e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773",
+## "master_seed_phrase":"degree crisp fat noodle clog word globe filter problem rice swear priority",
+## "private_key":"ed25519:FfnmBekG6NYcrqsgk3JNoLr9qbc6T3cqY6YjoYFYKGHuELswSyjxRZzZAoDc4rweuByHpqCQDrQnLV1Excm2W2W",
+## "public_key":"ed25519:GDHGgfGte8prwJ4dEJcCB8SZhKWf7RWSXxTHg4fzY62W","seed_phrase_hd_path":"m/44'/397'/0'"
+## }
+
+## 3.$ unc account import-account using-private-key ed25519:FfnmBekG6NYcrqsgk3JNoLr9qbc6T3cqY6YjoYFYKGHuELswSyjxRZzZAoDc4rweuByHpqCQDrQnLV1Excm2W2W network-config testnet
+## > Enter account ID: e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773
+
+## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773 '100 unc' network-config testnet sign-with-keychain send
+
+## 5.$ export CONTRACT_ACCOUNT_ID=e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773
+
+
 #2. deploy contract and call new method initializing the contract
 unc contract deploy $CONTRACT_ACCOUNT_ID \
     use-file ../../res/whitelist.wasm \

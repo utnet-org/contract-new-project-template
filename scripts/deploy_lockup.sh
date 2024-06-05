@@ -1,7 +1,9 @@
 #!/bin/bash
 CHAIN_ID="${CHAIN_ID:-testnet}"
 MASTER_ACCOUNT_ID="${MASTER_ACCOUNT_ID:-7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376}"
-LOCKUP_MASTER_ACCOUNT_ID="${LOCKUP_MASTER_ACCOUNT_ID:-lockup}"
+VOTE_ACCOUNT_ID="${VOTE_ACCOUNT_ID:-0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee}"
+WHITELIST_ACCOUNT_ID="${WHITELIST_ACCOUNT_ID:-e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773}"
+
 set -e
 
 if [ -z "${CHAIN_ID}" ]; then
@@ -15,19 +17,18 @@ if [ -z "${MASTER_ACCOUNT_ID}" ]; then
 fi
 
 
-if [ -z "${LOCKUP_MASTER_ACCOUNT_ID}" ]; then
-  echo "LOCKUP_MASTER_ACCOUNT_ID is required, e.g. \`export LOCKUP_MASTER_ACCOUNT_ID=lockup\`"
+if [ -z "${MASTER_ACCOUNT_ID}" ]; then
+  echo "MASTER_ACCOUNT_ID is required, e.g. \`export MASTER_ACCOUNT_ID=lockup\`"
   exit 1
 fi
 
 echo "Using CHAIN_ID=${CHAIN_ID}"
 echo "Using MASTER_ACCOUNT_ID=${MASTER_ACCOUNT_ID}"
-echo "Using LOCKUP_MASTER_ACCOUNT_ID=${LOCKUP_MASTER_ACCOUNT_ID}"
 
 # Verifying master account exist
-RES=$(unc account view-account-summary $LOCKUP_MASTER_ACCOUNT_ID network-config $CHAIN_ID now | grep "balance" && echo "OK" || echo "BAD")
+RES=$(unc account view-account-summary $MASTER_ACCOUNT_ID network-config $CHAIN_ID now | grep "balance" && echo "OK" || echo "BAD")
 if [ "$RES" = "BAD" ]; then
-  echo "Can't get state for ${LOCKUP_MASTER_ACCOUNT_ID}. Maybe the account doesn't exist."
+  echo "Can't get state for ${MASTER_ACCOUNT_ID}. Maybe the account doesn't exist."
   exit 1
 fi
 
@@ -36,7 +37,7 @@ read -p "Enter account ID: " ACCOUNT_PREFIX
 PREFIX_RE=$(grep -qE '^([a-z0-9]+[-_])*[a-z0-9]+$' <<< "$ACCOUNT_PREFIX" && echo "OK" || echo "BAD")
 
 if [ "$PREFIX_RE" = "OK" ]; then
-  ACCOUNT_ID="$ACCOUNT_PREFIX.${LOCKUP_MASTER_ACCOUNT_ID}"
+  ACCOUNT_ID="$ACCOUNT_PREFIX"
 else
   echo "Invalid new account prefix."
   exit 1
@@ -82,21 +83,25 @@ while true; do
   fi
 done
 
-VOTE_ACCOUNT_ID="vote-${MASTER_ACCOUNT_ID}"
-WHITELIST_ACCOUNT_ID="whitelist-${MASTER_ACCOUNT_ID}"
-
 
 #1. create account and transfer funds
-unc account create-account fund-myself $CONTRACT_ACCOUNT_ID '${LOCKUP_BALANCE}000000000000000000000000 unc' \
-    use-manually-provided-public-key "ed25519:5FF38DhwzfavJxR4FULScKMZ3qn9rFeeTcDPYbyW8egN" \
-    sign-as $LOCKUP_MASTER_ACCOUNT_ID \
-    network-config $CHAIN_ID \
-    sign-with-plaintext-private-key \
-        --signer-public-key "ed25519:9DbmnSYXws5hB7KHBLD6YwuDYCxCTX9b4MSEQhZzgTp1" \
-        --signer-private-key "ed25519:4JoG9dVMwPp869VXPaWYwAfT7cLYDoZifk48FwK7gVCWXrpytrT4uyQcLQNS6vGNQZVfAHWUGTeos6fhHTsWskv9" \
-    send
+##1.$ unc account create-account fund-later use-auto-generation save-to-folder $HOME/.unc-credentials/implicit
+##2.$ cat $HOME/.unc-credentials/implicit/ef14eded70222383b8aed8a999879e06f28d86557b087db6d98d5d37ee198846.json
 
-#sleep 180
+## {"account_id":"ef14eded70222383b8aed8a999879e06f28d86557b087db6d98d5d37ee198846",
+## "master_seed_phrase":"glimpse card pride element local monkey company puppy stock fashion giraffe salt",
+## "private_key":"ed25519:4mwryZ4GXVJieS9ccaGBhH3BnyNV9ovNonWrrxr9nfpu9wybPYUQsY1DdxQfVZ6ZJdvj61WYgsLoWMVPxSqYv2ms",
+## "public_key":"ed25519:H6Gx6FSEFJVPGXQkhX6kcPpB9NyXM2SNp8weFgb1A9fb",
+## "seed_phrase_hd_path":"m/44'/397'/0'"
+## }
+
+## 3.$ unc account import-account using-private-key ed25519:4mwryZ4GXVJieS9ccaGBhH3BnyNV9ovNonWrrxr9nfpu9wybPYUQsY1DdxQfVZ6ZJdvj61WYgsLoWMVPxSqYv2ms network-config testnet
+## > Enter account ID: ef14eded70222383b8aed8a999879e06f28d86557b087db6d98d5d37ee198846
+
+## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc ef14eded70222383b8aed8a999879e06f28d86557b087db6d98d5d37ee198846 '${LOCKUP_BALANCE}000000000000000000000000 unc' network-config testnet sign-with-keychain send
+
+## 5.$ export CONTRACT_ACCOUNT_ID=ef14eded70222383b8aed8a999879e06f28d86557b087db6d98d5d37ee198846
+
 #2. deploy contract and call new method initializing the contract
 unc contract deploy $CONTRACT_ACCOUNT_ID \
     use-file ../../res/lockup_contract.wasm \
