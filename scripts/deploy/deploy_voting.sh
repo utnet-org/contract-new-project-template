@@ -8,6 +8,11 @@ CONTRACT_ACCOUNT_ID="${VOTING_ACCOUNT_ID:-0b861433767ace72eeace6cd636feec7e44c82
 
 echo "Deploying voting contract to $CONTRACT_ACCOUNT_ID with 100 unc"
 
+# Verifying contract account exist
+AMOUNT=$(unc account view-account-summary $CONTRACT_ACCOUNT_ID network-config $CHAIN_ID now | grep "balance")
+if [ -z "$AMOUNT" ]; then
+  echo "Can't get state for master account ${CONTRACT_ACCOUNT_ID}. Maybe the account doesn't exist."
+  cat << EOF
 #1. create account and transfer funds
 ## voting
 ##1.$ unc account create-account fund-later use-auto-generation save-to-folder $HOME/.unc-credentials/implicit
@@ -26,6 +31,10 @@ echo "Deploying voting contract to $CONTRACT_ACCOUNT_ID with 100 unc"
 
 ## 5.$ export CONTRACT_ACCOUNT_ID=0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee
 
+## 6. wait for the contract to be deployed, 6 blocks time
+EOF
+  exit 1
+fi
 
 #2. deploy contract and call new method initializing the contract
 unc contract deploy $CONTRACT_ACCOUNT_ID \

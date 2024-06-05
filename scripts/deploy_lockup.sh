@@ -86,6 +86,11 @@ while true; do
 done
 
 
+# Verifying master account exist
+AMOUNT=$(unc account view-account-summary $CONTRACT_ACCOUNT_ID network-config $CHAIN_ID now | grep "balance")
+if [ -z "$AMOUNT" ]; then
+  echo "Can't get state for master account ${CONTRACT_ACCOUNT_ID}. Maybe the account doesn't exist."
+cat << EOF
 #1. create account and transfer funds
 ##1.$ unc account create-account fund-later use-auto-generation save-to-folder $HOME/.unc-credentials/implicit
 ##2.$ cat $HOME/.unc-credentials/implicit/ef14eded70222383b8aed8a999879e06f28d86557b087db6d98d5d37ee198846.json
@@ -103,6 +108,11 @@ done
 ## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc ef14eded70222383b8aed8a999879e06f28d86557b087db6d98d5d37ee198846 '${LOCKUP_BALANCE}000000000000000000000000 unc' network-config testnet sign-with-keychain send
 
 ## 5.$ export CONTRACT_ACCOUNT_ID=ef14eded70222383b8aed8a999879e06f28d86557b087db6d98d5d37ee198846
+## 6. wait for the contract to be deployed, 6 blocks time
+EOF
+  exit 1
+fi
+
 
 #2. deploy contract and call new method initializing the contract
 unc contract deploy $CONTRACT_ACCOUNT_ID \

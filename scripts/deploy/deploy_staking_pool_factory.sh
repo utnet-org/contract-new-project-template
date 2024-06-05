@@ -9,7 +9,11 @@ CONTRACT_ACCOUNT_ID="${POOL_ACCOUNT_ID:-81c3341ed21f7f39f9507a5953c81da6a1db46fe
 
 echo "Deploying staking pool factory contract to $CONTRACT_ACCOUNT_ID with 100 unc"
 
-
+# Verifying contract account exist
+AMOUNT=$(unc account view-account-summary $CONTRACT_ACCOUNT_ID network-config $CHAIN_ID now | grep "balance")
+if [ -z "$AMOUNT" ]; then
+  echo "Can't get state for master account ${CONTRACT_ACCOUNT_ID}. Maybe the account doesn't exist."
+cat << EOF
 #1. create account and transfer funds
 ## stake-pool-factory
 ##1.$ unc account create-account fund-later use-auto-generation save-to-folder $HOME/.unc-credentials/implicit
@@ -27,6 +31,10 @@ echo "Deploying staking pool factory contract to $CONTRACT_ACCOUNT_ID with 100 u
 ## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc 81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737 '100 unc' network-config testnet sign-with-keychain send
 
 ## 5.$ export CONTRACT_ACCOUNT_ID=81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737
+## 6. wait for the contract to be deployed, 6 blocks time
+EOF
+  exit 1
+fi
 
 
 #2. deploy contract and call new method initializing the contract
@@ -44,6 +52,8 @@ unc contract deploy $CONTRACT_ACCOUNT_ID \
 
 echo "Whitelisting staking pool factory $CONTRACT_ACCOUNT_ID on whitelist contract $WHITELIST_ACCOUNT_ID"
 
+# wait for the contract to be deployed, 6 blocks time
+sleep 180
 #3. call add_factory
 unc contract call-function \
     as-transaction $WHITELIST_ACCOUNT_ID add_factory json-args '{"factory_account_id": "'$CONTRACT_ACCOUNT_ID'"}' \
