@@ -36,9 +36,9 @@ if [ -z "$AMOUNT" ]; then
   exit 1
 fi
 
-pushd deploy
 ./prepare.sh
 
+pushd deploy
 ./deploy_voting.sh
 ./deploy_whitelist.sh
 ./deploy_staking_pool_factory.sh
