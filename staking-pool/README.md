@@ -124,7 +124,7 @@ Contract owner can do the following:
 
 - Change public staking key. This action restakes with the new key.
 - Change reward fee fraction.
-- Vote on behalf of the pool. This is needed for the UNC chain governance, and can be discussed in the following NEP: <https://github.com/utility/NEPs/pull/62>
+- Vote on behalf of the pool. This is needed for the UNC chain governance, and can be discussed in the following UIP: <https://github.com/utility/NEPs/pull/62>
 - Pause and resume staking. When paused, the pool account unstakes everything (stakes 0) and doesn't restake.
 It doesn't affect the staking shares or reward distribution. Pausing is useful for node maintenance. Note, the contract is not paused by default.
 

@@ -243,7 +243,7 @@ impl AirDrop {
     }
 
     /// Returns information associated with a given key.
-    /// Part of the airdrop NEP
+    /// Part of the airdrop UIP
     #[handle_result]
     pub fn get_key_information(&self, key: PublicKey) -> Result<KeyInfo, &'static str> {
         match self.accounts.get(&key) {
