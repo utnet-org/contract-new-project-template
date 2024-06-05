@@ -1,5 +1,5 @@
 #!/bin/bash
-ACCOUNT="${CONTRACT_ACCOUNT_ID:-unc}"
+ACCOUNT="${CONTRACT_ACCOUNT_ID:-social}"
 set -e
 
 ./build.sh

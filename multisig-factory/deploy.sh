@@ -1,5 +1,5 @@
 #!/bin/bash
-ACCOUNT="${CONTRACT_ACCOUNT_ID:-unc}"
+ACCOUNT="${CONTRACT_ACCOUNT_ID:-mutisig-factory}"
 set -e
 
 ./build.sh

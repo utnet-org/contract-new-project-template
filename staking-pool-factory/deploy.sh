@@ -1,5 +1,5 @@
 #!/bin/bash
-ACCOUNT="${CONTRACT_ACCOUNT_ID:-unc}"
+ACCOUNT="${CONTRACT_ACCOUNT_ID:-staking-pool-factory}"
 set -e
 
 ./build.sh
