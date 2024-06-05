@@ -51,13 +51,13 @@ impl Contract {
     /// ```js
     ///
     /// get({keys: [
-    ///   "alex.unc/profile/*",
-    ///   "alex.unc/profile/**",
-    ///   "alex.unc/profile/[name,url,image_url]",
-    ///   "alex.unc/profile/url",
-    ///   "alex.unc/profile/",
+    ///   "alex/profile/*",
+    ///   "alex/profile/**",
+    ///   "alex/profile/[name,url,image_url]",
+    ///   "alex/profile/url",
+    ///   "alex/profile/",
     ///   "bob.unc/profile/*",
-    ///   "alex.unc/graph/follow/*",
+    ///   "alex/graph/follow/*",
     /// ]})
     /// ```
     pub fn get(self, keys: Vec<String>, options: Option<GetOptions>) -> Value {
@@ -84,13 +84,13 @@ impl Contract {
     /// Note, recursive match all pattern "**" is not allowed.
     ///
     /// keys({keys: [
-    ///   "alex.unc/profile/*",
-    ///   "alex.unc/profile/*",
-    ///   "alex.unc/profile/[name,url,image_url]",
-    ///   "alex.unc/profile/url",
-    ///   "alex.unc/profile/",
+    ///   "alex/profile/*",
+    ///   "alex/profile/*",
+    ///   "alex/profile/[name,url,image_url]",
+    ///   "alex/profile/url",
+    ///   "alex/profile/",
     ///   "bob.unc/profile/*",
-    ///   "alex.unc/graph/follow/*",
+    ///   "alex/graph/follow/*",
     /// ]})
     /// ```
     pub fn keys(self, keys: Vec<String>, options: Option<KeysOptions>) -> Value {
@@ -115,7 +115,7 @@ impl Contract {
 
     /// ```js
     /// user_set({
-    ///   "alex.unc": {
+    ///   "alex": {
     ///     "graph": "yoloyoloyoloyolo:yoloyoloyoloyoloyo:lo",
     ///   }
     /// })
@@ -124,7 +124,7 @@ impl Contract {
     /// $account_id/badge/$badge_id/owners/$receiver_id
     ///
     /// user_set({
-    ///   "alex.unc": {
+    ///   "alex": {
     ///     "graph": {
     ///       "follow": {
     ///         "root.unc": "",
