@@ -2,9 +2,9 @@
 CHAIN_ID="${CHAIN_ID:-testnet}"
 MASTER_ACCOUNT_ID="${MASTER_ACCOUNT_ID:-7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376}"
 FOUNDATION_ACCOUNT_ID="${FOUNDATION_ACCOUNT_ID:-unc}"
-set -e
+CONTRACT_ACCOUNT_ID="${CONTRACT_ACCOUNT_ID:-e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773}"
 
-CONTRACT_ACCOUNT_ID="lockup-whitelist-${MASTER_ACCOUNT_ID}"
+set -e
 
 echo "Deploying whitelist contract to $CONTRACT_ACCOUNT_ID with 100 unc"
 
@@ -31,7 +31,7 @@ echo "Deploying whitelist contract to $CONTRACT_ACCOUNT_ID with 100 unc"
 unc contract deploy $CONTRACT_ACCOUNT_ID \
     use-file ../../res/whitelist.wasm \
     with-init-call new json-args '{"foundation_account_id": "'$FOUNDATION_ACCOUNT_ID'"}' \
-    prepaid-gas '100.0 Tgas' \
+    prepaid-gas '300.0 Tgas' \
     attached-deposit '0 unc' \
     network-config $CHAIN_ID \
     sign-with-plaintext-private-key \

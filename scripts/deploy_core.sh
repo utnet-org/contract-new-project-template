@@ -37,6 +37,7 @@ if [ -z "$AMOUNT" ]; then
 fi
 
 pushd deploy
+./prepare.sh
 
 ./deploy_voting.sh
 ./deploy_whitelist.sh

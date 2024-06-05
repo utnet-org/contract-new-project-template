@@ -1,9 +1,9 @@
 #!/bin/bash
 CHAIN_ID="${CHAIN_ID:-testnet}"
 MASTER_ACCOUNT_ID="${MASTER_ACCOUNT_ID:-7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376}"
-set -e
+CONTRACT_ACCOUNT_ID="${CONTRACT_ACCOUNT_ID:-0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee}"
 
-CONTRACT_ACCOUNT_ID="transfer-vote-${MASTER_ACCOUNT_ID}"
+set -e
 
 echo "Deploying voting contract to $CONTRACT_ACCOUNT_ID with 100 unc"
 
@@ -30,7 +30,7 @@ echo "Deploying voting contract to $CONTRACT_ACCOUNT_ID with 100 unc"
 unc contract deploy $CONTRACT_ACCOUNT_ID \
     use-file ../../res/voting_contract.wasm \
     with-init-call new json-args '{}' \
-    prepaid-gas '100.0 Tgas' \
+    prepaid-gas '300.0 Tgas' \
     attached-deposit '0 unc' \
     network-config $CHAIN_ID \
     sign-with-plaintext-private-key \

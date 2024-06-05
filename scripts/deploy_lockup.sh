@@ -6,6 +6,8 @@ WHITELIST_ACCOUNT_ID="${WHITELIST_ACCOUNT_ID:-e204abad77845ac1d756d580480a463d3a
 
 set -e
 
+./prepare.sh
+
 if [ -z "${CHAIN_ID}" ]; then
   echo "CHAIN_ID is required, e.g. \`export CHAIN_ID=testnet\`"
   exit 1

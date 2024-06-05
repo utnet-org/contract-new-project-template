@@ -3,6 +3,13 @@ MASTER_ACCOUNT_ID="${MASTER_ACCOUNT_ID:-7a17c8371a5a511fc92bc61e2b4c068e7546a3cd
 set -e
 
 ### Requirements:  create account, import account, transfer funds, export CONTRACT_ACCOUNT_ID
+
+## use master-account-id.json.sample
+unc account import-account using-private-key ed25519:4JoG9dVMwPp869VXPaWYwAfT7cLYDoZifk48FwK7gVCWXrpytrT4uyQcLQNS6vGNQZVfAHWUGTeos6fhHTsWskv9 network-config testnet
+## > Enter account ID: 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376
+
+unc account view-account-summary 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 network-config testnet now
+
 ## whitelist
 ##1.$ unc account create-account fund-later use-auto-generation save-to-folder $HOME/.unc-credentials/implicit
 ##2.$ cat $HOME/.unc-credentials/implicit/e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773.json

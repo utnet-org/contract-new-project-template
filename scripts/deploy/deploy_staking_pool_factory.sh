@@ -1,10 +1,10 @@
 #!/bin/bash
 CHAIN_ID="${CHAIN_ID:-testnet}"
 MASTER_ACCOUNT_ID="${MASTER_ACCOUNT_ID:-7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376}"
-set -e
+WHITELIST_ACCOUNT_ID="${WHITELIST_ACCOUNT_ID:-e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773}"
+CONTRACT_ACCOUNT_ID="${CONTRACT_ACCOUNT_ID:-81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737}"
 
-WHITELIST_ACCOUNT_ID="lockup-whitelist-${MASTER_ACCOUNT_ID}"
-CONTRACT_ACCOUNT_ID="poolv1.${MASTER_ACCOUNT_ID}"
+set -e
 
 echo "Deploying staking pool factory contract to $CONTRACT_ACCOUNT_ID with 100 unc"
 
@@ -32,7 +32,7 @@ echo "Deploying staking pool factory contract to $CONTRACT_ACCOUNT_ID with 100 u
 unc contract deploy $CONTRACT_ACCOUNT_ID \
     use-file ../../res/staking_pool_factory.wasm \
     with-init-call new json-args '{"staking_pool_whitelist_account_id": "'$WHITELIST_ACCOUNT_ID'"}' \
-    prepaid-gas '100.0 Tgas' \
+    prepaid-gas '300.0 Tgas' \
     attached-deposit '0 unc' \
     network-config $CHAIN_ID \
     sign-with-plaintext-private-key \
@@ -46,7 +46,7 @@ echo "Whitelisting staking pool factory $CONTRACT_ACCOUNT_ID on whitelist contra
 #3. call add_factory
 unc contract call-function \
     as-transaction $WHITELIST_ACCOUNT_ID add_factory json-args '{"factory_account_id": "'$CONTRACT_ACCOUNT_ID'"}' \
-    prepaid-gas '100.0 Tgas' \
+    prepaid-gas '300.0 Tgas' \
     attached-deposit '0 unc' \
     network-config $CHAIN_ID \
     sign-with-plaintext-private-key \
