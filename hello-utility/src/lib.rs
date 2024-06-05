@@ -55,7 +55,7 @@ impl Default for Contract {
             greeting: DEFAULT_MESSAGE.to_string(),
             beneficiary: "unc".parse().unwrap(),
             // structures (Vectors, Sets, Maps and Trees) unique prefix进行初始化, 用于在序列化状态中识别结构的键
-            /// Result is:
+            // Result is:
             //  [
             //        {
             //          key: 'STATE',
