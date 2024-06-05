@@ -2,14 +2,14 @@
 set -e
 
 # start 5 unc-node instances
-```yaml
+cat << EOF > docker-compose.yml
 version: "3.8"
 services:
   unc-node1:
     image: ghcr.io/utnet-org/utility:latest
     environment:
       - UNC_HOME=$HOME/.unc
-      - CHAIN_ID=local
+      - CHAIN_ID=localnet
       - INIT=true
     volumes:
       - ${HOME}//.unc/localnet/node1:$HOME/.unc
@@ -20,7 +20,7 @@ services:
     image: ghcr.io/utnet-org/utility:latest
     environment:
       - UNC_HOME=$HOME/.unc
-      - CHAIN_ID=local
+      - CHAIN_ID=localnet
       - INIT=true
     volumes:
       - ${HOME}/.unc/localnet/node2:$HOME/.unc
@@ -31,7 +31,7 @@ services:
     image: ghcr.io/utnet-org/utility:latest
     environment:
       - UNC_HOME=$HOME/.unc
-      - CHAIN_ID=local
+      - CHAIN_ID=localnet
       - INIT=true
     volumes:
       - ${HOME}/.unc/localnet/node3:$HOME/.unc
@@ -42,7 +42,7 @@ services:
     image: ghcr.io/utnet-org/utility:latest
     environment:
       - UNC_HOME=$HOME/.unc
-      - CHAIN_ID=local
+      - CHAIN_ID=localnet
       - INIT=true
     volumes:
       - ${HOME}/.unc/localnet/node4:$HOME/.unc
@@ -53,21 +53,36 @@ services:
     image: ghcr.io/utnet-org/utility:latest
     environment:
       - UNC_HOME=$HOME/.unc
-      - CHAIN_ID=local
+      - CHAIN_ID=localnet
       - INIT=true
     volumes:
       - ${HOME}/.unc/localnet/node5:$HOME/.unc
     ports:
       - 3035:3030
       - 12350:12345
-```
+EOF
+
+# Check if docker-compose is installed
+if ! command -v docker-compose &> /dev/null
+then
+    echo "docker-compose could not be found"
+    exit
+fi
+
+# Run the Docker containers
+docker-compose up -d
 
 export MASTER_ACCOUNT_ID=node0
-export CHAIN_ID=local
+export CHAIN_ID=localnet
 
 stop_nodes() {
   echo "STOOOP THE NODES!"
-  uncup stop
+  # Stop the Docker containers
+  docker-compose down
+
+  # Remove Docker networks and volumes
+  docker network prune -f
+  docker volume prune -f
 }
 
 trap "stop_nodes" ERR
@@ -86,7 +101,34 @@ for (( i=0; i<=$LAST_NODE; i++ )); do
 done;
 
 OWNER_ACCOUNT_ID="owner.$MASTER_ACCOUNT_ID"
-unc create-account $OWNER_ACCOUNT_ID --masterAccount=$MASTER_ACCOUNT_ID --initialBalance=10000
+# Verifying owner account exist
+AMOUNT=$(unc account view-account-summary $OWNER_ACCOUNT_ID network-config $CHAIN_ID now | grep "balance")
+if [ -z "$AMOUNT" ]; then
+  echo "Can't get state for master account ${OWNER_ACCOUNT_ID}. Maybe the account doesn't exist."
+cat << EOF
+#1. create account and transfer funds if account not exist on-chain
+### if you want to use a different account, follow the steps below
+### or use the default account, it has some tokens, execute the command step 3 #3 to import the account
+### account stake-pool-factory:
+##1.$ unc account create-account fund-later use-auto-generation save-to-folder $HOME/.unc-credentials/implicit
+##2.$ cat $HOME/.unc-credentials/implicit/81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737.json
+
+## {"account_id":"81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737",
+## "master_seed_phrase":"luggage into fall pill wine repeat undo salon index plate until matter",
+## "private_key":"ed25519:2wJFRRVYadDwQT3svS81vCGdFqgX8ZMeLuNPqUejg5wNKWgQ9Crh5uhmGMRvB3NkBjGZ73Bnr5L694nkZ8qB8NWz",
+## "public_key":"ed25519:9jYETemz2TFrXfmy72kRqpgWkCjiZn1BBRcYfY8ZMyPU","seed_phrase_hd_path":"m/44'/397'/0'"
+## }
+
+## 3.$ unc account import-account using-private-key ed25519:2wJFRRVYadDwQT3svS81vCGdFqgX8ZMeLuNPqUejg5wNKWgQ9Crh5uhmGMRvB3NkBjGZ73Bnr5L694nkZ8qB8NWz network-config testnet
+## > Enter account ID: 81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737
+
+## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc 81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737 '100 unc' network-config testnet sign-with-keychain send
+
+## 5.$ export CONTRACT_ACCOUNT_ID=81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737
+## 6. wait for the account to be on-chain, 6 blocks time
+EOF
+  exit 1
+fi
 
 echo "Deploying core accounts/"
 (cd .. && ./deploy_core.sh)
@@ -135,7 +177,35 @@ echo "Current validators should be the $LAST_NODE nodes with the staking pools o
 unc validators current
 unc validators current | grep "Validators (total: $LAST_NODE,"
 
-VOTE_ACCOUNT_ID="vote.$MASTER_ACCOUNT_ID"
+VOTE_ACCOUNT_ID="0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee"
+AMOUNT=$(unc account view-account-summary $VOTE_ACCOUNT_ID network-config $CHAIN_ID now | grep "balance")
+if [ -z "$AMOUNT" ]; then
+  echo "Can't get state for master account ${VOTE_ACCOUNT_ID}. Maybe the account doesn't exist."
+  cat << EOF
+#1. create account and transfer funds if account not exist on-chain
+### if you want to use a different account, follow the steps below
+### or use the default account, it has some tokens, execute the command step 3 #3 to import the account
+## account voting:
+##1.$ unc account create-account fund-later use-auto-generation save-to-folder $HOME/.unc-credentials/implicit
+##2.$ cat $HOME/.unc-credentials/implicit/0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee.json
+
+##{"account_id":"0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee",
+## "master_seed_phrase":"crunch coach section hospital disagree denial hospital suspect view cycle brand please",
+## "private_key":"ed25519:v9zXRShtYhyEDEjBeNDjU4fnjghiCwSVm4qwA5kBA17fXT4y66S7YvYjYEdYaRiT8xnvPEErEgegeTpYxPaiZ5F",
+## "public_key":"ed25519:mz4koCMGRmbEDW6GCgferaVP5Upq9tozgaz3gnXZSp5","seed_phrase_hd_path":"m/44'/397'/0'"
+## }
+
+## 3.$ unc account import-account using-private-key ed25519:v9zXRShtYhyEDEjBeNDjU4fnjghiCwSVm4qwA5kBA17fXT4y66S7YvYjYEdYaRiT8xnvPEErEgegeTpYxPaiZ5F network-config testnet
+## > Enter account ID: 0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee
+
+## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc 0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee '100 unc' network-config testnet sign-with-keychain send
+
+## 5.$ export CONTRACT_ACCOUNT_ID=0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee
+
+## 6. wait for the account to be on-chain, 6 blocks time
+EOF
+  exit 1
+fi
 
 check_votes() {
   echo "Checking votes"
