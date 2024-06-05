@@ -1,7 +1,7 @@
-// Anatomy 解剖一个智能合约
-//任何支持编译目标 wasm32-unknown-unknown的东西， 都是和智能合约兼容的
-// 对编译合约二进制文件有一个大小限制，约为4.19 MB
-// Modules 为Utility SDK，提供访问执行环境，允许调用其他合同、转移代币等等
+//Anatomy 解剖一个智能合约
+//任何支持编译目标 wasm32-unknown-unknown的东西，都是和智能合约兼容的
+//对编译合约二进制文件有一个大小限制，约为4.19 MB
+//Modules为Utility SDK，mod提供访问执行环境，允许调用其他合同、转移代币等等
 use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use unc_sdk::serde_json::json;
 use unc_sdk::store::LookupMap;
@@ -13,7 +13,7 @@ const DEFAULT_MESSAGE: &str = "Hello";
 
 //  Collections contract's attributes (state), Always prefer SDK collections over native
 //  collections 被设计为将数据分割成chunk, defer reading and writing to the store until needed
-//  unc_sdk::collections 将迁移到 unc_sdk::store 并更新API, 在 near-sdk 上启用 unstable 功能使用
+//  unc_sdk::collections 迁移到 unc_sdk::store 并更新API, 在 unc-sdk 上启用 unstable 功能使用
 /*
 vector: Vector::new(b"vec-uid-1".to_vec()),
 map: LookupMap::new(b"map-uid-1".to_vec()),
@@ -22,16 +22,21 @@ tree: TreeMap::new(b"tree-uid-1".to_vec()),
 */
 
 // Bob 合约
-const HELLO_UTILITY: &str = "hello-nearverse.testnet";
+const HELLO_UTILITY: &str = "hello-account";
 const NO_DEPOSIT: UncToken = UncToken::from_unc(0);
-const CALL_GAS: Gas = Gas::from_tgas(50);
+const CALL_GAS: Gas = Gas::from_tgas(100);
 
-const MIN_STORAGE: UncToken = UncToken::from_attounc(100_000_000_000_000_000_000_000u128); //0.1 U
-                                                                                           //const HELLO_CODE: &[u8] = include_bytes!("./hello.wasm");
+const MIN_STORAGE: UncToken = UncToken::from_attounc(100_000_000_000_000_000_000_000u128); //0.1 U （1 U = 10.pow(24) atto）
+//const HELLO_CODE: &[u8] = include_bytes!("./hello.wasm");
 
-// Internal Structures 包括非bindings的内部结构和 bindings的合约结构
-// Utility Bindgen bindings装饰器  Define the contract structure 合约的结构，Borsh 序列化状态存储， json 序列化作为方法的输入输出
-// Utility Bindgen decorator/macro 将代码转换为有效的Utility合约
+// Internal Structures 包括非bindings的内部结构和 bindings的合约结构, 结构体字段为 contract state 数据
+// Utility Bindgen bindings装饰器  Define the contract structure 合约的结构，Borsh序列化状态存储(contract state)， json序列化作为方法的输入输出(参数，返回值)
+// Utility Bindgen decorator/macro 将代码转换为有效的Utility合约C ABI bindings
+/// #[cfg(target_arch = "wasm32")]
+/// #[no_mangle]
+/// pub extern "C" fn method() {
+///    ...
+//// }
 // 每当调用函数时，状态将被加载和反序列化，保持加载的数据量尽可能小是很重要的
 #[unc_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -48,8 +53,21 @@ impl Default for Contract {
     fn default() -> Self {
         Self {
             greeting: DEFAULT_MESSAGE.to_string(),
-            beneficiary: "v1.faucet.nonofficial.testnet".parse().unwrap(),
+            beneficiary: "unc".parse().unwrap(),
             // structures (Vectors, Sets, Maps and Trees) unique prefix进行初始化, 用于在序列化状态中识别结构的键
+            /// Result is:
+            //  [
+            //        {
+            //          key: 'STATE',
+            //         ///Contract 具有结构 string, LookupMap<u8>
+            //         //这个key-value表示 [2, 0, 0, 0, "h", "i"] -> The `string` has 2 elements: "h" and "i".
+            //         ///[1, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, "prefix"] -> The Vector has 1 element, and to see the values search for keys that start with (the 6 bytes prefix): "prefix"
+            //          value: '\x02\x00\x00\x00hi\x01\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00prefix'
+            //         },
+            //         /// 这个 key-value 由 "prefix" 字符串表示的 LookupMap 的条目
+            //         { key: 'prefix\x00\x00\x00\x00\x00\x00\x00\x00', value: '\x00' }
+            //   ]
+
             //Nesting of Objects RS支持对象嵌套
             donations: LookupMap::new(b"d"),
         }
