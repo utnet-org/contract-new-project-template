@@ -11,7 +11,7 @@
 ### Set master account
 
 ```bash
-export MASTER_ACCOUNT_ID=unc
+export MASTER_ACCOUNT_ID=7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376
 ```
 
 ### Set network environment
@@ -63,4 +63,4 @@ Once the amount (in UNC) is provided, the lockup contract will be deployed.
 
 For rebuilding contracts, make sure you have `rust` with `wasm32` target installed.
 
-For deploying, you need to have `unc-cli` installed and be logged in with the master account ID.
+For deploying, you need to have [`unc-cli`](https://github.com/utnet-org/utility-cli-rs) installed and be logged in with the master account ID.

@@ -8,6 +8,7 @@
 - [Lockup / Vesting contract](./lockup/)
 - [Lockup Factory](./lockup-factory/)
 - [Multisig contract](./multisig/)
+- [Multisig Factory](./multisig-factory/)
 - [Staking Pool / Delegation contract](./staking-pool/)
 - [Staking Pool Factory](./staking-pool-factory/)
 - [Voting Contract](./voting/)
