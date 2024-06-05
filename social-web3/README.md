@@ -6,7 +6,7 @@
 
 Deployed at `social`
 
-<https://uncblocks.io/address/social#contract>
+<https://unc-explorer.io/address/social#contract>
 
 ### About empty keys
 
@@ -99,9 +99,9 @@ It takes one or more path patterns as arguments, and returns the matching data.
 The path pattern is a string that can contain wildcards.
 For example:
 
-- `alice.unc/profile/**` will match the entire profile data of account `alice.unc`.
-- `alice.unc/profile/*` will match all the fields of the profile, but not the nested objects.
-- `alice.unc/profile/name` will match only the name field of the profile.
+- `alice/profile/**` will match the entire profile data of account `alice`.
+- `alice/profile/*` will match all the fields of the profile, but not the nested objects.
+- `alice/profile/name` will match only the name field of the profile.
 - `*/widget/*` will match all the widgets of all the accounts.
 
 ```rust
@@ -152,10 +152,10 @@ It's useful for querying the data without reading values.
 It also has an additional `options` field that can be used to specify the return type and whether to return deleted keys.
 For example:
 
-- `alice.unc/profile/*` will return the list of all the fields of the profile, but not the nested objects.
+- `alice/profile/*` will return the list of all the fields of the profile, but not the nested objects.
 - `*/profile/image/nft` will return the list of all the accounts that have an NFT image in their profile.
-- `alice.unc/widget/*` with `return_deleted` option will return the list of all the widget names of the account, including the deleted ones.
-- `alice.unc/widget/*` with `return_type` equal to `BlockHeight` will return the list of all the widget names of the account and the value will be the block height when the widget was last updated.
+- `alice/widget/*` with `return_deleted` option will return the list of all the widget names of the account, including the deleted ones.
+- `alice/widget/*` with `return_type` equal to `BlockHeight` will return the list of all the widget names of the account and the value will be the block height when the widget was last updated.
 - Note `**` is not supported by the `keys` method.
 
 ```rust
