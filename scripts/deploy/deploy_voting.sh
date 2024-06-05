@@ -31,7 +31,7 @@ if [ -z "$AMOUNT" ]; then
 
 ## 5.$ export CONTRACT_ACCOUNT_ID=0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee
 
-## 6. wait for the contract to be deployed, 6 blocks time
+## 6. wait for the account to be on-chain, 6 blocks time
 EOF
   exit 1
 fi

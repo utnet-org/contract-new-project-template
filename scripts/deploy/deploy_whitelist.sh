@@ -29,7 +29,7 @@ if [ -z "$AMOUNT" ]; then
 ## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773 '100 unc' network-config testnet sign-with-keychain send
 
 ## 5.$ export CONTRACT_ACCOUNT_ID=e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773
-## 6. wait for the contract to be deployed, 6 blocks time
+## 6. wait for the account to be on-chain, 6 blocks time
 EOF
   exit 1
 fi
