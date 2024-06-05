@@ -11,12 +11,12 @@ echo "Deploying whitelist contract to $CONTRACT_ACCOUNT_ID with 20 unc"
 #1. create account and transfer funds
 (
 unc account create-account fund-myself $CONTRACT_ACCOUNT_ID '20 unc' \
-    use-manually-provided-public-key "ed25519:AYU8UsZZJM5pXpYafzpwvizJk3rZitsVTyK4nqhMfvXx" \
+    use-manually-provided-public-key "ed25519:5FF38DhwzfavJxR4FULScKMZ3qn9rFeeTcDPYbyW8egN" \
     sign-as $MASTER_ACCOUNT_ID \
     network-config $CHAIN_ID \
     sign-with-plaintext-private-key \
-        --signer-public-key "ed25519:2yMvZrTtjgFMtcpE12G3tdt7KsYKdKE6jufRnz4Yyxw3" \
-        --signer-private-key "ed25519:3NVx4sHxBJciEH2wZoMig8YiMx1Q84Ur2RWTd2GQ7JNfWdyDxwwYrUR6XtJR3YcYeWh9NzVEmsnYe2keB97mVExZ" \
+        --signer-public-key "ed25519:9DbmnSYXws5hB7KHBLD6YwuDYCxCTX9b4MSEQhZzgTp1" \
+        --signer-private-key "ed25519:4JoG9dVMwPp869VXPaWYwAfT7cLYDoZifk48FwK7gVCWXrpytrT4uyQcLQNS6vGNQZVfAHWUGTeos6fhHTsWskv9" \
     send
 ) &
 wait
@@ -43,6 +43,6 @@ unc contract deploy $CONTRACT_ACCOUNT_ID \
     attached-deposit '0 unc' \
     network-config $CHAIN_ID \
     sign-with-plaintext-private-key \
-        --signer-public-key "ed25519:AYU8UsZZJM5pXpYafzpwvizJk3rZitsVTyK4nqhMfvXx" \
-        --signer-private-key "ed25519:3NZU7esBCfejMa556Sp4DATuadrcUSQmrQwZUb32b2ehN4tyMkzcydwAcQ41ukeEn3hkoNVTax8GusceRf2RVVFC" \
+        --signer-public-key "ed25519:5FF38DhwzfavJxR4FULScKMZ3qn9rFeeTcDPYbyW8egN" \
+        --signer-private-key "ed25519:UcMrCTarWPc4Sc3XLL8LPvHAPrZqFVYJqA5mSNaMo1P46ncoycRhwc4RRb7RhCiac1HKwTKDwCoZc6cy6tK28H4" \
     send
