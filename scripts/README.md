@@ -24,9 +24,9 @@ export CHAIN_ID=testnet
 
 This will deploy the following contracts:
 
-- Voting contract at `vote.<MASTER_ACCOUNT_ID>` with `15` UNC tokens
-- Whitelist contract at `whitelist.<MASTER_ACCOUNT_ID>` with `15` UNC tokens
-- Staking pool factory contract at `pool.<MASTER_ACCOUNT_ID>` with `50` UNC tokens
+- Voting contract at `VOTING_ACCOUNT_ID` with `100` UNC tokens
+- Whitelist contract at `WHITELIST_ACCOUNT_ID` with `100` UNC tokens
+- Staking pool factory contract at `POOL_ACCOUNT_ID` with `100` UNC tokens
 
 It will whitelist the staking pool factory account.
 
@@ -46,7 +46,7 @@ This account will be used as a suffix to deploy lockup contracts.
 Also this account will fund the newly created lockup contracts.
 
 ```bash
-export LOCKUP_MASTER_ACCOUNT_ID=lockup
+export LOCKUP_ACCOUNT_ID=lockup
 ```
 
 ### Deploying
