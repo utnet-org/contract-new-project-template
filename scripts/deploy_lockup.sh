@@ -91,7 +91,10 @@ AMOUNT=$(unc account view-account-summary $CONTRACT_ACCOUNT_ID network-config $C
 if [ -z "$AMOUNT" ]; then
   echo "Can't get state for master account ${CONTRACT_ACCOUNT_ID}. Maybe the account doesn't exist."
 cat << EOF
-#1. create account and transfer funds
+#1. create account and transfer funds if account not exist on-chain
+### if you want to use a different account, follow the steps below
+### or use the default account, it has some tokens, execute the command step 3 #3 to import the account
+## account lockup:
 ##1.$ unc account create-account fund-later use-auto-generation save-to-folder $HOME/.unc-credentials/implicit
 ##2.$ cat $HOME/.unc-credentials/implicit/ef14eded70222383b8aed8a999879e06f28d86557b087db6d98d5d37ee198846.json
 
