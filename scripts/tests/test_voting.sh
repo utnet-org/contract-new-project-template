@@ -9,13 +9,57 @@ services:
     image: ghcr.io/utnet-org/utility:latest
     environment:
       - UNC_HOME=$HOME/.unc
-      - CHAIN_ID=testnet
+      - CHAIN_ID=local
       - INIT=true
     volumes:
-      - ${HOME}/node-store:$HOME/.unc
+      - ${HOME}/node-store1:$HOME/.unc
     ports:
-      - 3030:3030
-      - 12345:12345
+      - 3031:3030
+      - 12346:12345
+  unc-node2:
+    image: ghcr.io/utnet-org/utility:latest
+    environment:
+      - UNC_HOME=$HOME/.unc
+      - CHAIN_ID=local
+      - INIT=true
+    volumes:
+      - ${HOME}/node-store2:$HOME/.unc
+    ports:
+      - 3032:3030
+      - 12347:12345
+  unc-node3:
+    image: ghcr.io/utnet-org/utility:latest
+    environment:
+      - UNC_HOME=$HOME/.unc
+      - CHAIN_ID=local
+      - INIT=true
+    volumes:
+      - ${HOME}/node-store3:$HOME/.unc
+    ports:
+      - 3033:3030
+      - 12348:12345
+  unc-node4:
+    image: ghcr.io/utnet-org/utility:latest
+    environment:
+      - UNC_HOME=$HOME/.unc
+      - CHAIN_ID=local
+      - INIT=true
+    volumes:
+      - ${HOME}/node-store4:$HOME/.unc
+    ports:
+      - 3034:3030
+      - 12349:12345
+  unc-node5:
+    image: ghcr.io/utnet-org/utility:latest
+    environment:
+      - UNC_HOME=$HOME/.unc
+      - CHAIN_ID=local
+      - INIT=true
+    volumes:
+      - ${HOME}/node-store5:$HOME/.unc
+    ports:
+      - 3035:3030
+      - 12350:12345
 ```
 
 export MASTER_ACCOUNT_ID=node0
