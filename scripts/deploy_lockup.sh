@@ -121,6 +121,6 @@ unc contract deploy $CONTRACT_ACCOUNT_ID \
     attached-deposit '0 unc' \
     network-config $CHAIN_ID \
     sign-with-plaintext-private-key \
-        --signer-public-key "ed25519:5FF38DhwzfavJxR4FULScKMZ3qn9rFeeTcDPYbyW8egN" \
-        --signer-private-key "ed25519:UcMrCTarWPc4Sc3XLL8LPvHAPrZqFVYJqA5mSNaMo1P46ncoycRhwc4RRb7RhCiac1HKwTKDwCoZc6cy6tK28H4" \
+        --signer-public-key "ed25519:H6Gx6FSEFJVPGXQkhX6kcPpB9NyXM2SNp8weFgb1A9fb" \
+        --signer-private-key "ed25519:4mwryZ4GXVJieS9ccaGBhH3BnyNV9ovNonWrrxr9nfpu9wybPYUQsY1DdxQfVZ6ZJdvj61WYgsLoWMVPxSqYv2ms" \
     send

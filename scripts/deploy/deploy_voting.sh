@@ -5,7 +5,7 @@ set -e
 
 CONTRACT_ACCOUNT_ID="transfer-vote-${MASTER_ACCOUNT_ID}"
 
-echo "Deploying voting contract to $CONTRACT_ACCOUNT_ID with 20 unc"
+echo "Deploying voting contract to $CONTRACT_ACCOUNT_ID with 100 unc"
 
 #1. create account and transfer funds
 ## voting
@@ -34,7 +34,7 @@ unc contract deploy $CONTRACT_ACCOUNT_ID \
     attached-deposit '0 unc' \
     network-config $CHAIN_ID \
     sign-with-plaintext-private-key \
-        --signer-public-key "ed25519:5FF38DhwzfavJxR4FULScKMZ3qn9rFeeTcDPYbyW8egN" \
-        --signer-private-key "ed25519:UcMrCTarWPc4Sc3XLL8LPvHAPrZqFVYJqA5mSNaMo1P46ncoycRhwc4RRb7RhCiac1HKwTKDwCoZc6cy6tK28H4" \
+        --signer-public-key "ed25519:mz4koCMGRmbEDW6GCgferaVP5Upq9tozgaz3gnXZSp5" \
+        --signer-private-key "ed25519:v9zXRShtYhyEDEjBeNDjU4fnjghiCwSVm4qwA5kBA17fXT4y66S7YvYjYEdYaRiT8xnvPEErEgegeTpYxPaiZ5F" \
     send
 

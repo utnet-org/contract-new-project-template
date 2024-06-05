@@ -6,7 +6,7 @@ set -e
 WHITELIST_ACCOUNT_ID="lockup-whitelist-${MASTER_ACCOUNT_ID}"
 CONTRACT_ACCOUNT_ID="poolv1.${MASTER_ACCOUNT_ID}"
 
-echo "Deploying staking pool factory contract to $CONTRACT_ACCOUNT_ID with 50 unc"
+echo "Deploying staking pool factory contract to $CONTRACT_ACCOUNT_ID with 100 unc"
 
 
 #1. create account and transfer funds
@@ -36,8 +36,8 @@ unc contract deploy $CONTRACT_ACCOUNT_ID \
     attached-deposit '0 unc' \
     network-config $CHAIN_ID \
     sign-with-plaintext-private-key \
-        --signer-public-key "ed25519:5FF38DhwzfavJxR4FULScKMZ3qn9rFeeTcDPYbyW8egN" \
-        --signer-private-key "ed25519:UcMrCTarWPc4Sc3XLL8LPvHAPrZqFVYJqA5mSNaMo1P46ncoycRhwc4RRb7RhCiac1HKwTKDwCoZc6cy6tK28H4" \
+        --signer-public-key "ed25519:9jYETemz2TFrXfmy72kRqpgWkCjiZn1BBRcYfY8ZMyPU" \
+        --signer-private-key "ed25519:2wJFRRVYadDwQT3svS81vCGdFqgX8ZMeLuNPqUejg5wNKWgQ9Crh5uhmGMRvB3NkBjGZ73Bnr5L694nkZ8qB8NWz" \
     send
 
 
@@ -50,6 +50,6 @@ unc contract call-function \
     attached-deposit '0 unc' \
     network-config $CHAIN_ID \
     sign-with-plaintext-private-key \
-        --signer-public-key "ed25519:5FF38DhwzfavJxR4FULScKMZ3qn9rFeeTcDPYbyW8egN" \
-        --signer-private-key "ed25519:UcMrCTarWPc4Sc3XLL8LPvHAPrZqFVYJqA5mSNaMo1P46ncoycRhwc4RRb7RhCiac1HKwTKDwCoZc6cy6tK28H4" \
+        --signer-public-key "ed25519:9jYETemz2TFrXfmy72kRqpgWkCjiZn1BBRcYfY8ZMyPU" \
+        --signer-private-key "ed25519:2wJFRRVYadDwQT3svS81vCGdFqgX8ZMeLuNPqUejg5wNKWgQ9Crh5uhmGMRvB3NkBjGZ73Bnr5L694nkZ8qB8NWz" \
     send

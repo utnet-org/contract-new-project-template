@@ -6,7 +6,7 @@ set -e
 
 CONTRACT_ACCOUNT_ID="lockup-whitelist-${MASTER_ACCOUNT_ID}"
 
-echo "Deploying whitelist contract to $CONTRACT_ACCOUNT_ID with 20 unc"
+echo "Deploying whitelist contract to $CONTRACT_ACCOUNT_ID with 100 unc"
 
 #1. create account and transfer funds
 ## whitelist
@@ -35,6 +35,6 @@ unc contract deploy $CONTRACT_ACCOUNT_ID \
     attached-deposit '0 unc' \
     network-config $CHAIN_ID \
     sign-with-plaintext-private-key \
-        --signer-public-key "ed25519:5FF38DhwzfavJxR4FULScKMZ3qn9rFeeTcDPYbyW8egN" \
-        --signer-private-key "ed25519:UcMrCTarWPc4Sc3XLL8LPvHAPrZqFVYJqA5mSNaMo1P46ncoycRhwc4RRb7RhCiac1HKwTKDwCoZc6cy6tK28H4" \
+        --signer-public-key "ed25519:GDHGgfGte8prwJ4dEJcCB8SZhKWf7RWSXxTHg4fzY62W" \
+        --signer-private-key "ed25519:FfnmBekG6NYcrqsgk3JNoLr9qbc6T3cqY6YjoYFYKGHuELswSyjxRZzZAoDc4rweuByHpqCQDrQnLV1Excm2W2W" \
     send
