@@ -15,7 +15,7 @@ ACCOUNT="${CONTRACT_ACCOUNT_ID:-hello}"
 ## 3.$ unc account import-account using-private-key ed25519:F6dzasVpq9jizeV99ATgLmHfiExwhRwpqfk35BYQyDdnXa4f4BJP4hwPhpdcVPD4mTVy4opsHTYempkcbLqRjNZ network-config testnet
 ## > Enter account ID: baeca15656753d36b5f5c903ed5a977fed292af19a4698c3660045d1fd8d0b6a
 
-## 4.$ unc tokens unc send-unc baeca15656753d36b5f5c903ed5a977fed292af19a4698c3660045d1fd8d0b6a '100 unc' network-config testnet sign-with-keychain send
+## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc baeca15656753d36b5f5c903ed5a977fed292af19a4698c3660045d1fd8d0b6a '100 unc' network-config testnet sign-with-keychain send
 
 ## 5.$ export CONTRACT_ACCOUNT_ID=baeca15656753d36b5f5c903ed5a977fed292af19a4698c3660045d1fd8d0b6a
 echo ">> Deploying hello contract"
