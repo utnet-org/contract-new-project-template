@@ -12,7 +12,7 @@ services:
       - CHAIN_ID=local
       - INIT=true
     volumes:
-      - ${HOME}/node-store1:$HOME/.unc
+      - ${HOME}//.unc/localnet/node1:$HOME/.unc
     ports:
       - 3031:3030
       - 12346:12345
@@ -23,7 +23,7 @@ services:
       - CHAIN_ID=local
       - INIT=true
     volumes:
-      - ${HOME}/node-store2:$HOME/.unc
+      - ${HOME}/.unc/localnet/node2:$HOME/.unc
     ports:
       - 3032:3030
       - 12347:12345
@@ -34,7 +34,7 @@ services:
       - CHAIN_ID=local
       - INIT=true
     volumes:
-      - ${HOME}/node-store3:$HOME/.unc
+      - ${HOME}/.unc/localnet/node3:$HOME/.unc
     ports:
       - 3033:3030
       - 12348:12345
@@ -45,7 +45,7 @@ services:
       - CHAIN_ID=local
       - INIT=true
     volumes:
-      - ${HOME}/node-store4:$HOME/.unc
+      - ${HOME}/.unc/localnet/node4:$HOME/.unc
     ports:
       - 3034:3030
       - 12349:12345
@@ -56,7 +56,7 @@ services:
       - CHAIN_ID=local
       - INIT=true
     volumes:
-      - ${HOME}/node-store5:$HOME/.unc
+      - ${HOME}/.unc/localnet/node5:$HOME/.unc
     ports:
       - 3035:3030
       - 12350:12345
