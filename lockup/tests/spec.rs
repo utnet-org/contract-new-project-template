@@ -3,14 +3,14 @@ use lockup_contract::{
     VestingScheduleOrHash, VestingScheduleWithSalt, WrappedBalance, MIN_BALANCE_FOR_STORAGE
 };
 use unc_sdk::borsh::BorshSerialize;
-use unc_sdk::json_types::{PublicKey, U128};
+use unc_sdk::json_types::U128;
 use unc_sdk::serde_json::json;
-use unc_sdk::{AccountId, Balance};
+use unc_sdk::{AccountId, PublicKey};
 use quickcheck_macros::quickcheck;
 use std::convert::TryInto;
 
 pub const MAX_GAS: u64 = 300000000000000;
-pub const NO_DEPOSIT: Balance = 0;
+pub const NO_DEPOSIT: u128 = 0;
 pub const LOCKUP_ACCOUNT_ID: &str = "lockup";
 
 const STAKING_POOL_WHITELIST_ACCOUNT_ID: &str = "staking-pool-whitelist";
@@ -39,12 +39,12 @@ pub fn assert_atto_eq(left: u128, right: u128) {
 lazy_static_include::lazy_static_include_bytes! {
     LOCKUP_WASM_BYTES => "res/lockup_contract.wasm",
     STAKING_POOL_WASM_BYTES => "../staking-pool/res/staking_pool.wasm",
-    FAKE_VOTING_WASM_BYTES => "tests/res/fake_voting.wasm",
+    FAKE_VOTING_WASM_BYTES => "../res/voting.wasm",
     WHITELIST_WASM_BYTES => "../whitelist/res/whitelist.wasm",
 }
 
 #[quickcheck]
-fn lockup(lockup_amount: Balance, lockup_duration: u64, lockup_timestamp: u64) {
+fn lockup(lockup_amount: u128, lockup_duration: u64, lockup_timestamp: u64) {
     let (root, _foundation, owner, _staking_pool) = basic_setup();
 
     let lockup = deploy!(

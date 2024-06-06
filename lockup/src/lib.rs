@@ -238,8 +238,8 @@ impl LockupContract {
 mod tests {
     use std::convert::TryInto;
 
-    use unc_sdk::{testing_env, MockedBlockchain, PromiseResult, VMContext};
-    use unc_sdk::test_utils::VMContextBuilder;
+    use unc_sdk::{testing_env, PromiseResult, VMContext};
+    use unc_sdk::test_utils::{testing_env_with_promise_results, VMContextBuilder};
 
     use test_utils::*;
 
@@ -254,8 +254,8 @@ mod tests {
         VMContextBuilder::new()
             .current_account_id(lockup_account())
             .predecessor_account_id(system_account())
-            .account_balance(to_atto(LOCKUP_UNC))
-            .account_locked_balance(0)
+            .account_balance(UncToken::from_attounc(to_atto(LOCKUP_UNC)))
+            .account_locked_balance(UncToken::from_attounc(0))
             .block_timestamp(to_ts(GENESIS_TIME_IN_DAYS))
             .is_view(false)
             .build()
@@ -421,7 +421,7 @@ mod tests {
         context.signer_account_id = non_owner();
         testing_env!(context.clone());
 
-        contract.select_staking_pool(AccountId::from("staking_pool"));
+        contract.select_staking_pool("staking_pool".parse().unwrap());
     }
 
     #[test]
@@ -627,9 +627,9 @@ mod tests {
         context.view_config = None;
         testing_env!(context.clone());
 
-        assert_eq!(env::account_balance(), to_atto(LOCKUP_UNC));
+        assert_eq!(env::account_balance(), UncToken::from_attounc(to_atto(LOCKUP_UNC)));
         contract.transfer(to_atto(100).into(), non_owner());
-        assert_almost_eq(env::account_balance(), to_atto(LOCKUP_UNC - 100));
+        assert_almost_eq(env::account_balance().as_attounc(), to_atto(LOCKUP_UNC - 100));
     }
 
     #[test]
@@ -653,7 +653,7 @@ mod tests {
         context.signer_account_pk = public_key(2).try_into().unwrap();
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".parse().unwrap();
+        let staking_pool: AccountId = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -676,7 +676,7 @@ mod tests {
         testing_env!(context.clone());
         contract.deposit_to_staking_pool(amount.into());
         context.account_balance = env::account_balance();
-        assert_eq!(context.account_balance, to_atto(LOCKUP_UNC) - amount);
+        assert_eq!(context.account_balance, UncToken::from_attounc(to_atto(LOCKUP_UNC) - amount));
 
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
@@ -709,7 +709,7 @@ mod tests {
         context.predecessor_account_id = account_owner();
         testing_env!(context.clone());
         contract.withdraw_from_staking_pool(unstake_amount.into());
-        context.account_balance += unstake_amount;
+        context.account_balance = context.account_balance.saturating_add(UncToken::from_attounc(unstake_amount));
 
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
@@ -734,7 +734,7 @@ mod tests {
         context.signer_account_pk = public_key(2).try_into().unwrap();
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".parse().unwrap();
+        let staking_pool: AccountId = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -751,7 +751,7 @@ mod tests {
         testing_env!(context.clone());
         contract.deposit_to_staking_pool(amount.into());
         context.account_balance = env::account_balance();
-        assert_eq!(context.account_balance, to_atto(LOCKUP_UNC) - amount);
+        assert_eq!(context.account_balance, UncToken::from_attounc(to_atto(LOCKUP_UNC) - amount));
 
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
@@ -815,7 +815,7 @@ mod tests {
         context.signer_account_pk = public_key(2).try_into().unwrap();
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".parse().unwrap();
+        let staking_pool: AccountId = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -829,7 +829,7 @@ mod tests {
         // Selecting another staking pool
         context.predecessor_account_id = account_owner();
         testing_env!(context.clone());
-        contract.select_staking_pool("staking_pool_2".to_string());
+        contract.select_staking_pool("staking_pool_2".parse().unwrap());
     }
 
     #[test]
@@ -841,7 +841,7 @@ mod tests {
         context.signer_account_pk = public_key(2).try_into().unwrap();
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".parse().unwrap();
+        let staking_pool: AccountId = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -876,7 +876,7 @@ mod tests {
         context.signer_account_pk = public_key(2).try_into().unwrap();
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".parse().unwrap();
+        let staking_pool: AccountId = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -919,7 +919,7 @@ mod tests {
         context.view_config = None;
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".parse().unwrap();
+        let staking_pool: AccountId = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -939,7 +939,7 @@ mod tests {
             testing_env!(context.clone());
             contract.deposit_to_staking_pool(amount.into());
             context.account_balance = env::account_balance();
-            assert_eq!(context.account_balance, lockup_amount - total_amount);
+            assert_eq!(context.account_balance, UncToken::from_attounc(lockup_amount - total_amount));
 
             context.predecessor_account_id = lockup_account();
             testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
@@ -962,10 +962,10 @@ mod tests {
             context.predecessor_account_id = account_owner();
             testing_env!(context.clone());
             contract.withdraw_from_staking_pool(amount.into());
-            context.account_balance += amount;
+            context.account_balance = context.account_balance.saturating_add(UncToken::from_attounc(amount));
             assert_eq!(
                 context.account_balance,
-                lockup_amount - total_amount + total_withdrawn_amount
+                UncToken::from_attounc(lockup_amount - total_amount + total_withdrawn_amount)
             );
 
             context.predecessor_account_id = lockup_account();
@@ -1174,7 +1174,7 @@ mod tests {
         // Withdrawing
         context.view_config = None;
         testing_env!(context.clone());
-        let receiver_id = "unc".parse().unwrap();
+        let receiver_id: AccountId = "unc".parse().unwrap();
         contract.termination_withdraw(receiver_id.clone());
         context.account_balance = env::account_balance();
 
@@ -1556,7 +1556,7 @@ mod tests {
         // Withdrawing
         context.view_config = None;
         testing_env!(context.clone());
-        let receiver_id = "unc".parse().unwrap();
+        let receiver_id: AccountId = "unc".parse().unwrap();
         contract.termination_withdraw(receiver_id.clone());
         context.account_balance = env::account_balance();
 
@@ -1676,10 +1676,10 @@ mod tests {
         // Withdrawing
         context.view_config = None;
         testing_env!(context.clone());
-        let receiver_id = account_foundation();
+        let receiver_id: AccountId = account_foundation();
         contract.termination_withdraw(receiver_id.clone());
         context.account_balance = env::account_balance();
-        assert_eq!(context.account_balance, MIN_BALANCE_FOR_STORAGE);
+        assert_eq!(context.account_balance, UncToken::from_attounc(MIN_BALANCE_FOR_STORAGE));
 
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
@@ -1746,7 +1746,7 @@ mod tests {
         testing_env!(context.clone());
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".parse().unwrap();
+        let staking_pool: AccountId = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -1876,7 +1876,7 @@ mod tests {
         );
         contract
             .on_get_account_unstaked_balance_to_withdraw(withdraw_amount_with_extra_rewards.into());
-        context.account_balance += withdraw_amount_with_extra_rewards;
+        context.account_balance = context.account_balance.saturating_add(UncToken::from_attounc(withdraw_amount_with_extra_rewards));
 
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         contract
@@ -1912,7 +1912,7 @@ mod tests {
         let receiver_id = account_foundation();
         contract.termination_withdraw(receiver_id.clone());
         context.account_balance = env::account_balance();
-        assert_eq!(context.account_balance, to_atto(250 + 51));
+        assert_eq!(context.account_balance, UncToken::from_attounc(to_atto(250 + 51)));
 
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
