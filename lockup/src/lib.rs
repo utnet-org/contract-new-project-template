@@ -290,7 +290,7 @@ mod tests {
             }
         } else {
             TransfersInformation::TransfersDisabled {
-                transfer_poll_account_id: AccountId::from("transfers"),
+                transfer_poll_account_id: "transfers".parse().unwrap(),
             }
         };
         let foundation_account_id = if foundation_account {
@@ -315,7 +315,7 @@ mod tests {
             lockup_start_information,
             vesting_schedule,
             release_duration,
-            AccountId::from("whitelist"),
+           "whitelist".parse().unwrap(),
             foundation_account_id,
         )
     }
@@ -475,7 +475,7 @@ mod tests {
                 vesting_schedule.clone(),
             )),
             None,
-            AccountId::from("whitelist"),
+           "whitelist".parse().unwrap(),
             Some(account_foundation()),
         );
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR);
@@ -653,7 +653,7 @@ mod tests {
         context.signer_account_pk = public_key(2).try_into().unwrap();
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".to_string();
+        let staking_pool = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -734,7 +734,7 @@ mod tests {
         context.signer_account_pk = public_key(2).try_into().unwrap();
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".to_string();
+        let staking_pool = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -815,7 +815,7 @@ mod tests {
         context.signer_account_pk = public_key(2).try_into().unwrap();
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".to_string();
+        let staking_pool = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -841,7 +841,7 @@ mod tests {
         context.signer_account_pk = public_key(2).try_into().unwrap();
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".to_string();
+        let staking_pool = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -876,7 +876,7 @@ mod tests {
         context.signer_account_pk = public_key(2).try_into().unwrap();
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".to_string();
+        let staking_pool = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -919,7 +919,7 @@ mod tests {
         context.view_config = None;
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".to_string();
+        let staking_pool = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 
@@ -998,11 +998,11 @@ mod tests {
             0.into(),
             Some(to_ts(GENESIS_TIME_IN_DAYS + YEAR).into()),
             TransfersInformation::TransfersDisabled {
-                transfer_poll_account_id: AccountId::from("transfers"),
+                transfer_poll_account_id: "transfers".parse().unwrap(),
             },
             None,
             None,
-            AccountId::from("whitelist"),
+           "whitelist".parse().unwrap(),
             None,
         );
 
@@ -1049,7 +1049,7 @@ mod tests {
             },
             None,
             None,
-            AccountId::from("whitelist"),
+           "whitelist".parse().unwrap(),
             None,
         );
 
@@ -1088,7 +1088,7 @@ mod tests {
                 vesting_schedule.clone(),
             )),
             None,
-            AccountId::from("whitelist"),
+           "whitelist".parse().unwrap(),
             Some(account_foundation()),
         );
 
@@ -1174,7 +1174,7 @@ mod tests {
         // Withdrawing
         context.view_config = None;
         testing_env!(context.clone());
-        let receiver_id = "unc".to_string();
+        let receiver_id = "unc".parse().unwrap();
         contract.termination_withdraw(receiver_id.clone());
         context.account_balance = env::account_balance();
 
@@ -1369,7 +1369,7 @@ mod tests {
                 vesting_schedule.clone(),
             )),
             Some(to_nanos(4 * YEAR).into()),
-            AccountId::from("whitelist"),
+            "whitelist".parse().unwrap(),
             Some(account_foundation()),
         );
 
@@ -1556,7 +1556,7 @@ mod tests {
         // Withdrawing
         context.view_config = None;
         testing_env!(context.clone());
-        let receiver_id = "unc".to_string();
+        let receiver_id = "unc".parse().unwrap();
         contract.termination_withdraw(receiver_id.clone());
         context.account_balance = env::account_balance();
 
@@ -1746,7 +1746,7 @@ mod tests {
         testing_env!(context.clone());
 
         // Selecting staking pool
-        let staking_pool = "staking_pool".to_string();
+        let staking_pool = "staking_pool".parse().unwrap();
         testing_env!(context.clone());
         contract.select_staking_pool(staking_pool.clone());
 

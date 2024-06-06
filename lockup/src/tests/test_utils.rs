@@ -1,4 +1,5 @@
 use unc_sdk::AccountId;
+use unc_sdk::json_types::Base58PublicKey;
 
 pub const LOCKUP_UNC: u128 = 1000;
 pub const GENESIS_TIME_IN_DAYS: u64 = 500;
@@ -50,4 +51,10 @@ pub fn assert_almost_eq_with_max_delta(left: u128, right: u128, max_delta: u128)
 
 pub fn assert_almost_eq(left: u128, right: u128) {
     assert_almost_eq_with_max_delta(left, right, to_atto(10));
+}
+
+pub fn public_key(byte_val: u8) -> PublicKey {
+    let mut pk = vec![byte_val; 33];
+    pk[0] = 0;
+    PublicKey(pk)
 }
