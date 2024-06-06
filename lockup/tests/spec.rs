@@ -3,11 +3,9 @@ use lockup_contract::{
     VestingScheduleOrHash, VestingScheduleWithSalt, WrappedBalance, MIN_BALANCE_FOR_STORAGE
 };
 use unc_sdk::borsh::BorshSerialize;
-use unc_sdk::json_types::{Base58PublicKey, U128};
+use unc_sdk::json_types::{PublicKey, U128};
 use unc_sdk::serde_json::json;
 use unc_sdk::{AccountId, Balance};
-use unc_sdk_sim::runtime::GenesisConfig;
-use unc_sdk_sim::{deploy, init_simulator, to_atto, UserAccount};
 use quickcheck_macros::quickcheck;
 use std::convert::TryInto;
 
@@ -18,12 +16,6 @@ pub const LOCKUP_ACCOUNT_ID: &str = "lockup";
 const STAKING_POOL_WHITELIST_ACCOUNT_ID: &str = "staking-pool-whitelist";
 const STAKING_POOL_ACCOUNT_ID: &str = "staking-pool";
 const TRANSFER_POLL_ACCOUNT_ID: &str = "transfer-poll";
-
-pub fn public_key(byte_val: u8) -> Base58PublicKey {
-    let mut pk = vec![byte_val; 33];
-    pk[0] = 0;
-    Base58PublicKey(pk)
-}
 
 pub fn assert_almost_eq_with_max_delta(left: u128, right: u128, max_delta: u128) {
     assert!(
@@ -44,7 +36,7 @@ pub fn assert_atto_eq(left: u128, right: u128) {
     assert_almost_eq_with_max_delta(left, right, 1);
 }
 
-unc_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
+lazy_static_include::lazy_static_include_bytes! {
     LOCKUP_WASM_BYTES => "res/lockup_contract.wasm",
     STAKING_POOL_WASM_BYTES => "../staking-pool/res/staking_pool.wasm",
     FAKE_VOTING_WASM_BYTES => "tests/res/fake_voting.wasm",
@@ -1510,7 +1502,7 @@ fn test_release_schedule_unlock_transfers() {
         .unwrap_json();
     assert_eq_with_gas(res.0, full_balance);
 
-    let public_key: Base58PublicKey = owner_staking_account
+    let public_key: PublicKey = owner_staking_account
         .signer
         .public_key
         .try_to_vec()

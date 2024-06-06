@@ -179,7 +179,7 @@ mod tests {
 
     #[tokio::test]
     async fn workspaces_test() -> anyhow::Result<()> {
-        let wasm = fs::read("res/state_manipulation.wasm").await?;
+        let wasm = fs::read("../res/state_manipulation.wasm").await?;
 
         let worker = utility_workspaces::sandbox().await?;
 

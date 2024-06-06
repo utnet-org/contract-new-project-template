@@ -14,9 +14,11 @@ JSON format for `clean`:
 ```
 
 JSON format for `replace`:
+
 ```json
 {"entries":[["<base64 key byte string>", "<base64 value byte string>"], ["...", "..."]]}
 ```
+
 ## With CLI
 
 Usage example to put and remove only the "STATE" item using [unc-cli](https://github.com/unc/unc-cli-rs):
@@ -26,19 +28,19 @@ Usage example to put and remove only the "STATE" item using [unc-cli](https://gi
 ./build.sh
 
 # Deploy built code on chain
-unc-cli add contract-code network testnet account nesdie.testnet contract-file ./res/state_manipulation.wasm no-initialize sign-with-keychain
+unc add contract-code network testnet account nesdie.testnet contract-file ./res/state_manipulation.wasm no-initialize sign-with-keychain
 
 # Add state item for "STATE" key
-unc-cli execute change-method network testnet contract nesdie.testnet call replace '{"entries":[["U1RBVEU=", "dGVzdA=="]]}' --prepaid-gas '100.000 TeraGas' --attached-deposit '0 UNC' signer nesdie.testnet sign-with-keychain
+unc execute change-method network testnet contract nesdie.testnet call replace '{"entries":[["U1RBVEU=", "dGVzdA=="]]}' --prepaid-gas '100.000 TeraGas' --attached-deposit '0 UNC' signer nesdie.testnet sign-with-keychain
 
 # View Added state item
-unc-cli view contract-state network testnet account nesdie.testnet at-final-block
+unc view contract-state network testnet account nesdie.testnet at-final-block
 
 # Clear added state item
-unc-cli execute change-method network testnet contract nesdie.testnet call clean '{"keys":["U1RBVEU="]}' --prepaid-gas '100.000 TeraGas' --attached-deposit '0 UNC' signer nesdie.testnet sign-with-keychain
+unc execute change-method network testnet contract nesdie.testnet call clean '{"keys":["U1RBVEU="]}' --prepaid-gas '100.000 TeraGas' --attached-deposit '0 UNC' signer nesdie.testnet sign-with-keychain
 
 # View that item was removed
-unc-cli view contract-state network testnet account nesdie.testnet at-final-block
+unc view contract-state network testnet account nesdie.testnet at-final-block
 ```
 
 ## Features

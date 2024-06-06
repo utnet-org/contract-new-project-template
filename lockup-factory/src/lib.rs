@@ -200,7 +200,7 @@ mod tests {
     mod test_utils;
 
     use super::*;
-    use unc_sdk::{testing_env, MockedBlockchain, PromiseResult};
+    use unc_sdk::{testing_env, PromiseResult};
     use unc_sdk::test_utils::{testing_env_with_promise_results, VMContextBuilder};
     use test_utils::*;
 

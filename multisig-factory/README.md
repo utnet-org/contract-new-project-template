@@ -10,7 +10,7 @@ E.g. Removes need for using `unc cli` and having wasm file available.
 Deploy to new developer account on TestNet:
 
 ```sh
-unc dev-deploy --wasmFile=res/multisig_factory.wasm
+unc dev-tool depoly <MULTISIG_ACCOUNT_ID>
 ```
 
 Setup variable for the contract to use commands below easier:

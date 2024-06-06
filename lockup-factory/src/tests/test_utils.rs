@@ -1,4 +1,3 @@
-use std::convert::TryInto;
 use unc_sdk::{env, AccountId};
 
 pub const GENESIS_TIME_IN_DAYS: u64 = 500;

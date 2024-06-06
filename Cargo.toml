@@ -27,7 +27,7 @@ members = [
     "staking-pool-factory",
     "multisig",
     "multisig-factory",
-    #"state-manipulation",
+    "state-manipulation",
     "voting",
     "w-unc/contract",
     "w-unc/integration-tests",
