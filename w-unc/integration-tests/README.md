@@ -8,5 +8,5 @@ in the contract source code.
 Run a specific integration test with:
 
 ```bash
- cargo run --example set_method
+ cargo run --example ft_wunc
 ```
