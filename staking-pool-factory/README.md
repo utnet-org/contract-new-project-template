@@ -15,9 +15,9 @@ Otherwise, the factory returns the attached deposit back the users and returns `
 
 ## Changelog
 
-### `0.1.1`
+### `0.1.0`
 
-- Rebuild with the staking pool contract version of `0.2.1`.
+- Rebuild with the staking pool contract.
 
 ## API
 

@@ -32,7 +32,7 @@ and methods that can only be called by the foundation.
 
 ## Changelog
 
-### `0.2.0`
+### `0.1.0`
 
 - Internally updated to use `LockupSet` instead of `UnorderedSet`.
 

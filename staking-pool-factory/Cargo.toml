@@ -1,6 +1,6 @@
 [package]
 name = "staking-pool-factory"
-version = "0.1.5"
+version = "0.1.0"
 authors = ["Utility Inc <hello@utnet.org>"]
 license = "GPL-2.0-or-later"
 edition = "2021"

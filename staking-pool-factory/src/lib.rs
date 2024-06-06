@@ -9,7 +9,7 @@ mod utils;
 use crate::utils::*;
 
 /// The 30 UNC tokens required for the storage of the staking pool.
-const MIN_ATTACHED_BALANCE: UncToken = UncToken::from_attounc(30_000_000_000_000_000_000_000_000);
+const MIN_ATTACHED_BALANCE: u128 = 30_000_000_000_000_000_000_000_000;
 
 pub mod gas {
     use unc_sdk::Gas;
@@ -117,7 +117,7 @@ impl StakingPoolFactory {
     /// Returns the minimum amount of tokens required to attach to the function call to
     /// create a new staking pool.
     pub fn get_min_attached_balance(&self) -> U128 {
-        MIN_ATTACHED_BALANCE.as_attounc().into()
+        MIN_ATTACHED_BALANCE.into()
     }
 
     /// Returns the total number of the staking pools created from this factory.
@@ -136,18 +136,18 @@ impl StakingPoolFactory {
     #[payable]
     pub fn create_staking_pool(
         &mut self,
-        staking_pool_id: String,
+        staking_pool_id: AccountId,
         owner_id: AccountId,
         stake_public_key: PublicKey,
         reward_fee_fraction: RewardFeeFraction,
     ) -> Promise {
         assert!(
-            env::attached_deposit() >= MIN_ATTACHED_BALANCE,
+            env::attached_deposit() >= UncToken::from_attounc(MIN_ATTACHED_BALANCE),
             "Not enough attached deposit to complete staking pool creation"
         );
 
         assert!(
-            staking_pool_id.find('.').is_none(),
+            staking_pool_id.to_string().find('.').is_none(),
             "The staking pool ID can't contain `.`"
         );
 
@@ -241,39 +241,44 @@ impl StakingPoolFactory {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, not(target_arch = "wasm32")))]
 mod tests {
     use super::*;
+    use unc_sdk::test_utils::{VMContextBuilder, testing_env_with_promise_results};
     use unc_sdk::{testing_env, MockedBlockchain, PromiseResult};
-
     mod test_utils;
-    use std::convert::TryInto;
     use test_utils::*;
+    use std::convert::TryInto;
 
     #[test]
     fn test_create_staking_pool_success() {
-        let mut context = VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(account_factory())
             .predecessor_account_id(account_unc())
-            .finish();
-        testing_env!(context.clone());
+            .build());
 
         let mut contract = StakingPoolFactory::new(account_whitelist());
 
-        context.is_view = true;
-        testing_env!(context.clone());
+        testing_env!(VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_unc())
+            .is_view(true)
+            .build());
+
         assert_eq!(contract.get_min_attached_balance().0, MIN_ATTACHED_BALANCE);
         assert_eq!(contract.get_number_of_staking_pools_created(), 0);
 
-        context.is_view = false;
-        context.predecessor_account_id = account_tokens_owner();
-        context.attached_deposit = ntoy(31);
-        testing_env!(context.clone());
+        testing_env!(VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_tokens_owner())
+            .attached_deposit(UncToken::from_attounc(ntoy(31)))
+            .is_view(false)
+            .build());
         contract.create_staking_pool(
             staking_pool_id(),
             account_pool_owner(),
-            "KuTCtARNzxZQ3YvXDeLjx83FDqxv2SdQTSbiq876zR7"
-                .try_into()
+            "ed25519:KuTCtARNzxZQ3YvXDeLjx83FDqxv2SdQTSbiq876zR7"
+                .parse()
                 .unwrap(),
             RewardFeeFraction {
                 numerator: 10,
@@ -281,42 +286,58 @@ mod tests {
             },
         );
 
-        context.predecessor_account_id = account_factory();
-        context.attached_deposit = ntoy(0);
+        let context = VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_factory())
+            .attached_deposit(UncToken::from_attounc(ntoy(0)))
+            .build();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         contract.on_staking_pool_create(account_pool(), ntoy(31).into(), account_tokens_owner());
 
-        context.is_view = true;
-        testing_env!(context.clone());
+        testing_env!(VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_factory())
+            .attached_deposit(UncToken::from_attounc(ntoy(0)))
+            .is_view(true)
+            .build());
         assert_eq!(contract.get_number_of_staking_pools_created(), 1);
     }
 
     #[test]
     #[should_panic(expected = "Not enough attached deposit to complete staking pool creation")]
     fn test_create_staking_pool_not_enough_deposit() {
-        let mut context = VMContextBuilder::new()
+        let context = VMContextBuilder::new()
             .current_account_id(account_factory())
             .predecessor_account_id(account_unc())
-            .finish();
-        testing_env!(context.clone());
+            .build();
+        testing_env!(context);
 
         let mut contract = StakingPoolFactory::new(account_whitelist());
 
         // Checking the pool is still whitelisted
-        context.is_view = true;
-        testing_env!(context.clone());
+        let context = VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_unc())
+            .is_view(true)
+            .build();
+        testing_env!(context);
+
         assert_eq!(contract.get_min_attached_balance().0, MIN_ATTACHED_BALANCE);
         assert_eq!(contract.get_number_of_staking_pools_created(), 0);
 
-        context.is_view = false;
-        context.predecessor_account_id = account_tokens_owner();
-        context.attached_deposit = ntoy(20);
-        testing_env!(context.clone());
+        let context = VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_tokens_owner())
+            .attached_deposit(UncToken::from_attounc(ntoy(20)))
+            .is_view(false)
+            .build();
+        testing_env!(context);
+
         contract.create_staking_pool(
             staking_pool_id(),
             account_pool_owner(),
-            "KuTCtARNzxZQ3YvXDeLjx83FDqxv2SdQTSbiq876zR7"
-                .try_into()
+            "ed25519:KuTCtARNzxZQ3YvXDeLjx83FDqxv2SdQTSbiq876zR7"
+                .parse()
                 .unwrap(),
             RewardFeeFraction {
                 numerator: 10,
@@ -327,28 +348,35 @@ mod tests {
 
     #[test]
     fn test_create_staking_pool_rollback() {
-        let mut context = VMContextBuilder::new()
+        let context = VMContextBuilder::new()
             .current_account_id(account_factory())
             .predecessor_account_id(account_unc())
-            .finish();
-        testing_env!(context.clone());
+            .build();
+        testing_env!(context);
 
         let mut contract = StakingPoolFactory::new(account_whitelist());
 
-        context.is_view = true;
-        testing_env!(context.clone());
+        let context = VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_unc())
+            .is_view(true)
+            .build();
+        testing_env!(context);
         assert_eq!(contract.get_min_attached_balance().0, MIN_ATTACHED_BALANCE);
         assert_eq!(contract.get_number_of_staking_pools_created(), 0);
 
-        context.is_view = false;
-        context.predecessor_account_id = account_tokens_owner();
-        context.attached_deposit = ntoy(31);
+        let context = VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_tokens_owner())
+            .is_view(false)
+            .attached_deposit(UncToken::from_attounc(ntoy(31)))
+            .build();
         testing_env!(context.clone());
         contract.create_staking_pool(
             staking_pool_id(),
             account_pool_owner(),
-            "KuTCtARNzxZQ3YvXDeLjx83FDqxv2SdQTSbiq876zR7"
-                .try_into()
+            "ed25519:KuTCtARNzxZQ3YvXDeLjx83FDqxv2SdQTSbiq876zR7"
+                .parse()
                 .unwrap(),
             RewardFeeFraction {
                 numerator: 10,
@@ -356,10 +384,15 @@ mod tests {
             },
         );
 
-        context.predecessor_account_id = account_factory();
-        context.attached_deposit = ntoy(0);
-        context.account_balance += ntoy(31);
-        testing_env_with_promise_results(context.clone(), PromiseResult::Failed);
+        let balance = context.account_balance.saturating_add(UncToken::from_attounc(ntoy(31)));
+        let context = VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_factory())
+            .attached_deposit(UncToken::from_attounc(ntoy(0)))
+            .account_balance(balance)
+            .build();
+
+        testing_env_with_promise_results(context, PromiseResult::Failed);
         let res = contract.on_staking_pool_create(
             account_pool(),
             ntoy(31).into(),
@@ -370,8 +403,14 @@ mod tests {
             PromiseOrValue::Value(value) => assert!(!value),
         };
 
-        context.is_view = true;
-        testing_env!(context.clone());
+        let context = VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_factory())
+            .attached_deposit(UncToken::from_attounc(ntoy(0)))
+            .account_balance(balance)
+            .is_view(true)
+            .build();
+        testing_env!(context);
         assert_eq!(contract.get_number_of_staking_pools_created(), 0);
     }
 }

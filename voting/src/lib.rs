@@ -110,7 +110,7 @@ impl VotingContract {
     pub fn get_total_voted_stake(&self) -> (U128, U128) {
         (
             self.total_voted_stake.into(),
-            env::validator_total_stake().as_unc().into(),
+            env::validator_total_stake().as_attounc().into(),
         )
     }
 
@@ -138,12 +138,12 @@ mod tests {
     #[should_panic(expected = "is not a validator")]
     fn test_nonvalidator_cannot_vote() {
         let context = VMContextBuilder::new()
-            .predecessor_account_id("bob".parse().unwrap())
+            .predecessor_account_id("chacha".parse().unwrap())
             .build();
         let validators = HashMap::from_iter(
             vec![
-                ("alice_unc".to_string(), UncToken::from_unc(100)),
-                ("bob_unc".to_string(), UncToken::from_unc(100)),
+                ("alice".to_string(), UncToken::from_unc(100)),
+                ("bob".to_string(), UncToken::from_unc(100)),
             ]
             .into_iter(),
         );
@@ -156,9 +156,9 @@ mod tests {
     #[should_panic(expected = "Voting has already ended")]
     fn test_vote_again_after_voting_ends() {
         let context = VMContextBuilder::new()
-            .predecessor_account_id("alice_unc".parse().unwrap())
+            .predecessor_account_id("alice".parse().unwrap())
             .build();
-        let validators = HashMap::from_iter(vec![("alice_unc".to_string(), UncToken::from_unc(100))].into_iter());
+        let validators = HashMap::from_iter(vec![("alice".to_string(), UncToken::from_unc(100))].into_iter());
         testing_env!(context, test_vm_config(), RuntimeFeesConfig::test(), validators);
         let mut contract = VotingContract::new();
         contract.vote(true);
@@ -172,7 +172,7 @@ mod tests {
             .predecessor_account_id("test0".parse().unwrap())
             .build();
         let validators = (0..10)
-            .map(|i| (format!("test{}", i), UncToken::from_unc(10)))
+            .map(|i| (format!("test{}", i), UncToken::from_attounc(10)))
             .collect::<HashMap<_, _>>();
         testing_env!(
             context,
@@ -332,9 +332,9 @@ mod tests {
             .epoch_height(1)
             .build();
         let mut validators = HashMap::from_iter(vec![
-            ("test1".to_string(), UncToken::from_unc(40)),
-            ("test2".to_string(), UncToken::from_unc(10)),
-            ("test3".to_string(), UncToken::from_unc(10)),
+            ("test1".to_string(), UncToken::from_attounc(40)),
+            ("test2".to_string(), UncToken::from_attounc(10)),
+            ("test3".to_string(), UncToken::from_attounc(10)),
         ]);
         testing_env!(
             context,
