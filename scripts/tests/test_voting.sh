@@ -94,13 +94,13 @@ echo "Awaiting for network to start"
 sleep 3
 
 echo "Current validator should be the $LAST_NODE + 1 nodes"
-unc validators current
+unc pledging validators network-config $CHAIN_ID now
 
 for (( i=0; i<=$LAST_NODE; i++ )); do
   cp ~/.unc/localnet/node$i/node_key.json ~/.unc-credentials/local/node$i.json
 done;
 
-OWNER_ACCOUNT_ID="owner.$MASTER_ACCOUNT_ID"
+OWNER_ACCOUNT_ID="8613616183c9f381fcfa79852235f818d058958bc03ec0b8ca3bc9ca289392b4"
 # Verifying owner account exist
 AMOUNT=$(unc account view-account-summary $OWNER_ACCOUNT_ID network-config $CHAIN_ID now | grep "balance")
 if [ -z "$AMOUNT" ]; then
@@ -120,10 +120,10 @@ cat << EOF
 ## "seed_phrase_hd_path":"m/44'/397'/0'"
 ## }
 
-## 3.$ unc account import-account using-private-key ed25519:2wJFRRVYadDwQT3svS81vCGdFqgX8ZMeLuNPqUejg5wNKWgQ9Crh5uhmGMRvB3NkBjGZ73Bnr5L694nkZ8qB8NWz network-config testnet
+## 3.$ unc account import-account using-private-key ed25519:2wJFRRVYadDwQT3svS81vCGdFqgX8ZMeLuNPqUejg5wNKWgQ9Crh5uhmGMRvB3NkBjGZ73Bnr5L694nkZ8qB8NWz network-config $CHAIN_ID
 ## > Enter account ID: 8613616183c9f381fcfa79852235f818d058958bc03ec0b8ca3bc9ca289392b4
 
-## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc 8613616183c9f381fcfa79852235f818d058958bc03ec0b8ca3bc9ca289392b4 '100 unc' network-config testnet sign-with-keychain send
+## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc 8613616183c9f381fcfa79852235f818d058958bc03ec0b8ca3bc9ca289392b4 '100 unc' network-config $CHAIN_ID sign-with-keychain send
 
 ## 5.$ export CONTRACT_ACCOUNT_ID=8613616183c9f381fcfa79852235f818d058958bc03ec0b8ca3bc9ca289392b4
 ## 6. wait for the account to be on-chain, 6 blocks time
@@ -136,18 +136,18 @@ echo "Deploying core accounts/"
 
 for (( i=1; i<=$LAST_NODE; i++ )); do
   ACCOUNT_ID="node${i}"
-  unc stake $ACCOUNT_ID "ed25519:7PGseFbWxvYVgZ89K1uTJKYoKetWs7BJtbyXDzfbAcqX" 0
+  unc validator pledging pledge-proposal $ACCOUNT_ID ed25519:7PGseFbWxvYVgZ89K1uTJKYoKetWs7BJtbyXDzfbAcqX '0 unc' network-config $CHAIN_ID sign-with-keychain send
 done;
 
 NODE0_PUBLIC_KEY=$(grep -oE 'ed25519:[^"]+' ~/.unc/localnet/node0/validator_key.json | head -1)
 echo "Staking close to 1B UNC by node0, to avoid it being kicked out too fast."
-unc stake node0 "$NODE0_PUBLIC_KEY" 999000000
+unc validator pledging pledge-proposal node0 "$NODE0_PUBLIC_KEY" '999000000 unc' network-config $CHAIN_ID sign-with-keychain send
 
 echo "Sleeping 3+ minutes (for 3+ epochs)"
 sleep 200
 
 echo "The only current validator should be the node0"
-unc validators current
+unc pledging validators network-config $CHAIN_ID now
 
 for (( i=1; i<=$LAST_NODE; i++ )); do
   ACCOUNT_ID="node${i}"
@@ -169,14 +169,14 @@ for (( i=1; i<=$LAST_NODE; i++ )); do
 done;
 
 echo "Unstaking for node0"
-unc stake node0 "$NODE0_PUBLIC_KEY" 0
+unc validator pledging pledge-proposal node0 "$NODE0_PUBLIC_KEY" '0 unc' network-config $CHAIN_ID sign-with-keychain send
 
 echo "Sleeping 3+ minutes (for 3+ epochs)"
 sleep 200
 
 echo "Current validators should be the $LAST_NODE nodes with the staking pools only"
-unc validators current
-unc validators current | grep "Validators (total: $LAST_NODE,"
+unc pledging validators network-config $CHAIN_ID now
+unc pledging validators network-config $CHAIN_ID now | grep "Validators (total: $LAST_NODE,"
 
 VOTE_ACCOUNT_ID="0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee"
 AMOUNT=$(unc account view-account-summary $VOTE_ACCOUNT_ID network-config $CHAIN_ID now | grep "balance")
@@ -196,10 +196,10 @@ if [ -z "$AMOUNT" ]; then
 ## "public_key":"ed25519:mz4koCMGRmbEDW6GCgferaVP5Upq9tozgaz3gnXZSp5","seed_phrase_hd_path":"m/44'/397'/0'"
 ## }
 
-## 3.$ unc account import-account using-private-key ed25519:v9zXRShtYhyEDEjBeNDjU4fnjghiCwSVm4qwA5kBA17fXT4y66S7YvYjYEdYaRiT8xnvPEErEgegeTpYxPaiZ5F network-config testnet
+## 3.$ unc account import-account using-private-key ed25519:v9zXRShtYhyEDEjBeNDjU4fnjghiCwSVm4qwA5kBA17fXT4y66S7YvYjYEdYaRiT8xnvPEErEgegeTpYxPaiZ5F network-config $CHAIN_ID
 ## > Enter account ID: 0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee
 
-## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc 0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee '100 unc' network-config testnet sign-with-keychain send
+## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc 0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee '100 unc' network-config $CHAIN_ID sign-with-keychain send
 
 ## 5.$ export CONTRACT_ACCOUNT_ID=0b861433767ace72eeace6cd636feec7e44c82ff4e25d048e09d0460f748acee
 
@@ -210,10 +210,10 @@ fi
 
 check_votes() {
   echo "Checking votes"
-  unc view $VOTE_ACCOUNT_ID get_total_voted_stake
-  unc view $VOTE_ACCOUNT_ID get_votes
+  unc contract call-function as-read-only $VOTE_ACCOUNT_ID get_total_voted_stake text-args '' network-config $CHAIN_ID now
+  unc contract call-function as-read-only $VOTE_ACCOUNT_ID get_votes text-args '' network-config $CHAIN_ID now
   echo "Checking result"
-  unc view $VOTE_ACCOUNT_ID get_result
+  unc contract call-function as-read-only $VOTE_ACCOUNT_ID get_result text-args '' network-config $CHAIN_ID now
 
 }
 
@@ -231,14 +231,14 @@ vote 2
 echo "Going to kick out node1. And restake with node0"
 unc call node1 pause_staking --accountId=$OWNER_ACCOUNT_ID
 sleep 1
-unc stake node0 "$NODE0_PUBLIC_KEY" 999000000
+unc validator pledging pledge-proposal node0 "$NODE0_PUBLIC_KEY" 999000000
 
 echo "Sleeping 3+ minutes (for 3+ epochs)"
 sleep 200
 
 echo "Current validators should be the 3 nodes with the staking pools and node0"
-unc validators current
-unc validators current | grep "Validators (total: 4,"
+unc pledging validators network-config $CHAIN_ID now
+unc pledging validators network-config $CHAIN_ID now | grep "Validators (total: 4,"
 
 check_votes
 
