@@ -70,7 +70,7 @@ then
 fi
 
 # Run the Docker containers
-docker-compose up -d
+sudo docker-compose up -d
 
 export MASTER_ACCOUNT_ID=node0
 export CHAIN_ID=localnet
@@ -78,11 +78,11 @@ export CHAIN_ID=localnet
 stop_nodes() {
   echo "STOOOP THE NODES!"
   # Stop the Docker containers
-  docker-compose down
+  sudo docker-compose down
 
   # Remove Docker networks and volumes
-  docker network prune -f
-  docker volume prune -f
+  sudo docker network prune -f
+  sudo docker volume prune -f
 }
 
 trap "stop_nodes" ERR
