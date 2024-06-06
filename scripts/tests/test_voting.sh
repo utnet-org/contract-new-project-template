@@ -111,20 +111,21 @@ cat << EOF
 ### or use the default account, it has some tokens, execute the command step 3 #3 to import the account
 ### account stake-pool-factory:
 ##1.$ unc account create-account fund-later use-auto-generation save-to-folder $HOME/.unc-credentials/implicit
-##2.$ cat $HOME/.unc-credentials/implicit/81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737.json
+##2.$ cat $HOME/.unc-credentials/implicit/8613616183c9f381fcfa79852235f818d058958bc03ec0b8ca3bc9ca289392b4.json
 
-## {"account_id":"81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737",
-## "master_seed_phrase":"luggage into fall pill wine repeat undo salon index plate until matter",
-## "private_key":"ed25519:2wJFRRVYadDwQT3svS81vCGdFqgX8ZMeLuNPqUejg5wNKWgQ9Crh5uhmGMRvB3NkBjGZ73Bnr5L694nkZ8qB8NWz",
-## "public_key":"ed25519:9jYETemz2TFrXfmy72kRqpgWkCjiZn1BBRcYfY8ZMyPU","seed_phrase_hd_path":"m/44'/397'/0'"
+## { "account_id":"8613616183c9f381fcfa79852235f818d058958bc03ec0b8ca3bc9ca289392b4",
+## "master_seed_phrase":"praise vacant sample tent casual devote sniff barely ship daughter vapor angry",
+## "private_key":"ed25519:5sxzpVrPJxj5BiphCUd41PAv8gdMWsPVhAgVcuezLwEHFUnG1f8ix6g5xhDLKKV2HfDoE4KQxbWxKw2rLyhGeswy",
+## "public_key":"ed25519:A2Nmkj76YzeBD2WcmowJvV6cuqgGNxPo2JPDLdgndcR9",
+## "seed_phrase_hd_path":"m/44'/397'/0'"
 ## }
 
 ## 3.$ unc account import-account using-private-key ed25519:2wJFRRVYadDwQT3svS81vCGdFqgX8ZMeLuNPqUejg5wNKWgQ9Crh5uhmGMRvB3NkBjGZ73Bnr5L694nkZ8qB8NWz network-config testnet
-## > Enter account ID: 81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737
+## > Enter account ID: 8613616183c9f381fcfa79852235f818d058958bc03ec0b8ca3bc9ca289392b4
 
-## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc 81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737 '100 unc' network-config testnet sign-with-keychain send
+## 4.$ unc tokens 7a17c8371a5a511fc92bc61e2b4c068e7546a3cd5d6c0bbdef1b8132c8b30376 send-unc 8613616183c9f381fcfa79852235f818d058958bc03ec0b8ca3bc9ca289392b4 '100 unc' network-config testnet sign-with-keychain send
 
-## 5.$ export CONTRACT_ACCOUNT_ID=81c3341ed21f7f39f9507a5953c81da6a1db46fee08e3a9d508ce7adc2e87737
+## 5.$ export CONTRACT_ACCOUNT_ID=8613616183c9f381fcfa79852235f818d058958bc03ec0b8ca3bc9ca289392b4
 ## 6. wait for the account to be on-chain, 6 blocks time
 EOF
   exit 1
