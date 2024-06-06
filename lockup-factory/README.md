@@ -21,16 +21,17 @@ The benefits:
 
 ## TestNet
 
-unc dev-deploy --wasmFile=res/lockup_factory.wasm
-
 ## Initialize the factory
 
-unc call lockup.testnet new '{"whitelist_account_id":"whitelist.testnet","foundation_account_id":"testnet","master_account_id":"testnet","lockup_master_account_id":"lockup.testnet"}' --accountId lockup.testnet
+```sh
+unc dev-tool deploy ef14eded70222383b8aed8a999879e06f28d86557b087db6d98d5d37ee198846 with-init-call new json-args '{"whitelist_account_id": "e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773", "foundation_account_id": "unc"}' prepaid-gas '100.0 Tgas' attached-deposit '0 unc' network-config testnet  sign-with-keychain send
+
+```
 
 ## Create a new lockup with the given parameters
 
-unc call lockup.testnet create '{"owner_account_id":"lockup_owner.testnet","lockup_duration":"63036000000000000"}' --accountId funding_account.testnet --amount 50000
+contract call-function as-transaction <LOCKUP_ACCOUNT_ID> create json-args '{"owner_account_id":"<ONWER_ACCOUNT_ID>","lockup_duration":"63036000000000000"}' --accountId funding_account.testnet --amount 50000
 
 ## Create a new lockup with the vesting schedule
 
-unc call lockup.testnet create '{"owner_account_id":"lockup_owner.testnet","lockup_duration":"31536000000000000","vesting_schedule": { "VestingSchedule": {"start_timestamp": "1535760000000000000", "cliff_timestamp": "1567296000000000000", "end_timestamp": "1661990400000000000"}}}' --accountId funding_account.testnet --amount 50000 --gas 110000000000000
+contract call-function as-transaction <LOCKUP_ACCOUNT_ID> create json-args '{"owner_account_id":"<ONWER_ACCOUNT_ID>","lockup_duration":"31536000000000000","vesting_schedule": { "VestingSchedule": {"start_timestamp": "1535760000000000000", "cliff_timestamp": "1567296000000000000", "end_timestamp": "1661990400000000000"}}}' --accountId funding_account.testnet --amount 50000 --gas 110000000000000
