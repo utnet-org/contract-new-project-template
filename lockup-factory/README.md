@@ -3,7 +3,7 @@
 This contract deploys lockup contracts.
 It allows any user to create and fund the lockup contract.
 The lockup factory contract packages the binary of the
-<a href="https://github.com/utnet-org/core-contracts/tree/master/lockup">lockup
+<a href="https://github.com/utnet-org/contract-new-project-template/tree/master/lockup">lockup
 contract</a> within its own binary.
 
 To create a new lockup contract a user should issue a transaction and
@@ -23,10 +23,7 @@ The benefits:
 
 ## Initialize the factory
 
-```sh
 unc dev-tool deploy ef14eded70222383b8aed8a999879e06f28d86557b087db6d98d5d37ee198846 with-init-call new json-args '{"whitelist_account_id": "e204abad77845ac1d756d580480a463d3a5efd7bb039a12293ca15ebb1878773", "foundation_account_id": "unc"}' prepaid-gas '100.0 Tgas' attached-deposit '0 unc' network-config testnet  sign-with-keychain send
-
-```
 
 ## Create a new lockup with the given parameters
 

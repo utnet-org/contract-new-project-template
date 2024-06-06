@@ -8,6 +8,7 @@ pub const SALT: [u8; 3] = [1, 2, 3];
 pub fn to_ts(num_days: u64) -> u64 {
     // 2018-08-01 UTC in nanoseconds
     1533081600_000_000_000 + to_nanos(num_days)
+}
 
 pub fn to_nanos(num_days: u64) -> u64 {
     num_days * 86400_000_000_000
@@ -30,27 +31,27 @@ pub fn whitelist_account_id() -> AccountId {
 }
 
 pub fn custom_whitelist_account_id() -> AccountId {
-    "custom.whitelist.testnet"parse().unwrap()
+    "custom.whitelist.testnet".parse().unwrap()
 }
 
 pub fn foundation_account_id() -> AccountId {
-    "testnet".parse().unwrap()
+    "unc".parse().unwrap()
 }
 
 pub fn account_tokens_owner() -> AccountId {
     "tokenowner.testnet".parse().unwrap()
 }
 
-pub fn ntoy(unc_amount: Balance) -> Balance {
+pub fn ntoy(unc_amount: u128) -> u128 {
     unc_amount * 10u128.pow(24)
 }
 
 pub fn lockup_account() -> AccountId {
-    let byte_slice = env::sha256(account_tokens_owner().as_ref().as_bytes());
+    let byte_slice = env::sha256(account_tokens_owner().as_bytes());
     let lockup_account_id = format!(
         "{}.{}",
         hex::encode(&byte_slice[..20]),
-        &lockup_master_account_id().as_ref().to_string()
+        &lockup_master_account_id().to_string()
     ).parse().unwrap();
     return lockup_account_id;
 }

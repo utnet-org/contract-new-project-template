@@ -28,7 +28,7 @@ pub mod gas {
     pub const CALLBACK: Gas = BASE;
 }
 
-const MIN_ATTACHED_BALANCE: UncToken = UncToken::from_attounc(3_500_000_000_000_000_000_000_000);
+const MIN_ATTACHED_BALANCE: u128 = 3_500_000_000_000_000_000_000_000;
 
 /// External interface for the callbacks to self.
 #[ext_contract(ext_self)]
@@ -98,7 +98,7 @@ impl LockupFactory {
 
     /// Returns minimum attached balance.
     pub fn get_min_attached_balance(&self) -> U128 {
-        MIN_ATTACHED_BALANCE.as_attounc().into()
+        MIN_ATTACHED_BALANCE.into()
     }
 
     #[payable]
@@ -111,7 +111,7 @@ impl LockupFactory {
         release_duration: Option<WrappedDuration>,
         whitelist_account_id: Option<AccountId>,
     ) -> Promise {
-        assert!(env::attached_deposit() >= MIN_ATTACHED_BALANCE, "Not enough attached deposit");
+        assert!(env::attached_deposit() >= UncToken::from_attounc(MIN_ATTACHED_BALANCE), "Not enough attached deposit");
 
         let byte_slice = env::sha256(owner_account_id.as_bytes());
         let lockup_account_id: AccountId =
@@ -195,12 +195,13 @@ impl LockupFactory {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, not(target_arch = "wasm32")))]
 mod tests {
     mod test_utils;
 
     use super::*;
     use unc_sdk::{testing_env, MockedBlockchain, PromiseResult};
+    use unc_sdk::test_utils::{testing_env_with_promise_results, VMContextBuilder};
     use test_utils::*;
 
     fn new_vesting_schedule(offset_in_days: u64) -> VestingSchedule {
@@ -216,7 +217,7 @@ mod tests {
         let mut context = VMContextBuilder::new()
             .current_account_id(account_factory())
             .predecessor_account_id(account_unc());
-        testing_env!(context.builder().clone());
+        testing_env!(context.build().clone());
 
         let contract = LockupFactory::new(
             whitelist_account_id(),
@@ -224,16 +225,16 @@ mod tests {
         );
 
         context.is_view(true);
-        testing_env!(context.builder().clone());
-        assert_eq!(contract.get_min_attached_balance().0, MIN_ATTACHED_BALANCE);
+        testing_env!(context.build().clone());
+        assert_eq!(contract.get_min_attached_balance().0, UncToken::from_attounc(MIN_ATTACHED_BALANCE));
         assert_eq!(
             contract.get_foundation_account_id(),
-            foundation_account_id().as_ref().to_string()
+            foundation_account_id().to_string()
         );
         println!("{}", contract.get_lockup_master_account_id());
         assert_eq!(
             contract.get_lockup_master_account_id(),
-            lockup_master_account_id().as_ref().to_string()
+            lockup_master_account_id().to_string()
         );
     }
 
@@ -253,7 +254,7 @@ mod tests {
         let lockup_duration: WrappedTimestamp = LOCKUP_DURATION.into();
 
         context.is_view(false);
-        context.predecessor_account_id = String::from(account_tokens_owner());
+        context.predecessor_account_id(account_tokens_owner());
         context.attached_deposit = ntoy(35);
         testing_env!(context.build().clone());
         contract.create(account_tokens_owner(), lockup_duration, None, None, None, None);
@@ -265,7 +266,7 @@ mod tests {
         contract.on_lockup_create(
             lockup_account(),
             ntoy(30).into(),
-            String::from(account_tokens_owner()),
+            account_tokens_owner(),
         );
     }
 
@@ -297,7 +298,7 @@ mod tests {
         });
 
         context.is_view(false);
-        context.predecessor_account_id(String::from(account_tokens_owner()));
+        context.predecessor_account_id(account_tokens_owner());
         context.attached_deposit(ntoy(35));
         testing_env!(context.build().clone());
         contract.create(
@@ -315,7 +316,7 @@ mod tests {
         contract.on_lockup_create(
             lockup_account(),
             ntoy(30).into(),
-            String::from(account_tokens_owner()),
+            account_tokens_owner(),
         );
     }
 
@@ -336,7 +337,7 @@ mod tests {
         let lockup_duration: WrappedTimestamp = LOCKUP_DURATION.into();
 
         context.is_view(false);
-        context.predecessor_account_id(String::from(account_tokens_owner()));
+        context.predecessor_account_id(account_tokens_owner());
         context.attached_deposit(ntoy(1)); /* Storage reduced to 3.5 UNC */
         testing_env!(context.build().clone());
         contract.create(account_tokens_owner(), lockup_duration, None, None, None, None);
@@ -358,19 +359,19 @@ mod tests {
         let lockup_duration: WrappedTimestamp = LOCKUP_DURATION.into();
 
         context.is_view(false);
-        context.predecessor_account_id(String::from(account_tokens_owner()));
-        context.attached_deposit(ntoy(35));
+        context.predecessor_account_id(account_tokens_owner());
+        context.attached_deposit(UncToken::from_attounc(ntoy(35)));
         testing_env!(context.build().clone());
         contract.create(account_tokens_owner(), lockup_duration, None, None, None, None);
 
         context.predecessor_account_id(account_factory());
         context.attached_deposit(ntoy(0));
-        context.account_balance(context.account_balance().clone(), ntoy(35));
+        context.account_balance(context.build().account_balance.saturating_add(UncToken::from_attounc(ntoy(35))));
         testing_env_with_promise_results(context.clone(), PromiseResult::Failed);
         let res = contract.on_lockup_create(
             lockup_account(),
             ntoy(35).into(),
-            String::from(account_tokens_owner()),
+            account_tokens_owner(),
         );
 
         match res {
@@ -392,7 +393,7 @@ mod tests {
         let lockup_duration: WrappedTimestamp = LOCKUP_DURATION.into();
 
         context.is_view(false);
-        context.predecessor_account_id(String::from(account_tokens_owner()));
+        context.predecessor_account_id(account_tokens_owner());
         context.attached_deposit(ntoy(35));
         testing_env!(context.build().clone());
         contract.create(
@@ -411,7 +412,7 @@ mod tests {
         contract.on_lockup_create(
             lockup_account(),
             ntoy(30).into(),
-            String::from(account_tokens_owner()),
+            account_tokens_owner(),
         );
     }
 }
