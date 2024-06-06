@@ -239,25 +239,26 @@ mod tests {
     use std::convert::TryInto;
 
     use unc_sdk::{testing_env, MockedBlockchain, PromiseResult, VMContext};
+    use unc_sdk::test_utils::VMContextBuilder;
 
     use test_utils::*;
 
     use super::*;
+    use unc_primitives_core::config::ViewConfig;
 
     mod test_utils;
-
-    pub type AccountId = String;
 
     const SALT: [u8; 3] = [1, 2, 3];
 
     fn basic_context() -> VMContext {
-        get_context(
-            system_account(),
-            to_atto(LOCKUP_UNC),
-            0,
-            to_ts(GENESIS_TIME_IN_DAYS),
-            false,
-        )
+        VMContextBuilder::new()
+            .current_account_id(lockup_account())
+            .predecessor_account_id(system_account())
+            .account_balance(to_atto(LOCKUP_UNC))
+            .account_locked_balance(0)
+            .block_timestamp(to_ts(GENESIS_TIME_IN_DAYS))
+            .is_view(false)
+            .build()
     }
 
     fn new_vesting_schedule(offset_in_days: u64) -> VestingSchedule {
@@ -345,7 +346,7 @@ mod tests {
     fn test_lockup_only_basic() {
         let (mut context, contract) = lockup_only_setup();
         // Checking initial values at genesis time
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
 
         assert_eq!(contract.get_owners_balance().0, 0);
@@ -529,7 +530,7 @@ mod tests {
         context.predecessor_account_id = account_owner();
         context.signer_account_id = account_owner();
         context.signer_account_pk = public_key(1).try_into().unwrap();
-        context.is_view = false;
+        context.view_config = None;
         testing_env!(context.clone());
 
         contract.transfer(to_atto(100).into(), non_owner());
@@ -540,7 +541,7 @@ mod tests {
         let mut context = basic_context();
         testing_env!(context.clone());
         let mut contract = new_contract(false, None, None, false);
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert!(!contract.are_transfers_enabled());
 
@@ -548,7 +549,7 @@ mod tests {
         context.predecessor_account_id = account_owner();
         context.signer_account_id = account_owner();
         context.signer_account_pk = public_key(1).try_into().unwrap();
-        context.is_view = false;
+        context.view_config = None;
         testing_env!(context.clone());
 
         contract.check_transfers_vote();
@@ -560,7 +561,7 @@ mod tests {
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         assert!(contract.on_get_result_from_transfer_poll(poll_result));
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         // Not unlocked yet
         assert_eq!(contract.get_owners_balance().0, 0);
@@ -575,7 +576,7 @@ mod tests {
             to_atto(LOCKUP_UNC).into()
         );
 
-        context.is_view = false;
+        context.view_config = None;
         context.predecessor_account_id = account_owner();
         testing_env!(context.clone());
         contract.transfer(to_atto(100).into(), non_owner());
@@ -586,7 +587,7 @@ mod tests {
         let mut context = basic_context();
         testing_env!(context.clone());
         let mut contract = new_contract(false, None, None, false);
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert!(!contract.are_transfers_enabled());
 
@@ -594,7 +595,7 @@ mod tests {
         context.predecessor_account_id = account_owner();
         context.signer_account_id = account_owner();
         context.signer_account_pk = public_key(1).try_into().unwrap();
-        context.is_view = false;
+        context.view_config = None;
         testing_env!(context.clone());
 
         contract.check_transfers_vote();
@@ -606,7 +607,7 @@ mod tests {
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         assert!(!contract.on_get_result_from_transfer_poll(poll_result));
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         // Not enabled
         assert!(!contract.are_transfers_enabled());
@@ -616,14 +617,14 @@ mod tests {
     fn test_lockup_only_transfer_call_by_owner() {
         let (mut context, mut contract) = lockup_only_setup();
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR + 1);
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_almost_eq(contract.get_owners_balance().0, to_atto(LOCKUP_UNC));
 
         context.predecessor_account_id = account_owner();
         context.signer_account_id = account_owner();
         context.signer_account_pk = public_key(1).try_into().unwrap();
-        context.is_view = false;
+        context.view_config = None;
         testing_env!(context.clone());
 
         assert_eq!(env::account_balance(), to_atto(LOCKUP_UNC));
@@ -663,11 +664,11 @@ mod tests {
         );
         contract.on_whitelist_is_whitelisted(true, staking_pool.clone());
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_staking_pool_account_id(), Some(staking_pool));
         assert_eq!(contract.get_known_deposited_balance().0, 0);
-        context.is_view = false;
+        context.view_config = None;
 
         // Deposit to the staking_pool
         let amount = to_atto(LOCKUP_UNC - 100);
@@ -680,10 +681,10 @@ mod tests {
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         contract.on_staking_pool_deposit(amount.into());
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_known_deposited_balance().0, amount);
-        context.is_view = false;
+        context.view_config = None;
 
         // Staking on the staking pool
         context.predecessor_account_id = account_owner();
@@ -713,10 +714,10 @@ mod tests {
         context.predecessor_account_id = lockup_account();
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         contract.on_staking_pool_withdraw(unstake_amount.into());
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_known_deposited_balance().0, 0);
-        context.is_view = false;
+        context.view_config = None;
 
         // Unselecting staking pool
         context.predecessor_account_id = account_owner();
@@ -765,12 +766,12 @@ mod tests {
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         contract.on_staking_pool_stake(amount.into());
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, 0);
         assert_eq!(contract.get_liquid_owners_balance().0, 0);
         assert_eq!(contract.get_known_deposited_balance().0, amount);
-        context.is_view = false;
+        context.view_config = None;
 
         // Assuming there are 20 UNC tokens in rewards. Refreshing balance.
         let total_balance = amount + to_atto(20);
@@ -783,12 +784,12 @@ mod tests {
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         contract.on_get_account_total_balance(total_balance.into());
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_known_deposited_balance().0, total_balance);
         assert_eq!(contract.get_owners_balance().0, to_atto(20));
         assert_eq!(contract.get_liquid_owners_balance().0, to_atto(20));
-        context.is_view = false;
+        context.view_config = None;
 
         // Withdrawing these tokens
         context.predecessor_account_id = account_owner();
@@ -797,12 +798,12 @@ mod tests {
         contract.transfer(transfer_amount.into(), non_owner());
         context.account_balance = env::account_balance();
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_known_deposited_balance().0, total_balance);
         assert_eq!(contract.get_owners_balance().0, to_atto(5));
         assert_eq!(contract.get_liquid_owners_balance().0, to_atto(5));
-        context.is_view = false;
+        context.view_config = None;
     }
 
     #[test]
@@ -912,10 +913,10 @@ mod tests {
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR + 1);
 
         let lockup_amount = to_atto(LOCKUP_UNC);
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, lockup_amount);
-        context.is_view = false;
+        context.view_config = None;
 
         // Selecting staking pool
         let staking_pool = "staking_pool".to_string();
@@ -943,7 +944,7 @@ mod tests {
             context.predecessor_account_id = lockup_account();
             testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
             contract.on_staking_pool_deposit(amount.into());
-            context.is_view = true;
+            context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
             testing_env!(context.clone());
             assert_eq!(contract.get_known_deposited_balance().0, total_amount);
             assert_eq!(contract.get_owners_balance().0, lockup_amount);
@@ -951,7 +952,7 @@ mod tests {
                 contract.get_liquid_owners_balance().0,
                 lockup_amount - total_amount - MIN_BALANCE_FOR_STORAGE
             );
-            context.is_view = false;
+            context.view_config = None;
         }
 
         // Withdrawing from the staking_pool. Plus one extra time as a reward
@@ -970,7 +971,7 @@ mod tests {
             context.predecessor_account_id = lockup_account();
             testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
             contract.on_staking_pool_withdraw(amount.into());
-            context.is_view = true;
+            context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
             testing_env!(context.clone());
             assert_eq!(
                 contract.get_known_deposited_balance().0,
@@ -984,7 +985,7 @@ mod tests {
                 contract.get_liquid_owners_balance().0,
                 lockup_amount - total_amount + total_withdrawn_amount - MIN_BALANCE_FOR_STORAGE
             );
-            context.is_view = false;
+            context.view_config = None;
         }
     }
 
@@ -1005,7 +1006,7 @@ mod tests {
             None,
         );
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, 0);
         assert_eq!(contract.get_liquid_owners_balance().0, 0);
@@ -1052,7 +1053,7 @@ mod tests {
             None,
         );
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         context.block_timestamp = to_ts(GENESIS_TIME_IN_DAYS + YEAR);
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, to_atto(1000));
@@ -1091,7 +1092,7 @@ mod tests {
             Some(account_foundation()),
         );
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(
             contract.get_vesting_information(),
@@ -1138,13 +1139,13 @@ mod tests {
         );
 
         // Terminating
-        context.is_view = false;
+        context.view_config = None;
         context.predecessor_account_id = account_foundation();
         context.signer_account_pk = public_key(3).into();
         testing_env!(context.clone());
         contract.terminate_vesting(None);
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(
             contract.get_vesting_information(),
@@ -1171,7 +1172,7 @@ mod tests {
         );
 
         // Withdrawing
-        context.is_view = false;
+        context.view_config = None;
         testing_env!(context.clone());
         let receiver_id = "unc".to_string();
         contract.termination_withdraw(receiver_id.clone());
@@ -1181,7 +1182,7 @@ mod tests {
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         contract.on_withdraw_unvested_amount(to_atto(250).into(), receiver_id);
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, to_atto(750));
         assert_eq!(
@@ -1203,7 +1204,7 @@ mod tests {
         testing_env!(context.clone());
         let contract = new_contract(true, None, Some(to_nanos(4 * YEAR).into()), false);
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, 0);
         assert_eq!(contract.get_liquid_owners_balance().0, 0);
@@ -1267,7 +1268,7 @@ mod tests {
             0,
         );
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, 0);
         assert_eq!(contract.get_liquid_owners_balance().0, 0);
@@ -1372,7 +1373,7 @@ mod tests {
             Some(account_foundation()),
         );
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, 0);
         assert_eq!(contract.get_liquid_owners_balance().0, 0);
@@ -1485,7 +1486,7 @@ mod tests {
             0,
         );
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, 0);
         assert_eq!(contract.get_liquid_owners_balance().0, 0);
@@ -1518,7 +1519,7 @@ mod tests {
         );
 
         // Terminating
-        context.is_view = false;
+        context.view_config = None;
         context.predecessor_account_id = account_foundation();
         context.signer_account_pk = public_key(3).into();
         testing_env!(context.clone());
@@ -1527,7 +1528,7 @@ mod tests {
             salt: SALT.to_vec().into(),
         }));
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, to_atto(500));
         assert_eq!(contract.get_liquid_owners_balance().0, to_atto(500));
@@ -1553,7 +1554,7 @@ mod tests {
         );
 
         // Withdrawing
-        context.is_view = false;
+        context.view_config = None;
         testing_env!(context.clone());
         let receiver_id = "unc".to_string();
         contract.termination_withdraw(receiver_id.clone());
@@ -1563,7 +1564,7 @@ mod tests {
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         contract.on_withdraw_unvested_amount(to_atto(250).into(), receiver_id);
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, to_atto(500));
         assert_eq!(contract.get_liquid_owners_balance().0, to_atto(500));
@@ -1603,7 +1604,7 @@ mod tests {
         let vesting_schedule = new_vesting_schedule(YEAR);
         let mut contract = new_contract(true, Some(vesting_schedule.clone()), None, true);
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(
             contract.get_vesting_information(),
@@ -1631,7 +1632,7 @@ mod tests {
         );
 
         // Terminating
-        context.is_view = false;
+        context.view_config = None;
         context.predecessor_account_id = account_foundation();
         context.signer_account_pk = public_key(3).into();
         testing_env!(context.clone());
@@ -1640,7 +1641,7 @@ mod tests {
             salt: SALT.to_vec().into(),
         }));
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(
             contract.get_vesting_information(),
@@ -1673,7 +1674,7 @@ mod tests {
         );
 
         // Withdrawing
-        context.is_view = false;
+        context.view_config = None;
         testing_env!(context.clone());
         let receiver_id = account_foundation();
         contract.termination_withdraw(receiver_id.clone());
@@ -1687,7 +1688,7 @@ mod tests {
             receiver_id,
         );
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(
             contract.get_unvested_amount(vesting_schedule.clone()).0,
@@ -1723,7 +1724,7 @@ mod tests {
         let vesting_schedule = new_vesting_schedule(0);
         let mut contract = new_contract(true, Some(vesting_schedule.clone()), None, true);
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, to_atto(0));
         assert_eq!(contract.get_liquid_owners_balance().0, to_atto(0));
@@ -1738,7 +1739,7 @@ mod tests {
                 .0,
             to_atto(250)
         );
-        context.is_view = false;
+        context.view_config = None;
 
         context.predecessor_account_id = account_owner();
         context.signer_account_pk = public_key(2).into();
@@ -1776,7 +1777,7 @@ mod tests {
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         contract.on_staking_pool_stake(stake_amount.into());
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, to_atto(0));
         assert_eq!(contract.get_liquid_owners_balance().0, to_atto(0));
@@ -1792,10 +1793,9 @@ mod tests {
             contract.get_unvested_amount(vesting_schedule.clone()).0,
             to_atto(750)
         );
-        context.is_view = false;
 
         // Foundation terminating
-        context.is_view = false;
+        context.view_config = None;
         context.predecessor_account_id = account_foundation();
         context.signer_account_pk = public_key(3).into();
         testing_env!(context.clone());
@@ -1804,7 +1804,7 @@ mod tests {
             salt: SALT.to_vec().into(),
         }));
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, to_atto(0));
         assert_eq!(contract.get_liquid_owners_balance().0, to_atto(0));
@@ -1830,7 +1830,7 @@ mod tests {
         );
 
         // Proceeding with unstaking from the pool due to termination.
-        context.is_view = false;
+        context.view_config = None;
         testing_env!(context.clone());
         contract.termination_prepare_to_withdraw();
         assert_eq!(
@@ -1849,7 +1849,7 @@ mod tests {
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         contract.on_staking_pool_unstake_for_termination(stake_amount_with_rewards.into());
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(
             contract.get_termination_status(),
@@ -1857,7 +1857,7 @@ mod tests {
         );
 
         // Proceeding with withdrawing from the pool due to termination.
-        context.is_view = false;
+        context.view_config = None;
         context.predecessor_account_id = account_foundation();
         testing_env!(context.clone());
         contract.termination_prepare_to_withdraw();
@@ -1882,7 +1882,7 @@ mod tests {
         contract
             .on_staking_pool_withdraw_for_termination(withdraw_amount_with_extra_rewards.into());
 
-        context.is_view = true;
+            context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, to_atto(51));
         assert_eq!(contract.get_liquid_owners_balance().0, to_atto(51));
@@ -1906,7 +1906,7 @@ mod tests {
         );
 
         // Withdrawing
-        context.is_view = false;
+        context.view_config = None;
         context.predecessor_account_id = account_foundation();
         testing_env!(context.clone());
         let receiver_id = account_foundation();
@@ -1918,7 +1918,7 @@ mod tests {
         testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
         contract.on_withdraw_unvested_amount(to_atto(750).into(), receiver_id);
 
-        context.is_view = true;
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
         assert_eq!(contract.get_owners_balance().0, to_atto(51));
         assert_eq!(contract.get_liquid_owners_balance().0, to_atto(51));

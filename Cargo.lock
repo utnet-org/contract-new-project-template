@@ -1119,7 +1119,7 @@ version = "0.1.0"
 dependencies = [
  "unc-contract-standards",
  "unc-sdk",
- "unc-sys 2.0.6",
+ "unc-sys",
 ]
 
 [[package]]
@@ -3105,6 +3105,7 @@ dependencies = [
  "quickcheck",
  "quickcheck_macros",
  "uint",
+ "unc-primitives-core",
  "unc-sdk",
 ]
 
@@ -4400,15 +4401,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rand_xorshift"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d25bf25ec5ae4a3f1b92f929810509a2f53d7dca2f50b794ff57e3face536c8f"
-dependencies = [
- "rand_core 0.6.4",
-]
-
-[[package]]
 name = "rayon"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5428,24 +5420,6 @@ dependencies = [
  "unc-crypto",
  "unc-primitives",
  "unc-sdk",
-]
-
-[[package]]
-name = "state-manipulation"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "arbitrary",
- "base64 0.13.1",
- "borsh 1.3.1",
- "rand 0.8.5",
- "rand_xorshift",
- "serde",
- "serde_json",
- "tokio",
- "unc-sys 0.1.0",
- "utility-workspaces",
- "wee_alloc",
 ]
 
 [[package]]
@@ -6523,7 +6497,7 @@ dependencies = [
  "unc-primitives",
  "unc-primitives-core",
  "unc-sdk-macros",
- "unc-sys 2.0.6",
+ "unc-sys",
  "unc-token",
  "unc-vm-runner",
  "wee_alloc",
@@ -6551,12 +6525,6 @@ name = "unc-stdx"
 version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c90e798e06d502656ae3ce8a302b157100d424d2e6959f218d52918928192a4"
-
-[[package]]
-name = "unc-sys"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91664f4cb44f7d4f8fc9cd1d50aa50f04be8a3aa75a1e487f1b15fe9b9481c2c"
 
 [[package]]
 name = "unc-sys"

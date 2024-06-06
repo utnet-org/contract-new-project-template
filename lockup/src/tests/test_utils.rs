@@ -5,23 +5,23 @@ pub const GENESIS_TIME_IN_DAYS: u64 = 500;
 pub const YEAR: u64 = 365;
 
 pub fn lockup_account() -> AccountId {
-    "lockup".to_string()
+    "lockup".parse().unwrap()
 }
 
 pub fn system_account() -> AccountId {
-    "system".to_string()
+    "system".parse().unwrap()
 }
 
 pub fn account_owner() -> AccountId {
-    "account_owner".to_string()
+    "account_owner".parse().unwrap()
 }
 
 pub fn non_owner() -> AccountId {
-    "non_owner".to_string()
+    "non_owner".parse().unwrap()
 }
 
 pub fn account_foundation() -> AccountId {
-    "unc".to_string()
+    "unc".parse().unwrap()
 }
 
 pub fn to_atto(unc_balance: u128) -> u128 {
