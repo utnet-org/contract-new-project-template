@@ -214,36 +214,40 @@ mod tests {
 
     #[test]
     fn test_get_factory_vars() {
-        let mut context = VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(account_factory())
-            .predecessor_account_id(account_unc());
-        testing_env!(context.build().clone());
+            .predecessor_account_id(account_unc())
+            .build());
 
         let contract = LockupFactory::new(
             whitelist_account_id(),
             foundation_account_id(),
         );
 
-        context.is_view(true);
-        testing_env!(context.build().clone());
-        assert_eq!(contract.get_min_attached_balance().0, UncToken::from_attounc(MIN_ATTACHED_BALANCE));
+        testing_env!(VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_unc())
+            .is_view(true)
+            .build());
+
+        assert_eq!(contract.get_min_attached_balance().0, MIN_ATTACHED_BALANCE);
         assert_eq!(
             contract.get_foundation_account_id(),
-            foundation_account_id().to_string()
+            foundation_account_id()
         );
         println!("{}", contract.get_lockup_master_account_id());
         assert_eq!(
             contract.get_lockup_master_account_id(),
-            lockup_master_account_id().to_string()
+            lockup_master_account_id()
         );
     }
 
     #[test]
     fn test_create_lockup_success() {
-        let mut context = VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(account_factory())
-            .predecessor_account_id(account_unc());
-        testing_env!(context.build().clone());
+            .predecessor_account_id(account_unc())
+            .build());
 
         let mut contract = LockupFactory::new(
             whitelist_account_id(),
@@ -253,15 +257,23 @@ mod tests {
         const LOCKUP_DURATION: u64 = 63036000000000000; /* 24 months */
         let lockup_duration: WrappedTimestamp = LOCKUP_DURATION.into();
 
-        context.is_view(false);
-        context.predecessor_account_id(account_tokens_owner());
-        context.attached_deposit = ntoy(35);
-        testing_env!(context.build().clone());
+        testing_env!(VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_tokens_owner())
+            .attached_deposit(UncToken::from_attounc(ntoy(35)))
+            .is_view(false)
+            .build());
+
         contract.create(account_tokens_owner(), lockup_duration, None, None, None, None);
 
-        context.predecessor_account_id(account_factory());
-        context.attached_deposit(ntoy(0));
-        testing_env_with_promise_results(context.build().clone(), PromiseResult::Successful(vec![]));
+        let context = VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_factory())
+            .attached_deposit(UncToken::from_attounc(ntoy(0)))
+            .is_view(false)
+            .build();
+
+        testing_env_with_promise_results(context, PromiseResult::Successful(vec![]));
         println!("{}", lockup_account());
         contract.on_lockup_create(
             lockup_account(),
@@ -272,10 +284,10 @@ mod tests {
 
     #[test]
     fn test_create_lockup_with_vesting_success() {
-        let mut context = VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(account_factory())
-            .predecessor_account_id(account_unc());
-        testing_env!(context.build().clone());
+            .predecessor_account_id(account_unc())
+            .build());
 
         let mut contract = LockupFactory::new(
             whitelist_account_id(),
@@ -297,10 +309,13 @@ mod tests {
             )
         });
 
-        context.is_view(false);
-        context.predecessor_account_id(account_tokens_owner());
-        context.attached_deposit(ntoy(35));
-        testing_env!(context.build().clone());
+        testing_env!(VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_tokens_owner())
+            .attached_deposit(UncToken::from_attounc(ntoy(35)))
+            .is_view(false)
+            .build());
+
         contract.create(
             account_tokens_owner(),
             lockup_duration,
@@ -310,9 +325,13 @@ mod tests {
             None,
         );
 
-        context.predecessor_account_id(account_factory());
-        context.attached_deposit(ntoy(0));
-        testing_env_with_promise_results(context.build().clone(), PromiseResult::Successful(vec![]));
+        let context = VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_factory())
+            .attached_deposit(UncToken::from_attounc(ntoy(0)))
+            .build();
+
+        testing_env_with_promise_results(context, PromiseResult::Successful(vec![]));
         contract.on_lockup_create(
             lockup_account(),
             ntoy(30).into(),
@@ -323,10 +342,10 @@ mod tests {
     #[test]
     #[should_panic(expected = "Not enough attached deposit")]
     fn test_create_lockup_not_enough_deposit() {
-        let mut context = VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(account_factory())
-            .predecessor_account_id(account_unc());
-        testing_env!(context.build().clone());
+            .predecessor_account_id(account_unc())
+            .build());
 
         let mut contract = LockupFactory::new(
             whitelist_account_id(),
@@ -336,19 +355,22 @@ mod tests {
         const LOCKUP_DURATION: u64 = 63036000000000000; /* 24 months */
         let lockup_duration: WrappedTimestamp = LOCKUP_DURATION.into();
 
-        context.is_view(false);
-        context.predecessor_account_id(account_tokens_owner());
-        context.attached_deposit(ntoy(1)); /* Storage reduced to 3.5 UNC */
-        testing_env!(context.build().clone());
+        testing_env!(VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_tokens_owner())
+            .attached_deposit(UncToken::from_attounc(ntoy(1))) /* Storage reduced to 3.5 UNC */
+            .is_view(false)
+            .build());
+
         contract.create(account_tokens_owner(), lockup_duration, None, None, None, None);
     }
 
     #[test]
     fn test_create_lockup_rollback() {
-        let mut context = VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(account_factory())
-            .predecessor_account_id(account_unc());
-        testing_env!(context.build().clone());
+            .predecessor_account_id(account_unc())
+            .build());
 
         let mut contract = LockupFactory::new(
             whitelist_account_id(),
@@ -358,16 +380,25 @@ mod tests {
         const LOCKUP_DURATION: u64 = 63036000000000000; /* 24 months */
         let lockup_duration: WrappedTimestamp = LOCKUP_DURATION.into();
 
-        context.is_view(false);
-        context.predecessor_account_id(account_tokens_owner());
-        context.attached_deposit(UncToken::from_attounc(ntoy(35)));
-        testing_env!(context.build().clone());
+        let context = VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_tokens_owner())
+            .attached_deposit(UncToken::from_attounc(ntoy(35)))
+            .is_view(false)
+            .build();
+        testing_env!(context.clone());
+
         contract.create(account_tokens_owner(), lockup_duration, None, None, None, None);
 
-        context.predecessor_account_id(account_factory());
-        context.attached_deposit(ntoy(0));
-        context.account_balance(context.build().account_balance.saturating_add(UncToken::from_attounc(ntoy(35))));
-        testing_env_with_promise_results(context.clone(), PromiseResult::Failed);
+        let context = VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_factory())
+            .attached_deposit(UncToken::from_attounc(ntoy(0)))
+            .account_balance(context.account_balance.saturating_add(UncToken::from_attounc(ntoy(35))))
+            .is_view(false)
+            .build();
+
+        testing_env_with_promise_results(context, PromiseResult::Failed);
         let res = contract.on_lockup_create(
             lockup_account(),
             ntoy(35).into(),
@@ -382,20 +413,23 @@ mod tests {
 
     #[test]
     fn test_create_lockup_with_custom_whitelist_success() {
-        let mut context = VMContextBuilder::new()
+        testing_env!(VMContextBuilder::new()
             .current_account_id(account_factory())
-            .predecessor_account_id(account_unc());
-        testing_env!(context.build().clone());
+            .predecessor_account_id(account_unc())
+            .build());
 
         let mut contract = LockupFactory::new(whitelist_account_id(), foundation_account_id());
 
         const LOCKUP_DURATION: u64 = 63036000000000000; /* 24 months */
         let lockup_duration: WrappedTimestamp = LOCKUP_DURATION.into();
 
-        context.is_view(false);
-        context.predecessor_account_id(account_tokens_owner());
-        context.attached_deposit(ntoy(35));
-        testing_env!(context.build().clone());
+        testing_env!(VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_tokens_owner())
+            .attached_deposit(UncToken::from_attounc(ntoy(35)))
+            .is_view(false)
+            .build());
+
         contract.create(
             account_tokens_owner(),
             lockup_duration,
@@ -405,9 +439,17 @@ mod tests {
             Some(custom_whitelist_account_id()),
         );
 
-        context.predecessor_account_id(account_factory());
-        context.attached_deposit(ntoy(0));
-        testing_env_with_promise_results(context.build().clone(), PromiseResult::Successful(vec![]));
+        testing_env_with_promise_results(
+    VMContextBuilder::new()
+            .current_account_id(account_factory())
+            .predecessor_account_id(account_factory())
+            .attached_deposit(UncToken::from_attounc(ntoy(0)))
+            .is_view(false)
+            .build(),
+
+            PromiseResult::Successful(vec![])
+        );
+
         println!("{}", lockup_account());
         contract.on_lockup_create(
             lockup_account(),

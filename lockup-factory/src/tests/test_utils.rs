@@ -23,15 +23,15 @@ pub fn account_factory() -> AccountId {
 }
 
 pub fn lockup_master_account_id() -> AccountId {
-    "lockup.testnet".parse().unwrap()
+    "lockup".parse().unwrap()
 }
 
 pub fn whitelist_account_id() -> AccountId {
-    "whitelist.testnet".parse().unwrap()
+    "whitelist".parse().unwrap()
 }
 
 pub fn custom_whitelist_account_id() -> AccountId {
-    "custom.whitelist.testnet".parse().unwrap()
+    "custom.whitelist".parse().unwrap()
 }
 
 pub fn foundation_account_id() -> AccountId {
@@ -39,7 +39,7 @@ pub fn foundation_account_id() -> AccountId {
 }
 
 pub fn account_tokens_owner() -> AccountId {
-    "tokenowner.testnet".parse().unwrap()
+    "tokenowner".parse().unwrap()
 }
 
 pub fn ntoy(unc_amount: u128) -> u128 {
