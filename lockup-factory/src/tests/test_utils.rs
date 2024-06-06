@@ -14,31 +14,31 @@ pub fn to_nanos(num_days: u64) -> u64 {
 }
 
 pub fn account_unc() -> AccountId {
-    "testnet".to_string()
+    "unc".parse().unwrap()
 }
 
 pub fn account_factory() -> AccountId {
-    "lockup.testnet".to_string()
+    "lockup".parse().unwrap()
 }
 
 pub fn lockup_master_account_id() -> AccountId {
-    "lockup.testnet".try_into().unwrap()
+    "lockup.testnet".parse().unwrap()
 }
 
 pub fn whitelist_account_id() -> AccountId {
-    "whitelist.testnet".try_into().unwrap()
+    "whitelist.testnet".parse().unwrap()
 }
 
 pub fn custom_whitelist_account_id() -> AccountId {
-    "custom.whitelist.testnet".try_into().unwrap()
+    "custom.whitelist.testnet"parse().unwrap()
 }
 
 pub fn foundation_account_id() -> AccountId {
-    "testnet".try_into().unwrap()
+    "testnet".parse().unwrap()
 }
 
 pub fn account_tokens_owner() -> AccountId {
-    "tokenowner.testnet".try_into().unwrap()
+    "tokenowner.testnet".parse().unwrap()
 }
 
 pub fn ntoy(unc_amount: Balance) -> Balance {
@@ -51,6 +51,6 @@ pub fn lockup_account() -> AccountId {
         "{}.{}",
         hex::encode(&byte_slice[..20]),
         &lockup_master_account_id().as_ref().to_string()
-    );
+    ).parse().unwrap();
     return lockup_account_id;
 }
