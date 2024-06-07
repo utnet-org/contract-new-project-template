@@ -1,3 +1,5 @@
+#![cfg(not(test))]
+
 use std::cell::RefCell;
 use std::rc::Rc;
 use unc_sdk::serde_json::json;

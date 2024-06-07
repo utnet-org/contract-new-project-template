@@ -1,12 +1,10 @@
 use std::collections::HashSet;
 use std::convert::TryInto;
 
-use unc_sdk::borsh::{BorshDeserialize, BorshSerialize};
-use unc_sdk::store::{LookupMap, TreeMap, Vector};
+use unc_sdk::store::{LookupMap, IterableMap, IterableSet};
 use unc_sdk::json_types::{Base64VecU8, U128, U64};
-use unc_sdk::serde::{Deserialize, Serialize};
 use unc_sdk::{
-    env, serde_json, unc_bindgen, UncSchema, AccountId, Allowance, BorshStorageKey, Gas, PanicOnDefault, Promise, PromiseOrValue, PublicKey, UncToken
+    env, serde_json, unc, AccountId, Allowance, Gas, BorshStorageKey, PanicOnDefault, Promise, PromiseOrValue, PublicKey, UncToken
 };
 
 /// Unlimited allowance for multisig keys.
@@ -24,10 +22,8 @@ const MULTISIG_METHOD_NAMES: &str = "add_request,delete_request,confirm,add_and_
 pub type RequestId = u32;
 
 /// Permissions for function call access key.
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, UncSchema)]
 #[cfg_attr(test, derive(PartialEq, Clone))]
-#[borsh(crate = "unc_sdk::borsh")]
-#[serde(crate = "unc_sdk::serde")]
+#[unc(serializers=[borsh, json])]
 pub struct FunctionCallPermission {
     allowance: Option<U128>,
     receiver_id: AccountId,
@@ -35,10 +31,8 @@ pub struct FunctionCallPermission {
 }
 
 /// Lowest level action that can be performed by the multisig contract.
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, UncSchema)]
 #[cfg_attr(test, derive(PartialEq, Clone))]
-#[borsh(crate = "unc_sdk::borsh")]
-#[serde(tag = "type", crate = "unc_sdk::serde")]
+#[unc(serializers=[borsh, json])]
 pub enum MultiSigRequestAction {
     /// Transfers given amount to receiver.
     Transfer { amount: U128 },
@@ -74,20 +68,17 @@ pub enum MultiSigRequestAction {
 }
 
 /// The request the user makes specifying the receiving account and actions they want to execute (1 tx)
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, UncSchema)]
 #[cfg_attr(test, derive(PartialEq, Clone))]
-#[borsh(crate = "unc_sdk::borsh")]
-#[serde(crate = "unc_sdk::serde")]
+#[unc(serializers=[borsh, json])]
 pub struct MultiSigRequest {
     receiver_id: AccountId,
     actions: Vec<MultiSigRequestAction>,
 }
 
 /// An internal request wrapped with the signer_pk and added timestamp to determine num_requests_pk and prevent against malicious key holder gas attacks
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[cfg_attr(test, derive(PartialEq, Clone))]
-#[borsh(crate = "unc_sdk::borsh")]
-#[serde(crate = "unc_sdk::serde")]
+
+#[unc(serializers=[borsh, json])]
 pub struct MultiSigRequestWithSigner {
     request: MultiSigRequest,
     member: MultisigMember,
@@ -95,9 +86,8 @@ pub struct MultiSigRequestWithSigner {
 }
 
 /// Represents member of the multsig: either account or access key to given account.
-#[derive(Debug, BorshDeserialize, BorshSerialize, UncSchema, Clone, PartialEq, Serialize, Deserialize)]
-#[borsh(crate = "unc_sdk::borsh")]
-#[serde(crate = "unc_sdk::serde", untagged)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[unc(serializers=[borsh, json])]
 pub enum MultisigMember {
     AccessKey { public_key: PublicKey },
     Account { account_id: AccountId },
@@ -109,8 +99,8 @@ impl ToString for MultisigMember {
     }
 }
 
-#[derive(BorshStorageKey, BorshSerialize)]
-#[borsh(crate = "unc_sdk::borsh")]
+#[derive(BorshStorageKey)]
+#[unc(serializers=[borsh, json])]
 pub enum StorageKeys {
     Members,
     Requests,
@@ -118,18 +108,17 @@ pub enum StorageKeys {
     NumRequestsPk,
 }
 
-#[unc_bindgen]
-#[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
-#[borsh(crate = "unc_sdk::borsh")]
+#[derive(PanicOnDefault)]
+#[unc(contract_state)]
 pub struct MultiSigContract {
     /// Fix: Members of the multisig. use Set instead of Vec to avoid duplicates.
-    members: Vector<MultisigMember>,
+    members: IterableSet<MultisigMember>,
     /// Number of confirmations required.
     num_confirmations: u32,
     /// Latest request nonce.
     request_nonce: RequestId,
     /// All active requests.
-    requests: TreeMap<RequestId, MultiSigRequestWithSigner>,
+    requests: IterableMap<RequestId, MultiSigRequestWithSigner>,
     /// All confirmations for active requests.
     confirmations: LookupMap<RequestId, HashSet<String>>,
     /// Number of requests per member.
@@ -145,7 +134,7 @@ fn assert(condition: bool, error: &str) {
     }
 }
 
-#[unc_bindgen]
+#[unc]
 impl MultiSigContract {
     /// Initialize multisig contract.
     /// @params members: list of {"account_id": "name"} or {"public_key": "key"} members.
@@ -157,10 +146,10 @@ impl MultiSigContract {
             "Members list must be equal or larger than number of confirmations",
         );
         let mut multisig = Self {
-            members: Vector::new(StorageKeys::Members),
+            members: IterableSet::new(StorageKeys::Members),
             num_confirmations,
             request_nonce: 0,
-            requests: TreeMap::new(StorageKeys::Requests),
+            requests: IterableMap::new(StorageKeys::Requests),
             confirmations: LookupMap::new(StorageKeys::Confirmations),
             num_requests_pk: LookupMap::new(StorageKeys::NumRequestsPk),
             active_requests_limit: ACTIVE_REQUESTS_LIMIT,
@@ -349,7 +338,7 @@ impl MultiSigContract {
 
     /// Add member to the list. Adds access key if member is key based.
     fn add_member(&mut self, promise: Promise, member: MultisigMember) -> Promise {
-        self.members.push(member.clone().into());
+        self.members.insert(member.clone().into());
         match member {
             MultisigMember::AccessKey { public_key } => promise.add_access_key_allowance(
                 public_key.into(),
@@ -381,14 +370,7 @@ impl MultiSigContract {
         // remove num_requests_pk entry for member
         self.num_requests_pk.remove(&member.to_string());
 
-        // convert std vec to sdk store vector
-        let members: Vec<MultisigMember> = self.members.into_iter().cloned().collect();
-        self.members.clear();
-        for v in members.into_iter() {
-            if v != member {
-               self.members.push(v.into());
-            }
-        }
+        self.members.remove(&member);
 
         match member {
             MultisigMember::AccessKey { public_key } => promise.delete_key(public_key.into()),
@@ -472,7 +454,7 @@ impl MultiSigContract {
     }
 
     pub fn get_num_requests_per_member(&self, member: MultisigMember) -> u32 {
-        *self.num_requests_pk.get(&member.to_string()).unwrap_or(&0)
+        self.num_requests_pk.get(&member.to_string()).unwrap_or(&0).clone()
     }
 
     pub fn list_request_ids(&self) -> Vec<RequestId> {
@@ -608,7 +590,7 @@ mod tests {
             }],
         };
         let request_id = c.add_request(request.clone());
-        assert_eq!(c.get_request(request_id), request);
+        assert_eq!(c.get_request(request_id).clone(), request);
         assert_eq!(c.list_request_ids(), vec![request_id]);
         c.confirm(request_id);
         assert_eq!(c.requests.len(), 1);
@@ -649,7 +631,7 @@ mod tests {
             }],
         };
         let request_id = c.add_request_and_confirm(request.clone());
-        assert_eq!(c.get_request(request_id), request);
+        assert_eq!(c.get_request(request_id).clone(), request);
         assert_eq!(c.list_request_ids(), vec![request_id]);
         // c.confirm(request_id);
         assert_eq!(c.requests.len(), 1);
@@ -673,14 +655,14 @@ mod tests {
 
     #[test]
     fn add_key_delete_key_storage_cleared() {
-        let amount = UncToken::from_attounc(1_000);
+        let amount = 1_000;
         testing_env!(context_with_key(
             PublicKey::from(
                 "ed25519:Eg2jtsiMrprn7zgKKUk79qM1hWhANsFyE6JSX4txLEuy"
                     .parse()
                     .unwrap()
             ),
-            amount
+            UncToken::from_attounc(amount)
         ));
         let mut c = MultiSigContract::new(members(), 1);
         let new_key: PublicKey = PublicKey::from(
@@ -707,7 +689,7 @@ mod tests {
                     .parse()
                     .unwrap()
             ),
-            amount
+            UncToken::from_attounc(amount)
         ));
         let request2 = MultiSigRequest {
             receiver_id: alice(),
@@ -743,7 +725,7 @@ mod tests {
         let amount = 1_000;
         testing_env!(context_with_key(
             PublicKey::try_from(Vec::from("Eg2jtsiMrprn7zgKKUk79qM1hWhANsFyE6JSX4txLEuy")).unwrap(),
-            amount
+            UncToken::from_attounc(amount)
         ));
         let mut c = MultiSigContract::new(members(), 1);
         let new_key: PublicKey =
@@ -767,7 +749,7 @@ mod tests {
         let amount = 1_000;
         testing_env!(context_with_key(
             PublicKey::try_from(TEST_KEY.to_vec()).unwrap(),
-            amount
+            UncToken::from_attounc(amount)
         ));
         let mut c = MultiSigContract::new(members(), 1);
         let request_id = c.add_request(MultiSigRequest {
@@ -786,7 +768,7 @@ mod tests {
         let amount = 1_000;
         testing_env!(context_with_key(
             PublicKey::try_from(TEST_KEY.to_vec()).unwrap(),
-            amount
+            UncToken::from_attounc(amount)
         ));
         let mut c = MultiSigContract::new(members(), 3);
         let request_id = c.add_request(MultiSigRequest {
@@ -808,7 +790,7 @@ mod tests {
         let amount = 1_000;
         testing_env!(context_with_key(
             PublicKey::try_from(TEST_KEY.to_vec()).unwrap(),
-            amount
+            UncToken::from_attounc(amount)
         ));
         let mut c = MultiSigContract::new(members(), 3);
         let request_id = c.add_request(MultiSigRequest {
@@ -825,7 +807,7 @@ mod tests {
         let amount = 1_000;
         testing_env!(context_with_key(
             PublicKey::try_from(TEST_KEY.to_vec()).unwrap(),
-            amount
+            UncToken::from_attounc(amount)
         ));
         let mut c = MultiSigContract::new(members(), 3);
         let request_id = c.add_request(MultiSigRequest {
@@ -837,7 +819,7 @@ mod tests {
         c.confirm(request_id);
         testing_env!(context_with_key_future(
             PublicKey::try_from(TEST_KEY.to_vec()).unwrap(),
-            amount
+            UncToken::from_attounc(amount)
         ));
         c.delete_request(request_id);
         assert_eq!(c.requests.len(), 0);
@@ -850,7 +832,7 @@ mod tests {
         let amount = 1_000;
         testing_env!(context_with_key(
             PublicKey::try_from(TEST_KEY.to_vec()).unwrap(),
-            amount
+            UncToken::from_attounc(amount)
         ));
         let mut c = MultiSigContract::new(members(), 3);
         let request_id = c.add_request(MultiSigRequest {
@@ -861,7 +843,7 @@ mod tests {
         });
         testing_env!(context_with_key(
             PublicKey::try_from(TEST_KEY.to_vec()).unwrap(),
-            amount
+            UncToken::from_attounc(amount)
         ));
         c.delete_request(request_id);
     }
@@ -872,7 +854,7 @@ mod tests {
         let amount = 1_000;
         testing_env!(context_with_key(
             PublicKey::try_from(TEST_KEY.to_vec()).unwrap(),
-            amount
+            UncToken::from_attounc(amount)
         ));
         let mut c = MultiSigContract::new(members(), 3);
         for _i in 0..16 {
@@ -890,7 +872,7 @@ mod tests {
     fn test_too_many_confirmations() {
         testing_env!(context_with_key(
             PublicKey::try_from(TEST_KEY.to_vec()).unwrap(),
-            1_000
+            UncToken::from_attounc(1_000u128)
         ));
         let _ = MultiSigContract::new(members(), 5);
     }

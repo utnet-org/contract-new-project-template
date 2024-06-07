@@ -3309,7 +3309,7 @@ name = "multisig"
 version = "0.1.0"
 dependencies = [
  "borsh 1.3.1",
- "unc-primitives-core",
+ "lazy_static",
  "unc-sdk",
 ]
 
@@ -6228,7 +6228,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9cd52d4b96d80bba758f7baae4e833fadc5548d76e75e040a3d292617ab7ab71"
 dependencies = [
  "borsh 1.3.1",
- "schemars",
  "serde",
 ]
 
@@ -6511,18 +6510,16 @@ dependencies = [
 
 [[package]]
 name = "unc-sdk"
-version = "2.0.9"
+version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2af6b451811731b6d0d34e48a3af6999b39f138d3b6827a981a0a2d32eed2c19"
+checksum = "4d51361621082ba79a031f251f8f02850993cd745e8113d275b42a1e98daca06"
 dependencies = [
  "base64 0.22.1",
  "borsh 1.3.1",
  "bs58 0.5.1",
  "once_cell",
- "schemars",
  "serde",
  "serde_json",
- "unc-abi",
  "unc-account-id",
  "unc-crypto",
  "unc-gas",
@@ -6538,9 +6535,9 @@ dependencies = [
 
 [[package]]
 name = "unc-sdk-macros"
-version = "2.0.9"
+version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "329b3fdfa1b561a4efb0320a2c3d469f35e4023f55a219d7a3ea668fa0250e68"
+checksum = "7535c1034775e2bd802c547e798f59aa9f4cdb5f9a2d7d6f419490feaff5ffda"
 dependencies = [
  "Inflector",
  "darling",
@@ -6561,9 +6558,9 @@ checksum = "0c90e798e06d502656ae3ce8a302b157100d424d2e6959f218d52918928192a4"
 
 [[package]]
 name = "unc-sys"
-version = "2.1.0"
+version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ca986e0d6f48ad0fdfcac9f618980dd56a954ada3e0a1507214cd239043f16e"
+checksum = "938e99e1cdcd081195969cb25173e845ac7d9bb5f56e272fde8241fd04343d49"
 
 [[package]]
 name = "unc-token"
@@ -6573,7 +6570,6 @@ checksum = "452da397f4ff70873fe4dbaf55e6ff2053216a2393f800d54857526ed961ada2"
 dependencies = [
  "borsh 1.3.1",
  "interactive-clap",
- "schemars",
  "serde",
 ]
 
