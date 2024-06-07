@@ -238,8 +238,8 @@ impl LockupContract {
 mod tests {
     use std::convert::TryInto;
 
-    use unc_sdk::{testing_env, PromiseResult, VMContext};
-    use unc_sdk::test_utils::{testing_env_with_promise_results, VMContextBuilder};
+    use unc_sdk::{test_vm_config, testing_env, PromiseResult, RuntimeFeesConfig, VMContext};
+    use unc_sdk::test_utils::VMContextBuilder;
 
     use test_utils::*;
 
@@ -558,7 +558,13 @@ mod tests {
         context.predecessor_account_id = lockup_account();
         // NOTE: Unit tests don't need to read the content of the promise result. So here we don't
         // have to pass serialized result from the transfer poll.
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         assert!(contract.on_get_result_from_transfer_poll(poll_result));
 
         context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
@@ -604,7 +610,13 @@ mod tests {
         // NOTE: Unit tests don't need to read the content of the promise result. So here we don't
         // have to pass serialized result from the transfer poll.
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         assert!(!contract.on_get_result_from_transfer_poll(poll_result));
 
         context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
@@ -658,9 +670,12 @@ mod tests {
         contract.select_staking_pool(staking_pool.clone());
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(
+        testing_env!(
             context.clone(),
-            PromiseResult::Successful(b"true".to_vec()),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(b"true".to_vec())],
         );
         contract.on_whitelist_is_whitelisted(true, staking_pool.clone());
 
@@ -679,7 +694,13 @@ mod tests {
         assert_eq!(context.account_balance, UncToken::from_attounc(to_atto(LOCKUP_UNC) - amount));
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_staking_pool_deposit(amount.into());
         context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
@@ -692,7 +713,13 @@ mod tests {
         contract.stake(amount.into());
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_staking_pool_stake(amount.into());
 
         // Assuming there are 20 UNC tokens in rewards. Unstaking.
@@ -702,7 +729,13 @@ mod tests {
         contract.unstake(unstake_amount.into());
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_staking_pool_unstake(unstake_amount.into());
 
         // Withdrawing
@@ -712,7 +745,13 @@ mod tests {
         context.account_balance = context.account_balance.saturating_add(UncToken::from_attounc(unstake_amount));
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_staking_pool_withdraw(unstake_amount.into());
         context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
         testing_env!(context.clone());
@@ -739,9 +778,12 @@ mod tests {
         contract.select_staking_pool(staking_pool.clone());
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(
+        testing_env!(
             context.clone(),
-            PromiseResult::Successful(b"true".to_vec()),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(b"true".to_vec())],
         );
         contract.on_whitelist_is_whitelisted(true, staking_pool.clone());
 
@@ -754,7 +796,13 @@ mod tests {
         assert_eq!(context.account_balance, UncToken::from_attounc(to_atto(LOCKUP_UNC) - amount));
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_staking_pool_deposit(amount.into());
 
         // Staking on the staking pool
@@ -763,7 +811,13 @@ mod tests {
         contract.stake(amount.into());
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_staking_pool_stake(amount.into());
 
         context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
@@ -781,7 +835,13 @@ mod tests {
 
         // In unit tests, the following call ignores the promise value, because it's passed directly.
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_get_account_total_balance(total_balance.into());
 
         context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
@@ -820,9 +880,12 @@ mod tests {
         contract.select_staking_pool(staking_pool.clone());
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(
+        testing_env!(
             context.clone(),
-            PromiseResult::Successful(b"true".to_vec()),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(b"true".to_vec())],
         );
         contract.on_whitelist_is_whitelisted(true, staking_pool.clone());
 
@@ -847,9 +910,12 @@ mod tests {
 
         context.predecessor_account_id = lockup_account();
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(
+        testing_env!(
             context.clone(),
-            PromiseResult::Successful(b"false".to_vec()),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(b"false".to_vec())],
         );
         contract.on_whitelist_is_whitelisted(false, staking_pool.clone());
     }
@@ -881,9 +947,12 @@ mod tests {
         contract.select_staking_pool(staking_pool.clone());
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(
+        testing_env!(
             context.clone(),
-            PromiseResult::Successful(b"true".to_vec()),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(b"true".to_vec())],
         );
         contract.on_whitelist_is_whitelisted(true, staking_pool.clone());
 
@@ -895,7 +964,13 @@ mod tests {
         context.account_balance = env::account_balance();
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_staking_pool_deposit(amount.into());
 
         // Unselecting staking pool
@@ -924,9 +999,12 @@ mod tests {
         contract.select_staking_pool(staking_pool.clone());
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(
+        testing_env!(
             context.clone(),
-            PromiseResult::Successful(b"true".to_vec()),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(b"true".to_vec())],
         );
         contract.on_whitelist_is_whitelisted(true, staking_pool.clone());
 
@@ -942,7 +1020,13 @@ mod tests {
             assert_eq!(context.account_balance, UncToken::from_attounc(lockup_amount - total_amount));
 
             context.predecessor_account_id = lockup_account();
-            testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+            testing_env!(
+                context.clone(),
+                test_vm_config(),
+                RuntimeFeesConfig::test(),
+                Default::default(),
+                vec![PromiseResult::Successful(vec![])],
+            );
             contract.on_staking_pool_deposit(amount.into());
             context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
             testing_env!(context.clone());
@@ -969,7 +1053,13 @@ mod tests {
             );
 
             context.predecessor_account_id = lockup_account();
-            testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+            testing_env!(
+                context.clone(),
+                test_vm_config(),
+                RuntimeFeesConfig::test(),
+                Default::default(),
+                vec![PromiseResult::Successful(vec![])],
+            );
             contract.on_staking_pool_withdraw(amount.into());
             context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
             testing_env!(context.clone());
@@ -1179,7 +1269,13 @@ mod tests {
         context.account_balance = env::account_balance();
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_withdraw_unvested_amount(to_atto(250).into(), receiver_id);
 
         context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
@@ -1561,7 +1657,13 @@ mod tests {
         context.account_balance = env::account_balance();
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_withdraw_unvested_amount(to_atto(250).into(), receiver_id);
 
         context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
@@ -1682,7 +1784,13 @@ mod tests {
         assert_eq!(context.account_balance, UncToken::from_attounc(MIN_BALANCE_FOR_STORAGE));
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_withdraw_unvested_amount(
             (lockup_amount - MIN_BALANCE_FOR_STORAGE).into(),
             receiver_id,
@@ -1751,9 +1859,12 @@ mod tests {
         contract.select_staking_pool(staking_pool.clone());
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(
+        testing_env!(
             context.clone(),
-            PromiseResult::Successful(b"true".to_vec()),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(b"true".to_vec())],
         );
         contract.on_whitelist_is_whitelisted(true, staking_pool.clone());
 
@@ -1765,7 +1876,13 @@ mod tests {
         context.account_balance = env::account_balance();
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_staking_pool_deposit(stake_amount.into());
 
         // Staking on the staking pool
@@ -1774,7 +1891,13 @@ mod tests {
         contract.stake(stake_amount.into());
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_staking_pool_stake(stake_amount.into());
 
         context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
@@ -1840,13 +1963,22 @@ mod tests {
 
         let stake_amount_with_rewards = stake_amount + to_atto(50);
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(
+        testing_env!(
             context.clone(),
-            PromiseResult::Successful(format!("{}", stake_amount_with_rewards).into_bytes()),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(format!("{}", stake_amount_with_rewards).into_bytes())],
         );
         contract.on_get_account_staked_balance_to_unstake(stake_amount_with_rewards.into());
 
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_staking_pool_unstake_for_termination(stake_amount_with_rewards.into());
 
         context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
@@ -1868,17 +2000,24 @@ mod tests {
 
         let withdraw_amount_with_extra_rewards = stake_amount_with_rewards + to_atto(1);
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(
+        testing_env!(
             context.clone(),
-            PromiseResult::Successful(
-                format!("{}", withdraw_amount_with_extra_rewards).into_bytes(),
-            ),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(format!("{}", withdraw_amount_with_extra_rewards).into_bytes())],
         );
         contract
             .on_get_account_unstaked_balance_to_withdraw(withdraw_amount_with_extra_rewards.into());
         context.account_balance = context.account_balance.saturating_add(UncToken::from_attounc(withdraw_amount_with_extra_rewards));
 
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract
             .on_staking_pool_withdraw_for_termination(withdraw_amount_with_extra_rewards.into());
 
@@ -1915,7 +2054,13 @@ mod tests {
         assert_eq!(context.account_balance, UncToken::from_attounc(to_atto(250 + 51)));
 
         context.predecessor_account_id = lockup_account();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_withdraw_unvested_amount(to_atto(750).into(), receiver_id);
 
         context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });

@@ -200,8 +200,8 @@ mod tests {
     mod test_utils;
 
     use super::*;
-    use unc_sdk::{testing_env, PromiseResult};
-    use unc_sdk::test_utils::{testing_env_with_promise_results, VMContextBuilder};
+    use unc_sdk::{testing_env, test_vm_config, RuntimeFeesConfig, PromiseResult};
+    use unc_sdk::test_utils::VMContextBuilder;
     use test_utils::*;
 
     fn new_vesting_schedule(offset_in_days: u64) -> VestingSchedule {
@@ -273,7 +273,13 @@ mod tests {
             .is_view(false)
             .build();
 
-        testing_env_with_promise_results(context, PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         println!("{}", lockup_account());
         contract.on_lockup_create(
             lockup_account(),
@@ -331,7 +337,13 @@ mod tests {
             .attached_deposit(UncToken::from_attounc(ntoy(0)))
             .build();
 
-        testing_env_with_promise_results(context, PromiseResult::Successful(vec![]));
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_lockup_create(
             lockup_account(),
             ntoy(30).into(),
@@ -398,7 +410,14 @@ mod tests {
             .is_view(false)
             .build();
 
-        testing_env_with_promise_results(context, PromiseResult::Failed);
+        testing_env!(
+            context.clone(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Failed],
+        );
+
         let res = contract.on_lockup_create(
             lockup_account(),
             ntoy(35).into(),
@@ -439,15 +458,17 @@ mod tests {
             Some(custom_whitelist_account_id()),
         );
 
-        testing_env_with_promise_results(
-    VMContextBuilder::new()
-            .current_account_id(account_factory())
-            .predecessor_account_id(account_factory())
-            .attached_deposit(UncToken::from_attounc(ntoy(0)))
-            .is_view(false)
-            .build(),
-
-            PromiseResult::Successful(vec![])
+        testing_env!(
+            VMContextBuilder::new()
+                .current_account_id(account_factory())
+                .predecessor_account_id(account_factory())
+                .attached_deposit(UncToken::from_attounc(ntoy(0)))
+                .is_view(false)
+                .build(),
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
         );
 
         println!("{}", lockup_account());

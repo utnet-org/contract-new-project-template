@@ -2974,6 +2974,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "lazy-static-include"
+version = "3.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "67f771f5073e25401d245cf2bfca1e43574ecb1128556213f534a15d751763e3"
+dependencies = [
+ "lazy_static",
+ "manifest-dir-macros",
+ "syn 2.0.66",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3081,6 +3092,7 @@ name = "lockup-contract"
 version = "0.1.0"
 dependencies = [
  "borsh 1.3.1",
+ "lazy-static-include",
  "quickcheck",
  "quickcheck_macros",
  "uint",
@@ -3139,6 +3151,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "19b955cdeb2a02b9117f121ce63aa52d08ade45de53e48fe6a38b39c10f6f709"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "manifest-dir-macros"
+version = "0.1.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9c6d40de1ccdbf8bde2eaa0750595478a368f7b3a3f89c426e3454f64e29f593"
+dependencies = [
+ "once_cell",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.66",
 ]
 
 [[package]]
@@ -4380,6 +4404,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rand_xorshift"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d25bf25ec5ae4a3f1b92f929810509a2f53d7dca2f50b794ff57e3face536c8f"
+dependencies = [
+ "rand_core 0.6.4",
+]
+
+[[package]]
 name = "rayon"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5399,6 +5432,24 @@ dependencies = [
  "unc-crypto",
  "unc-primitives",
  "unc-sdk",
+]
+
+[[package]]
+name = "state-manipulation"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "arbitrary",
+ "base64 0.22.1",
+ "borsh 1.3.1",
+ "rand 0.8.5",
+ "rand_xorshift",
+ "serde",
+ "serde_json",
+ "tokio",
+ "unc-sys",
+ "utility-workspaces",
+ "wee_alloc",
 ]
 
 [[package]]
@@ -6510,9 +6561,9 @@ checksum = "0c90e798e06d502656ae3ce8a302b157100d424d2e6959f218d52918928192a4"
 
 [[package]]
 name = "unc-sys"
-version = "2.0.9"
+version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a4f0a0087c2fb9d147d2d32256718eb13a54ea800a230639abb7bc13f404e2a"
+checksum = "4ca986e0d6f48ad0fdfcac9f618980dd56a954ada3e0a1507214cd239043f16e"
 
 [[package]]
 name = "unc-token"

@@ -487,8 +487,9 @@ mod tests {
     use std::convert::TryFrom;
     use super::*;
 
-    use unc_sdk::test_utils::{VMContextBuilder};
     use unc_sdk::{serde_json, testing_env, mock, VMContext};
+    use unc_sdk::test_utils::VMContextBuilder;
+
     use crate::test_utils::*;
     struct Emulator {
         pub contract: StakingContract,
@@ -602,7 +603,7 @@ mod tests {
         emulator.simulate_stake_call();
 
         emulator.update_context(staking(), 0);
-        testing_env_with_promise_results(emulator.context.clone(), PromiseResult::Failed);
+        testing_env!(emulator.context.clone(), PromiseResult::Failed);
         emulator.contract.on_stake_action();
         let receipts = env::created_receipts();
         assert_eq!(receipts.len(), 1);

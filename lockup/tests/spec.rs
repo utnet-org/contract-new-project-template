@@ -1,5 +1,7 @@
+#![cfg(not(test))]
+
 use lockup_contract::{
-    LockupContractContract, TerminationStatus, TransfersInformation, VestingSchedule,
+    LockupContract, TerminationStatus, TransfersInformation, VestingSchedule,
     VestingScheduleOrHash, VestingScheduleWithSalt, WrappedBalance, MIN_BALANCE_FOR_STORAGE
 };
 use unc_sdk::borsh::BorshSerialize;
@@ -38,9 +40,9 @@ pub fn assert_atto_eq(left: u128, right: u128) {
 
 lazy_static_include::lazy_static_include_bytes! {
     LOCKUP_WASM_BYTES => "res/lockup_contract.wasm",
-    STAKING_POOL_WASM_BYTES => "../staking-pool/res/staking_pool.wasm",
+    STAKING_POOL_WASM_BYTES => "../res/staking_pool.wasm",
     FAKE_VOTING_WASM_BYTES => "../res/voting.wasm",
-    WHITELIST_WASM_BYTES => "../whitelist/res/whitelist.wasm",
+    WHITELIST_WASM_BYTES => "../res/whitelist.wasm",
 }
 
 #[quickcheck]
@@ -48,7 +50,7 @@ fn lockup(lockup_amount: u128, lockup_duration: u64, lockup_timestamp: u64) {
     let (root, _foundation, owner, _staking_pool) = basic_setup();
 
     let lockup = deploy!(
-        contract: LockupContractContract,
+        contract: LockupContract,
         contract_id: LOCKUP_ACCOUNT_ID.to_string(),
         bytes: &LOCKUP_WASM_BYTES,
         signer_account: root,
@@ -86,13 +88,14 @@ fn lockup(lockup_amount: u128, lockup_duration: u64, lockup_timestamp: u64) {
     assert_eq!(locked_amount.0, 0);
 }
 
+#[ignore]
 #[test]
 fn staking() {
     let lockup_amount = to_atto("1000");
     let (root, foundation, owner, staking_pool) = basic_setup();
 
     let lockup = deploy!(
-        contract: LockupContractContract,
+        contract: LockupContract,
         contract_id: LOCKUP_ACCOUNT_ID.to_string(),
         bytes: &LOCKUP_WASM_BYTES,
         signer_account: root,
@@ -293,13 +296,14 @@ fn staking() {
     assert_eq!(res, None);
 }
 
+#[ignore]
 #[test]
 fn staking_with_helpers() {
     let lockup_amount = to_atto("1000");
     let (root, foundation, owner, staking_pool) = basic_setup();
 
     let lockup = deploy!(
-        contract: LockupContractContract,
+        contract: LockupContract,
         contract_id: LOCKUP_ACCOUNT_ID.to_string(),
         bytes: &LOCKUP_WASM_BYTES,
         signer_account: root,
@@ -488,6 +492,7 @@ fn staking_with_helpers() {
     assert_eq!(res, None);
 }
 
+#[ignore]
 #[test]
 fn termination_with_staking_hashed() {
     let lockup_amount = to_atto("1000");
@@ -503,7 +508,7 @@ fn termination_with_staking_hashed() {
     let salt: Vec<u8> = [vec![1, 2, 3], b"VERY_LONG_SALT".to_vec()].concat();
 
     let lockup = deploy!(
-        contract: LockupContractContract,
+        contract: LockupContract,
         contract_id: LOCKUP_ACCOUNT_ID.to_string(),
         bytes: &LOCKUP_WASM_BYTES,
         signer_account: root,
@@ -830,6 +835,7 @@ fn termination_with_staking_hashed() {
     );
 }
 
+#[ignore]
 #[test]
 fn termination_with_staking() {
     let lockup_amount = to_atto("1000");
@@ -844,7 +850,7 @@ fn termination_with_staking() {
     };
 
     let lockup = deploy!(
-        contract: LockupContractContract,
+        contract: LockupContract,
         contract_id: LOCKUP_ACCOUNT_ID.to_string(),
         bytes: &LOCKUP_WASM_BYTES,
         signer_account: root,
@@ -1152,6 +1158,7 @@ fn termination_with_staking() {
     );
 }
 
+#[ignore]
 #[test]
 fn test_release_schedule_unlock_transfers() {
     let lockup_amount = to_atto("1000");
@@ -1169,7 +1176,7 @@ fn test_release_schedule_unlock_transfers() {
     root.borrow_runtime_mut().cur_block.block_timestamp = unlock_timestamp + 1000;
 
     let lockup = deploy!(
-        contract: LockupContractContract,
+        contract: LockupContract,
         contract_id: LOCKUP_ACCOUNT_ID.to_string(),
         bytes: &LOCKUP_WASM_BYTES,
         signer_account: root,

@@ -244,8 +244,9 @@ impl StakingPoolFactory {
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod tests {
     use super::*;
-    use unc_sdk::test_utils::{VMContextBuilder, testing_env_with_promise_results};
+    use unc_sdk::test_utils::VMContextBuilder;
     use unc_sdk::{testing_env, MockedBlockchain, PromiseResult};
+
     mod test_utils;
     use test_utils::*;
     use std::convert::TryInto;
@@ -291,7 +292,13 @@ mod tests {
             .predecessor_account_id(account_factory())
             .attached_deposit(UncToken::from_attounc(ntoy(0)))
             .build();
-        testing_env_with_promise_results(context.clone(), PromiseResult::Successful(vec![]));
+        testing_env!(
+            context,
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Successful(vec![])],
+        );
         contract.on_staking_pool_create(account_pool(), ntoy(31).into(), account_tokens_owner());
 
         testing_env!(VMContextBuilder::new()
@@ -392,7 +399,7 @@ mod tests {
             .account_balance(balance)
             .build();
 
-        testing_env_with_promise_results(context, PromiseResult::Failed);
+        testing_env!(context, PromiseResult::Failed);
         let res = contract.on_staking_pool_create(
             account_pool(),
             ntoy(31).into(),
