@@ -18,7 +18,7 @@ wee_alloc = "0.4"
 
 [dev-dependencies]
 tokio = { version = "1.10.0", features = ["full"] }
-utility-workspaces = { version = "0.12.3", features = ["unstable"] }
+utility-workspaces = { version = "0.12.4", features = ["unstable"] }
 anyhow = "1.0"
 arbitrary = { version = "1.0", features = ["derive"] }
 rand_xorshift = "0.3"
