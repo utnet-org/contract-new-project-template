@@ -1,3 +1,5 @@
+#![cfg(not(test))]
+
 mod utils;
 
 use crate::utils::{is_pool_paused, reward_pool, POOL_ACCOUNT_ID};

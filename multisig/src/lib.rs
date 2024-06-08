@@ -33,6 +33,7 @@ pub struct FunctionCallPermission {
 /// Lowest level action that can be performed by the multisig contract.
 #[cfg_attr(test, derive(PartialEq, Clone))]
 #[unc(serializers=[borsh, json])]
+#[serde(tag = "type")]
 pub enum MultiSigRequestAction {
     /// Transfers given amount to receiver.
     Transfer { amount: U128 },

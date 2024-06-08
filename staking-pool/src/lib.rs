@@ -489,7 +489,7 @@ mod tests {
 
     use unc_sdk::{serde_json, testing_env, mock, VMContext};
     use unc_sdk::test_utils::VMContextBuilder;
-
+    use unc_sdk::test_utils::get_created_receipts;
     use crate::test_utils::*;
     struct Emulator {
         pub contract: StakingContract,
@@ -498,7 +498,7 @@ mod tests {
         pub locked_amount: UncToken,
         last_total_staked_balance: UncToken,
         last_total_stake_shares: UncToken,
-        context: VMContext,
+        pub context: VMContext,
     }
 
     fn zero_fee() -> RewardFeeFraction {
@@ -510,18 +510,18 @@ mod tests {
 
     impl Emulator {
         pub fn new(
-            owner: String,
-            stake_public_key: String,
+            owner: AccountId,
+            stake_public_key: PublicKey,
             reward_fee_fraction: RewardFeeFraction,
         ) -> Self {
             let context = VMContextBuilder::new()
                 .current_account_id(owner.clone())
-                .account_balance(ntoy(30))
-                .finish();
+                .account_balance(UncToken::from_attounc(ntoy(30)))
+                .build();
             testing_env!(context.clone());
             let contract = StakingContract::new(
                 owner,
-                PublicKey::try_from(stake_public_key).unwrap(),
+                stake_public_key,
                 reward_fee_fraction,
             );
             let last_total_staked_balance = contract.total_staked_balance;
@@ -529,8 +529,8 @@ mod tests {
             Emulator {
                 contract,
                 epoch_height: 0,
-                amount: ntoy(30),
-                locked_amount: 0,
+                amount: UncToken::from_attounc(ntoy(30)),
+                locked_amount: UncToken::from_attounc(0),
                 last_total_staked_balance,
                 last_total_stake_shares,
                 context,
@@ -549,7 +549,7 @@ mod tests {
             self.last_total_stake_shares = total_stake_shares;
         }
 
-        pub fn update_context(&mut self, predecessor_account_id: String, deposit: UncToken) {
+        pub fn update_context(&mut self, predecessor_account_id: AccountId, deposit: UncToken) {
             self.verify_stake_price_increase_guarantee();
             self.context = VMContextBuilder::new()
                 .current_account_id(staking())
@@ -559,7 +559,7 @@ mod tests {
                 .account_balance(self.amount)
                 .account_locked_balance(self.locked_amount)
                 .epoch_height(self.epoch_height)
-                .finish();
+                .build();
             testing_env!(self.context.clone());
             println!(
                 "Epoch: {}, Deposit: {}, amount: {}, locked_amount: {}",
@@ -586,18 +586,18 @@ mod tests {
     fn test_restake_fail() {
         let mut emulator = Emulator::new(
             owner(),
-            "KuTCtARNzxZQ3YvXDeLjx83FDqxv2SdQTSbiq876zR7".to_string(),
+            "ed25519:KuTCtARNzxZQ3YvXDeLjx83FDqxv2SdQTSbiq876zR7".parse().unwrap(),
             zero_fee(),
         );
         emulator.update_context(bob(), 0);
         emulator.contract.internal_restake();
-        let receipts = mock::created_receipts();
+        let receipts = get_created_receipts();
         assert_eq!(receipts.len(), 2);
         // Mocked Receipt fields are private, so can't check directly.
-        assert!(serde_json::to_string(&receipts[0])
+        assert!(serde_json::to_string(&receipts[0].actions)
             .unwrap()
             .contains("\"actions\":[{\"Stake\":{\"stake\":29999999999999000000000000,"));
-        assert!(serde_json::to_string(&receipts[1])
+        assert!(serde_json::to_string(&receipts[1].actions)
             .unwrap()
             .contains("\"method_name\":\"on_stake_action\""));
         emulator.simulate_stake_call();
@@ -605,9 +605,9 @@ mod tests {
         emulator.update_context(staking(), 0);
         testing_env!(emulator.context.clone(), PromiseResult::Failed);
         emulator.contract.on_stake_action();
-        let receipts = env::created_receipts();
+        let receipts = get_created_receipts();
         assert_eq!(receipts.len(), 1);
-        assert!(serde_json::to_string(&receipts[0])
+        assert!(serde_json::to_string(&receipts[0].actions)
             .unwrap()
             .contains("\"actions\":[{\"Stake\":{\"stake\":0,"));
     }
