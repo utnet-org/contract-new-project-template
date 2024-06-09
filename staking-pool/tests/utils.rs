@@ -1,3 +1,5 @@
+#![cfg(not(test))]
+
 #![allow(dead_code)]
 extern crate staking_pool;
 

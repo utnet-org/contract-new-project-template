@@ -1,3 +1,5 @@
+#![cfg(not(test))]
+
 extern crate env_logger;
 #[allow(unused_imports)]
 #[macro_use]
