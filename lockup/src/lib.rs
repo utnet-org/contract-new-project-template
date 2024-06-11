@@ -1,7 +1,5 @@
 //! A smart contract that allows tokens to be locked up.
-
-use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use unc_sdk::{env, ext_contract, unc_bindgen, AccountId, UncToken, Gas};
+use unc_sdk::{env, ext_contract, unc, AccountId, UncToken, Gas};
 
 pub use crate::types::*;
 
@@ -106,8 +104,7 @@ pub trait ExtLockupContractFoundation {
     fn on_staking_pool_withdraw_for_termination(&mut self, amount: WrappedBalance) -> bool;
 }
 
-#[unc_bindgen]
-#[derive(BorshDeserialize, BorshSerialize)]
+#[unc(contract_state)]
 pub struct LockupContract {
     /// The account ID of the owner.
     pub owner_account_id: AccountId,
@@ -136,7 +133,7 @@ impl Default for LockupContract {
     }
 }
 
-#[unc_bindgen]
+#[unc]
 impl LockupContract {
     /// Requires 25 TGas (1 * BASE_GAS)
     ///

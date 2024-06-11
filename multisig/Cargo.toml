@@ -17,4 +17,3 @@ unc-sdk = { version = "2.2.1", features = ["unit-testing", "unstable"] }
 
 [dev-dependencies]
 lazy_static = "1.4.0"
-borsh = { version = "1.3"}

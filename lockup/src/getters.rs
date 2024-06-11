@@ -1,9 +1,9 @@
 use unc_sdk::json_types::U128;
-use unc_sdk::unc_bindgen;
+use unc_sdk::unc;
 
 use crate::*;
 
-#[unc_bindgen]
+#[unc]
 impl LockupContract {
     /// Returns the account ID of the owner.
     pub fn get_owner_account_id(&self) -> AccountId {

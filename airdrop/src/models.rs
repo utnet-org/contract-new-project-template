@@ -1,19 +1,15 @@
 use crate::*;
-use unc_sdk::serde::{Deserialize, Serialize};
-use unc_sdk::UncSchema;
 
 /// Information about a specific public key. Should be returned in the `get_key_information` view method.
 /// Part of the airdrop UIP
-#[derive(Serialize, UncSchema)]
-#[serde(crate = "unc_sdk::serde")]
+#[unc(serializers=[borsh, json])]
 pub struct KeyInfo {
     /// attounc$ amount that will be sent to the claiming account (either new or existing)
     /// when the key is successfully used.
     pub balance: U128,
 }
 
-#[derive(Serialize, Deserialize, UncSchema)]
-#[serde(crate = "unc_sdk::serde")]
+#[unc(serializers=[borsh, json])]
 /// Information about any limited access keys that are being added to the account as part of `create_account_advanced`.
 pub struct LimitedAccessKey {
     /// The public key of the limited access key.
@@ -26,8 +22,7 @@ pub struct LimitedAccessKey {
     pub method_names: String,
 }
 
-#[derive(Serialize, Deserialize, UncSchema)]
-#[serde(crate = "unc_sdk::serde")]
+#[unc(serializers=[borsh, json])]
 /// Options for `create_account_advanced`.
 pub struct CreateAccountOptions {
     pub full_access_keys: Option<Vec<PublicKey>>,

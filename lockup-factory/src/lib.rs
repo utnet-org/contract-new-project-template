@@ -3,10 +3,8 @@ mod utils;
 
 pub use crate::types::*;
 use crate::utils::*;
-use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use unc_sdk::json_types::U128;
-use unc_sdk::serde::Serialize;
-use unc_sdk::{env, ext_contract, unc_bindgen, AccountId, UncToken, Promise};
+use unc_sdk::{env, ext_contract, unc, AccountId, UncToken, Promise};
 
 /// There is no deposit balance attached.
 const NO_DEPOSIT: UncToken = UncToken::from_attounc(0);
@@ -41,15 +39,14 @@ pub trait ExtSelf {
     ) -> bool;
 }
 
-#[unc_bindgen]
-#[derive(BorshDeserialize, BorshSerialize)]
+#[unc(contract_state)]
 pub struct LockupFactory {
     whitelist_account_id: AccountId,
     foundation_account_id: AccountId,
 }
 
-#[derive(Serialize)]
-#[serde(crate = "unc_sdk::serde")]
+
+#[unc(serializers=[json])]
 pub struct LockupArgs {
     owner_account_id: AccountId,
     lockup_duration: WrappedDuration,
@@ -67,7 +64,7 @@ impl Default for LockupFactory {
     }
 }
 
-#[unc_bindgen]
+#[unc]
 impl LockupFactory {
     #[init]
     pub fn new(

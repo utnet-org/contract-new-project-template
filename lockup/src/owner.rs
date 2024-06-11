@@ -1,7 +1,7 @@
 use crate::*;
-use unc_sdk::{unc_bindgen, AccountId, Promise, PublicKey, UncToken, Gas};
+use unc_sdk::{unc, AccountId, Promise, PublicKey, UncToken, Gas};
 
-#[unc_bindgen]
+#[unc]
 impl LockupContract {
     /// OWNER'S METHOD
     ///

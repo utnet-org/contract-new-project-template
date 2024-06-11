@@ -1,16 +1,15 @@
-use borsh::{BorshDeserialize, BorshSerialize};
 use unc_sdk::json_types::U128;
 use unc_sdk::store::LookupMap;
 use unc_sdk::{
-    env, ext_contract, unc_bindgen, AccountId, Allowance, Gas, PanicOnDefault, Promise,
+    env, ext_contract, unc, AccountId, Allowance, Gas, PanicOnDefault, Promise,
     PromiseResult, PublicKey, UncToken,
 };
 
 mod models;
 use models::*;
 
-#[unc_bindgen]
-#[derive(PanicOnDefault, BorshDeserialize, BorshSerialize)]
+#[derive(PanicOnDefault)]
+#[unc(contract_state)]
 pub struct AirDrop {
     pub accounts: LookupMap<PublicKey, UncToken>,
 }
@@ -43,7 +42,7 @@ fn is_promise_success() -> bool {
     matches!(env::promise_result(0), PromiseResult::Successful(_))
 }
 
-#[unc_bindgen]
+#[unc]
 impl AirDrop {
     /// Initializes the contract with an empty map for the accounts
     #[init]

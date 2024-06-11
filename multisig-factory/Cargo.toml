@@ -9,7 +9,4 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
-unc-sdk = "2.0.6"
-
-[dev-dependencies]
-borsh = { version = "1.3"}
+unc-sdk = "2.2.1"

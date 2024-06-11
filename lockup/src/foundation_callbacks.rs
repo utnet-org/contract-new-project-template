@@ -1,8 +1,8 @@
 use crate::*;
-use unc_sdk::{unc_bindgen, PromiseOrValue, Gas, assert_self, is_promise_success};
+use unc_sdk::{unc, PromiseOrValue, Gas, assert_self, is_promise_success};
 use std::convert::Into;
 
-#[unc_bindgen]
+#[unc]
 impl LockupContract {
     /// Called after the request to get the current staked balance to unstake everything for vesting
     /// schedule termination.

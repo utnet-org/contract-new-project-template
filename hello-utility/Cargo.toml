@@ -13,5 +13,4 @@ unc-sdk = { version = "2.2.1", features = ["unit-testing"]}
 uint = { version = "0.9.3", default-features = false }
 
 [dev-dependencies]
-borsh = { version = "1.3"}
 

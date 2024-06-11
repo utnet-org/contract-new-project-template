@@ -1,8 +1,8 @@
-use unc_sdk::{unc_bindgen, AccountId, Promise, Gas};
+use unc_sdk::{unc, AccountId, Promise, Gas};
 
 use crate::*;
 
-#[unc_bindgen]
+#[unc]
 impl LockupContract {
     /// FOUNDATION'S METHOD
     ///

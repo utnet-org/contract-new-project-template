@@ -10,8 +10,7 @@ publish = false
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-unc-sdk = { version = "2.0.6", features = ["unit-testing"]}
+unc-sdk = { version = "2.2.1", features = ["unit-testing"]}
 hex = "0.4"
 
 [dev-dependencies]
-borsh = { version = "1.3"}

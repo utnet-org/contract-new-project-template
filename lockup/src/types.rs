@@ -1,7 +1,5 @@
-use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use unc_sdk::json_types::{Base64VecU8, U128, U64};
-use unc_sdk::serde::{Deserialize, Serialize};
-use unc_sdk::{env, AccountId, UncSchema};
+use unc_sdk::{borsh, env, unc, AccountId};
 use uint::construct_uint;
 
 construct_uint! {
@@ -25,7 +23,7 @@ pub type WrappedBalance = U128;
 pub type Hash = Vec<u8>;
 
 /// Contains information about token lockups.
-#[derive(BorshDeserialize, BorshSerialize)]
+#[unc]
 pub struct LockupInformation {
     /// The amount in atto-UNC tokens locked for this account.
     pub lockup_amount: u128,
@@ -54,8 +52,8 @@ pub struct LockupInformation {
 }
 
 /// Contains information about the transfers. Whether transfers are enabled or disabled.
-#[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize, UncSchema, Debug)]
-#[serde(crate = "unc_sdk::serde")]
+#[derive(Debug)]
+#[unc(serializers = [borsh, json])]
 pub enum TransfersInformation {
     /// The timestamp when the transfers were enabled.
     TransfersEnabled {
@@ -70,8 +68,8 @@ pub enum TransfersInformation {
 
 /// Describes the status of transactions with the staking pool contract or terminated unvesting
 /// amount withdrawal.
-#[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize, PartialEq)]
-#[serde(crate = "unc_sdk::serde")]
+#[derive(PartialEq)]
+#[unc(serializers = [borsh, json])]
 pub enum TransactionStatus {
     /// There are no transactions in progress.
     Idle,
@@ -80,7 +78,7 @@ pub enum TransactionStatus {
 }
 
 /// Contains information about current stake and delegation.
-#[derive(BorshDeserialize, BorshSerialize)]
+#[unc]
 pub struct StakingInformation {
     /// The Account ID of the staking pool contract.
     pub staking_pool_account_id: AccountId,
@@ -94,8 +92,8 @@ pub struct StakingInformation {
 }
 
 /// Contains information about vesting schedule.
-#[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize, UncSchema, Clone, PartialEq, Debug)]
-#[serde(crate = "unc_sdk::serde")]
+#[derive(Clone, PartialEq, Debug)]
+#[unc(serializers = [borsh, json])]
 pub struct VestingSchedule {
     /// The timestamp in nanosecond when the vesting starts. E.g. the start date of employment.
     pub start_timestamp: WrappedTimestamp,
@@ -125,8 +123,8 @@ impl VestingSchedule {
 }
 
 /// Initialization argument type to define the vesting schedule
-#[derive(Serialize, Deserialize, UncSchema, Debug)]
-#[serde(crate = "unc_sdk::serde")]
+#[derive(Debug)]
+#[unc(serializers = [borsh, json])]
 pub enum VestingScheduleOrHash {
     /// [deprecated] After transfers are enabled, only public schedule is used.
     /// The vesting schedule is private and this is a hash of (vesting_schedule, salt).
@@ -137,8 +135,8 @@ pub enum VestingScheduleOrHash {
 }
 
 /// Contains information about vesting that contains vesting schedule and termination information.
-#[derive(Serialize, BorshDeserialize, BorshSerialize, UncSchema, PartialEq, Clone, Debug)]
-#[serde(crate = "unc_sdk::serde")]
+#[derive(PartialEq, Clone, Debug)]
+#[unc(serializers = [borsh, json])]
 pub enum VestingInformation {
     None,
     /// [deprecated] After transfers are enabled, only public schedule is used.
@@ -157,10 +155,8 @@ pub enum VestingInformation {
 
 /// Describes the status of transactions with the staking pool contract or terminated unvesting
 /// amount withdrawal.
-#[derive(
-    BorshDeserialize, BorshSerialize, Deserialize, Serialize, UncSchema, PartialEq, Copy, Clone, Debug,
-)]
-#[serde(crate = "unc_sdk::serde")]
+#[derive(PartialEq, Copy, Clone, Debug,)]
+#[unc(serializers = [borsh, json])]
 pub enum TerminationStatus {
     /// Initial stage of the termination in case there are deficit on the account.
     VestingTerminatedWithDeficit,
@@ -177,8 +173,8 @@ pub enum TerminationStatus {
 }
 
 /// Contains information about early termination of the vesting schedule.
-#[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize, UncSchema, PartialEq, Clone, Debug)]
-#[serde(crate = "unc_sdk::serde")]
+#[derive(PartialEq, Clone, Debug)]
+#[unc(serializers = [borsh, json])]
 pub struct TerminationInformation {
     /// The amount of tokens that are unvested and has to be transferred back to UNC Foundation.
     /// These tokens are effectively locked and can't be transferred out and can't be restaked.
@@ -194,9 +190,8 @@ pub struct TerminationInformation {
 pub type PollResult = Option<WrappedTimestamp>;
 
 /// Contains a vesting schedule with a salt.
-#[derive(BorshSerialize, BorshDeserialize, Deserialize, Serialize, UncSchema, Clone, Debug)]
-#[serde(crate = "unc_sdk::serde")]
-#[borsh(crate = "unc_sdk::borsh")]
+#[derive(Clone, Debug)]
+#[unc(serializers = [borsh, json])]
 pub struct VestingScheduleWithSalt {
     /// The vesting schedule
     pub vesting_schedule: VestingSchedule,
