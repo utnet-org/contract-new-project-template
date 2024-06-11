@@ -21,28 +21,28 @@ JSON format for `replace`:
 
 ## With CLI
 
-Usage example to put and remove only the "STATE" item using [unc-cli](https://github.com/unc/unc-cli-rs):
+Usage example to put and remove only the "STATE" item using [unc-cli](https://github.com/utnet-org/utility-cli-rs):
 
 ```bash
 # Build the contracts will all feature combinations
 ./build.sh
 
 # Deploy built code on chain
-unc add contract-code network testnet account nesdie.testnet contract-file ./res/state_manipulation.wasm no-initialize sign-with-keychain
-
+unc contract deploy <CONTRACT_ID> use-file ../res/state_manipulation.wasm without-init-call network-config testnet sign-with-keychain send
 # Add state item for "STATE" key
-unc execute change-method network testnet contract nesdie.testnet call replace '{"entries":[["U1RBVEU=", "dGVzdA=="]]}' --prepaid-gas '100.000 TeraGas' --attached-deposit '0 UNC' signer nesdie.testnet sign-with-keychain
+unc contract call-function as-transaction <CONTRACT_ID> replace json-args '{"entries":[["U1RBVEU=", "dGVzdA=="]]}' prepaid-gas '100.0 Tgas' attached-deposit '0 unc' sign-as <SIGNER_ID> network-config testnet sign-with-keychain send
 
 # View Added state item
-unc view contract-state network testnet account nesdie.testnet at-final-block
+unc contract call-function as-read-only contract-state contract-state text-args '' network-config testnet now
 
 # Clear added state item
-unc execute change-method network testnet contract nesdie.testnet call clean '{"keys":["U1RBVEU="]}' --prepaid-gas '100.000 TeraGas' --attached-deposit '0 UNC' signer nesdie.testnet sign-with-keychain
+unc contract call-function as-transaction <CONTRACT_ID> clean json-args '{"keys":["U1RBVEU="]}' prepaid-gas '100.0 Tgas' attached-deposit '0 unc' sign-as <SIGNER_ID> network-config testnet sign-with-keychain send
 
 # View that item was removed
-unc view contract-state network testnet account nesdie.testnet at-final-block
+unc contract call-function as-read-only contract-state contract-state text-args '' network-config testnet now
 ```
 
 ## Features
+
 `clean`: Enables `clean` method to remove keys
 `replace`: Enables `replace` method to add key/value pairs to storage
