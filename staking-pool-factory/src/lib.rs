@@ -299,7 +299,7 @@ mod tests {
             .current_account_id(account_factory())
             .predecessor_account_id(account_factory())
             .attached_deposit(UncToken::from_attounc(ntoy(0)))
-            .is_view(true)
+            .is_view(false)
             .build());
         assert_eq!(contract.get_number_of_staking_pools_created(), 1);
     }
@@ -415,7 +415,7 @@ mod tests {
             .predecessor_account_id(account_factory())
             .attached_deposit(UncToken::from_attounc(ntoy(0)))
             .account_balance(balance)
-            .is_view(true)
+            .is_view(false)
             .build();
         testing_env!(context);
         assert_eq!(contract.get_number_of_staking_pools_created(), 0);
