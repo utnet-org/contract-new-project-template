@@ -2,8 +2,6 @@
 
 This contract provides a way for other users to delegate funds to a single validation node.
 
-Implements the <https://github.com/utility/NEPs/pull/27> standard.
-
 There are three different roles:
 
 - The staking pool contract account `my_validator`. A key-less account with the contract that pools funds.
@@ -124,7 +122,7 @@ Contract owner can do the following:
 
 - Change public staking key. This action restakes with the new key.
 - Change reward fee fraction.
-- Vote on behalf of the pool. This is needed for the UNC chain governance, and can be discussed in the following UIP: <https://github.com/utility/NEPs/pull/62>
+- Vote on behalf of the pool. This is needed for the utility chain governance
 - Pause and resume staking. When paused, the pool account unstakes everything (stakes 0) and doesn't restake.
 It doesn't affect the staking shares or reward distribution. Pausing is useful for node maintenance. Note, the contract is not paused by default.
 
@@ -147,11 +145,11 @@ It also has inner invariants:
 - The owner can't delete the staking pool account.
 
 NOTE: Guarantees are based on the no-slashing condition. Once slashing is introduced, the contract will no longer
-provide some guarantees. Read more about slashing in [Nightshade paper](https://unc.ai/nightshade).
+provide some guarantees.
 
 ## Changelog
 
-### `0.4.0`
+### `0.1.0`
 
 - Internal refactoring. Moving internal methods to `internal.rs`
 - Added 4 new delegator methods:
@@ -160,19 +158,13 @@ provide some guarantees. Read more about slashing in [Nightshade paper](https://
   - `unstake_all` - to unstake all staked balance.
   - `withdraw_all` - to withdraw all unstaked balance.
 
-### `0.3.0`
-
 - Inner implementation has changed from using the hash of the account ID to use unmodified account ID as a key.
 - Added 3 new view methods:
   - `get_account` - Returns human readable representation of the account for the given account ID
   - `get_number_of_accounts` - returns the total number of accounts that have positive balance in this staking pool.
   - `get_accounts` - Returns up to the limit of accounts starting from the given offset
 
-### `0.2.1`
-
 - Update `vote` interface to match the voting contract interface.
-
-### `0.2.0`
 
 - Added new owners methods: `pause_staking` and `resume_staking`. Allows pool owner to unstake everything from the pool for node maintenance.
 - Added a new view method `is_staking_paused` to check whether the pool has paused staking.
@@ -180,6 +172,7 @@ provide some guarantees. Read more about slashing in [Nightshade paper](https://
 ## Pre-requisites
 
 To develop Rust contracts you would need to:
+
 - Install [Rustup](https://rustup.rs/):
 
 ```bash

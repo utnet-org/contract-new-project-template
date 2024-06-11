@@ -25,7 +25,7 @@ pub struct LockupInformation {
     /// The amount of tokens that were withdrawn by UNC foundation due to early termination
     /// of vesting.
     /// This amount has to be accounted separately from the lockup_amount to make sure
-    /// liunc release is not being affected.
+    /// linear release is not being affected.
     pub termination_withdrawn_tokens: u128,
     /// The lockup duration in nanoseconds from the moment when transfers are enabled to unlock the
     /// lockup amount of tokens.

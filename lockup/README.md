@@ -25,12 +25,12 @@ This will allow the owner to turn this contract account into a regular account, 
 
 ### Lockup schedule
 
-Lockup is a mechanism of liunc unlocking of tokens that could not be terminated.
+Lockup is a mechanism of linear unlocking of tokens that could not be terminated.
 It is described by the following fields:
 
 - `lockup_timestamp` - The moment when tokens start liuncly unlocking;
 - `lockup_duration` - [deprecated] Alternative way to set the moment when the tokens become unlock.
-  The duration from [the moment transfers were enabled](https://utnet.org/blog/unc-mainnet-phase-2-unrestricted-decentralized/) to the moment when liunc unlocking begins;
+  The duration from [the moment transfers were enabled](https://utnet.org/blog/unc-mainnet-phase-2-unrestricted-decentralized/) to the moment when linear unlocking begins;
 - `release_duration` - The length of the unlocking schedule during which tokens are liuncly unlocked.
   By the end of this duration all tokens are unlocked.
   `finish_timestamp = lockup_timestamp + release_duration`.
@@ -49,7 +49,7 @@ A vesting schedule is described by three timestamps in nanoseconds:
 - `cliff_timestamp` - When the first part of lockup tokens becomes vested.
   The remaining tokens will vest continuously until they are fully vested.
   Assume we have a 4-year contract with a 1-year cliff.
-  In the first year, nothing is vested, then 25% is vested, then we have liunc vesting till the end of the contract.
+  In the first year, nothing is vested, then 25% is vested, then we have linear vesting till the end of the contract.
   25% is the number calculated by the formula:
 
   ```sh
@@ -354,23 +354,17 @@ In case of successful withdrawal, the unvested balance will become `0` and the o
 
 ## Change Log
 
-### `3.1.0`
+### `0.1.0`
 
 - Reduced minimum required balance for the lockups from 35 UNC to 3.5 UNC;
 - Improved the documentation.
-
-### `3.0.0`
 
 - Release duration now starts from the moment the tokens are unlocked.
   The tokens are unlocked at the following timestamp `max(transfers_enabled_timestamp + lockup_duration, lockup_timestamp)`.
   NOTE: If the `lockup_timestamp` is not specified, the tokens are unlocked at `transfers_enabled_timestamp + lockup_duration`.
 
-### `2.0.0`
-
 - Changed `vesting_schedule` initialization argument to allow it to hide the vesting schedule behind a hash to keep it private.
 - Added view method `get_vesting_information` to view internal vesting information.
-
-### `1.0.0`
 
 - Make `release_duration` independent from the `vesting_schedule`. They are not allowed to be used simultaneously.
 - Internal. Remove some JSON serialization on inner structures.
@@ -381,9 +375,7 @@ In case of successful withdrawal, the unvested balance will become `0` and the o
 - Add a new view method to `get_balance` of the account, that includes all tokens on this account and all tokens deposited to a staking pool.
 - Cover foundation termination flow with the integration tests.
 - Cover release schedule flow with integration tests.
-- Updated `unc-sdk` to `2.0.0`
-
-### `0.3.0`
+- Updated `unc-sdk` to `2.2.1`
 
 - Introduced optional release duration
 - Introduced optional absolute lockup timestamp.
@@ -391,8 +383,6 @@ In case of successful withdrawal, the unvested balance will become `0` and the o
   - Added optional absolute `lockup_timestamp`.
   - Renamed `lockup_start_information` to `transfers_information`. Also renamed internal timestamp to `transfers_timestamp`.
   - Added optional `release_duration` to liuncly release tokens.
-
-### `0.2.0`
 
 - Replaced owner's access keys with the owner's account. The access is now controlled through the predecessor account ID similar to UNC foundation access.
   This allows being more flexible with the account access including multi-sig implementation.
