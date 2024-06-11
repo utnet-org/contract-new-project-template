@@ -12,20 +12,19 @@ use unc_contract_standards::fungible_token::metadata::{
     FungibleTokenMetadata, FungibleTokenMetadataProvider, FT_METADATA_SPEC,
 };
 use unc_contract_standards::fungible_token::FungibleToken;
-use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use unc_sdk::json_types::U128;
-use unc_sdk::{unc_bindgen, PanicOnDefault};
+use unc_sdk::{unc, PanicOnDefault};
 
 mod legacy_storage;
 mod w_unc;
 
-#[unc_bindgen]
-#[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
+#[unc(contract_state)]
+#[derive(PanicOnDefault)]
 pub struct Contract {
     pub ft: FungibleToken,
 }
 
-#[unc_bindgen]
+#[unc]
 impl Contract {
     #[init]
     pub fn new() -> Self {
@@ -35,7 +34,7 @@ impl Contract {
     }
 }
 
-#[unc_bindgen]
+#[unc]
 impl FungibleTokenMetadataProvider for Contract {
     fn ft_metadata(&self) -> FungibleTokenMetadata {
         FungibleTokenMetadata {

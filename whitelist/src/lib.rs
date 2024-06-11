@@ -1,9 +1,7 @@
-use borsh::{BorshDeserialize, BorshSerialize};
 use unc_sdk::store::LookupSet;
-use unc_sdk::{env, unc_bindgen, AccountId};
+use unc_sdk::{env, unc, AccountId};
 
-#[unc_bindgen]
-#[derive(BorshDeserialize, BorshSerialize)]
+#[unc(contract_state)]
 pub struct WhitelistContract {
     /// The account ID of the UNC Foundation. It allows to whitelist new staking pool accounts.
     /// It also allows to whitelist new Staking Pool Factories, which can whitelist staking pools.
@@ -23,7 +21,7 @@ impl Default for WhitelistContract {
     }
 }
 
-#[unc_bindgen]
+#[unc]
 impl WhitelistContract {
     /// Initializes the contract with the given UNC foundation account ID.
     #[init]

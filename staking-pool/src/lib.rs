@@ -1,11 +1,8 @@
 use std::convert::TryInto;
-
-use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use unc_sdk::store::TreeMap;
+use unc_sdk::store::IterableMap;
 use unc_sdk::json_types::U128;
-use unc_sdk::serde::{Deserialize, Serialize};
 use unc_sdk::{
-    env, ext_contract, unc_bindgen, AccountId, UncToken, UncSchema, Gas, EpochHeight, Promise, PromiseResult,
+    env, ext_contract, unc, AccountId, UncToken, Gas, EpochHeight, Promise, PromiseResult,
     PublicKey,
 };
 use uint::construct_uint;
@@ -37,7 +34,8 @@ construct_uint! {
 mod test_utils;
 
 /// Inner account data of a delegate.
-#[derive(BorshDeserialize, BorshSerialize, Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
+#[unc(serializers=[borsh, json])]
 pub struct Account {
     /// The unstaked balance. It represents the amount the account has on this contract that
     /// can either be staked or withdrawn.
@@ -53,8 +51,7 @@ pub struct Account {
 }
 
 /// Represents an account structure readable by humans.
-#[derive(Serialize, Deserialize, UncSchema)]
-#[serde(crate = "unc_sdk::serde")]
+#[unc(serializers=[json])]
 pub struct HumanReadableAccount {
     pub account_id: AccountId,
     /// The unstaked balance that can be withdrawn or staked.
@@ -81,8 +78,7 @@ impl Default for Account {
 /// updated in the previous epoch. It will not unlock the funds for 4 epochs.
 const NUM_EPOCHS_TO_UNLOCK: EpochHeight = 4;
 
-#[unc_bindgen]
-#[derive(BorshDeserialize, BorshSerialize)]
+#[unc(contract_state)]
 pub struct StakingContract {
     /// The account ID of the owner who's running the staking validator node.
     /// NOTE: This is different from the current account ID which is used as a validator account.
@@ -104,7 +100,7 @@ pub struct StakingContract {
     /// validator node.
     pub reward_fee_fraction: RewardFeeFraction,
     /// Persistent map from an account ID to the corresponding account.
-    pub accounts: TreeMap<AccountId, Account>,
+    pub accounts: IterableMap<AccountId, Account>,
     /// Whether the staking is paused.
     /// When paused, the account unstakes everything (stakes 0) and doesn't restake.
     /// It doesn't affect the staking shares or reward distribution.
@@ -119,8 +115,8 @@ impl Default for StakingContract {
     }
 }
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, UncSchema, Clone)]
-#[serde(crate = "unc_sdk::serde")]
+#[derive(Clone)]
+#[unc(serializers=[borsh, json])]
 pub struct RewardFeeFraction {
     pub numerator: u32,
     pub denominator: u32,
@@ -159,7 +155,7 @@ pub trait SelfContract {
     fn on_stake_action(&mut self);
 }
 
-#[unc_bindgen]
+#[unc]
 impl StakingContract {
     /// Initializes the contract with the given owner_id, initial staking public key (with ED25519
     /// curve) and initial reward fee fraction that owner charges for the validation work.
@@ -194,7 +190,7 @@ impl StakingContract {
             total_staked_balance,
             total_stake_shares: NumStakeShares::from(total_staked_balance),
             reward_fee_fraction,
-            accounts: TreeMap::new(b"u".to_vec()),
+            accounts: IterableMap::new(b"u".to_vec()),
             paused: false,
         };
         // Staking with the current pool to make sure the staking key is valid.

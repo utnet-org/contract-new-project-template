@@ -1,14 +1,12 @@
-use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use unc_sdk::json_types::{U128, U64};
-use unc_sdk::{env, unc_bindgen, AccountId, EpochHeight};
+use unc_sdk::{env, unc, AccountId, EpochHeight};
 use std::collections::HashMap;
 
 type WrappedTimestamp = U64;
 
 /// Voting contract for unlocking transfers. Once the majority of the stake holders agree to
 /// unlock transfer, the time will be recorded and the voting ends.
-#[unc_bindgen]
-#[derive(BorshDeserialize, BorshSerialize)]
+#[unc(contract_state)]
 pub struct VotingContract {
     /// How much each validator votes
     votes: HashMap<AccountId, u128>,
@@ -26,7 +24,7 @@ impl Default for VotingContract {
     }
 }
 
-#[unc_bindgen]
+#[unc]
 impl VotingContract {
     #[init]
     pub fn new() -> Self {

@@ -1,9 +1,6 @@
-use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-#[allow(deprecated)]
-use unc_sdk::store::UnorderedSet;
+use unc_sdk::store::IterableSet;
 use unc_sdk::json_types::U128;
-use unc_sdk::serde::{Deserialize, Serialize};
-use unc_sdk::{env, ext_contract, unc_bindgen, AccountId, UncToken, UncSchema, PublicKey, Promise, PromiseOrValue};
+use unc_sdk::{env, ext_contract, unc, AccountId, UncToken, PublicKey, Promise, PromiseOrValue};
 
 mod utils;
 use crate::utils::*;
@@ -33,15 +30,14 @@ pub mod gas {
 /// There is no deposit balance attached.
 const NO_DEPOSIT: UncToken = UncToken::from_attounc(0);
 
-#[unc_bindgen]
-#[derive(BorshDeserialize, BorshSerialize)]
+#[unc(contract_state)]
 pub struct StakingPoolFactory {
     /// Account ID of the staking pool whitelist contract.
     staking_pool_whitelist_account_id: AccountId,
 
     #[allow(deprecated)]
     /// The account ID of the staking pools created.
-    staking_pool_account_ids: UnorderedSet<AccountId>,
+    staking_pool_account_ids: IterableSet<AccountId>,
 }
 
 impl Default for StakingPoolFactory {
@@ -51,8 +47,8 @@ impl Default for StakingPoolFactory {
 }
 
 /// Rewards fee fraction structure for the staking pool contract.
-#[derive(Serialize, Deserialize, UncSchema, Clone)]
-#[serde(crate = "unc_sdk::serde")]
+#[derive(Clone)]
+#[unc(serializers = [json])]
 pub struct RewardFeeFraction {
     pub numerator: u32,
     pub denominator: u32,
@@ -68,8 +64,7 @@ impl RewardFeeFraction {
     }
 }
 
-#[derive(Serialize)]
-#[serde(crate = "unc_sdk::serde")]
+#[unc(serializers = [json])]
 pub struct StakingPoolArgs {
     /// Owner account ID of the staking pool.
     owner_id: AccountId,
@@ -96,7 +91,7 @@ pub trait ExtWhitelist {
     fn add_staking_pool(&mut self, staking_pool_account_id: AccountId) -> bool;
 }
 
-#[unc_bindgen]
+#[unc]
 impl StakingPoolFactory {
     /// Initializes the staking pool factory with the given account ID of the staking pool whitelist
     /// contract.
@@ -110,7 +105,7 @@ impl StakingPoolFactory {
         Self {
             staking_pool_whitelist_account_id,
             #[allow(deprecated)]
-            staking_pool_account_ids: UnorderedSet::new(b"s".to_vec()),
+            staking_pool_account_ids: IterableSet::new(b"s".to_vec()),
         }
     }
 
@@ -245,11 +240,10 @@ impl StakingPoolFactory {
 mod tests {
     use super::*;
     use unc_sdk::test_utils::VMContextBuilder;
-    use unc_sdk::{testing_env, MockedBlockchain, PromiseResult};
+    use unc_sdk::{test_vm_config, testing_env, PromiseResult, RuntimeFeesConfig};
 
     mod test_utils;
     use test_utils::*;
-    use std::convert::TryInto;
 
     #[test]
     fn test_create_staking_pool_success() {
@@ -399,7 +393,13 @@ mod tests {
             .account_balance(balance)
             .build();
 
-        testing_env!(context, PromiseResult::Failed);
+        testing_env!(
+            context,
+            test_vm_config(),
+            RuntimeFeesConfig::test(),
+            Default::default(),
+            vec![PromiseResult::Failed],
+        );
         let res = contract.on_staking_pool_create(
             account_pool(),
             ntoy(31).into(),

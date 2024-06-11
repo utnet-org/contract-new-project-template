@@ -3,7 +3,7 @@ use unc_sdk::json_types::U128;
 use unc_sdk::{assert_one_atto, env, log, Promise, UncToken};
 use unc_contract_standards::storage_management::StorageManagement;
 
-#[unc_bindgen]
+#[unc]
 impl Contract {
     /// Deposit UNC to mint wUNC tokens to the predecessor account in this contract.
     /// Requirements:

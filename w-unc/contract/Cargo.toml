@@ -9,8 +9,7 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-unc-sdk = "2.0.6"
-unc-contract-standards = "2.0.6"
+unc-sdk = "2.2.1"
+unc-contract-standards = "2.2.1"
 
 [dev-dependencies]
-borsh = { version = "1.3"}
