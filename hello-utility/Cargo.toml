@@ -9,7 +9,7 @@ license = "GPL-2.0-or-later"
 crate-type = ["cdylib"]
 
 [dependencies]
-unc-sdk = { version = "2.0.6", features = ["unit-testing"]}
+unc-sdk = { version = "2.2.1", features = ["unit-testing"]}
 uint = { version = "0.9.3", default-features = false }
 
 [dev-dependencies]

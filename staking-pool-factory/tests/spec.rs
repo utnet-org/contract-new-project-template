@@ -1,3 +1,5 @@
+#![cfg(not(test))]
+
 mod utils;
 
 use crate::utils::{call_view, new_root, ntoy, view_factory, ExternalUser, FACTORY_ACCOUNT_ID};

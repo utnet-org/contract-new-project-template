@@ -78,7 +78,6 @@ pub struct MultiSigRequest {
 
 /// An internal request wrapped with the signer_pk and added timestamp to determine num_requests_pk and prevent against malicious key holder gas attacks
 #[cfg_attr(test, derive(PartialEq, Clone))]
-
 #[unc(serializers=[borsh, json])]
 pub struct MultiSigRequestWithSigner {
     request: MultiSigRequest,

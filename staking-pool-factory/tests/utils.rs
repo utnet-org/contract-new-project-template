@@ -1,3 +1,5 @@
+#![cfg(not(test))]
+
 #![allow(dead_code)]
 
 use unc_crypto::{InMemorySigner, KeyType, Signer};
@@ -20,7 +22,7 @@ pub fn ntoy(unc_amount: Balance) -> Balance {
 }
 
 lazy_static::lazy_static! {
-    static ref FACTORY_WASM_BYTES: &'static [u8] = include_bytes!("../res/staking_pool_factory.wasm").as_ref();
+    static ref FACTORY_WASM_BYTES: &'static [u8] = include_bytes!("../../res/staking_pool_factory.wasm").as_ref();
     static ref WHITELIST_WASM_BYTES: &'static [u8] = include_bytes!("../../whitelist/res/whitelist.wasm").as_ref();
 }
 

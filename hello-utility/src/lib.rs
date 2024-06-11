@@ -1,11 +1,10 @@
-//Anatomy 解剖一个智能合约
-//任何支持编译目标 wasm32-unknown-unknown的东西，都是和智能合约兼容的
-//对编译合约二进制文件有一个大小限制，约为4.19 MB
-//Modules为Utility SDK，mod提供访问执行环境，允许调用其他合同、转移代币等等
-use unc_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
+/// # Anatomy - Understanding a Smart Contract
+///
+/// This code represents a smart contract written in Rust. It is compatible with any target that supports `wasm32-unknown-unknown` compilation.
+/// There is a size limit for the compiled contract binary, which is approximately 4.19 MB.
 use unc_sdk::serde_json::json;
 use unc_sdk::store::LookupMap;
-use unc_sdk::{env, log, unc_bindgen, AccountId, Gas, Promise, UncToken};
+use unc_sdk::{env, log, unc, AccountId, Gas, Promise, UncToken};
 //Native Types u8, u16, u32, u64, u128, i8, i16, i32, i64, i128, Vec<T>, HashMap<K,V> ...
 //values larger than 52 bytes (such as u64 and u128), for which string-like alternatives
 //overflow-checks=true Cargo.toml
@@ -13,13 +12,6 @@ const DEFAULT_MESSAGE: &str = "Hello";
 
 //  Collections contract's attributes (state), Always prefer SDK collections over native
 //  collections 被设计为将数据分割成chunk, defer reading and writing to the store until needed
-//  unc_sdk::collections 迁移到 unc_sdk::store 并更新API, 在 unc-sdk 上启用 unstable 功能使用
-/*
-vector: Vector::new(b"vec-uid-1".to_vec()),
-map: LookupMap::new(b"map-uid-1".to_vec()),
-set: UnorderedSet::new(b"set-uid-1".to_vec()),
-tree: TreeMap::new(b"tree-uid-1".to_vec()),
-*/
 
 // Bob 合约
 const HELLO_UTILITY: &str = "hello-account";
@@ -38,8 +30,7 @@ const MIN_STORAGE: UncToken = UncToken::from_attounc(100_000_000_000_000_000_000
 ///    ...
 //// }
 // 每当调用函数时，状态将被加载和反序列化，保持加载的数据量尽可能小是很重要的
-#[unc_bindgen]
-#[derive(BorshDeserialize, BorshSerialize)]
+#[unc(contract_state)]
 pub struct Contract {
     //KEY-VALUE STORAGE 键值存储, SDK通过borsh进行了抽象，业务层面dapps don't care
     greeting: String,
@@ -75,7 +66,7 @@ impl Default for Contract {
 }
 
 // Implement the contract structure
-#[unc_bindgen]
+#[unc]
 impl Contract {
     // Public Methods init/view/call 三类， view方法默认有200Tgas
     // 在状态已经初始化过了, 再调用这个init就会报错的， 状态只能搞一次
