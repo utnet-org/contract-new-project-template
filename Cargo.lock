@@ -7610,6 +7610,7 @@ dependencies = [
 name = "whitelist"
 version = "0.1.0"
 dependencies = [
+ "unc-primitives-core",
  "unc-sdk",
 ]
 

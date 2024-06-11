@@ -138,109 +138,83 @@ impl WhitelistContract {
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
 mod tests {
+
     use super::*;
+    use unc_primitives_core::config::ViewConfig;
     use unc_sdk::test_utils::VMContextBuilder;
-    use unc_sdk::testing_env;
+    use unc_sdk::{testing_env, VMContext};
 
     mod test_utils;
     use test_utils::*;
 
+    fn basic_context() -> VMContext {
+        VMContextBuilder::new()
+            .current_account_id(account_whitelist())
+            .predecessor_account_id(account_unc())
+            .build()
+    }
+
     #[test]
     fn test_whitelist() {
         // Initialize the mocked blockchain
-        testing_env!(VMContextBuilder::new()
-            .current_account_id(account_whitelist())
-            .predecessor_account_id(account_unc())
-            .build());
+        let mut context = basic_context();
+        testing_env!(context.clone());
 
         let mut contract = WhitelistContract::new(account_unc());
 
         // Check initial whitelist
-        testing_env!(VMContextBuilder::new()
-            .current_account_id(account_whitelist())
-            .predecessor_account_id(account_unc())
-            .is_view(true)
-            .build());
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
+        testing_env!(context.clone());
         assert!(!contract.is_whitelisted(account_pool()));
 
         // Adding to whitelist by foundation
-        testing_env!(VMContextBuilder::new()
-            .current_account_id(account_whitelist())
-            .predecessor_account_id(account_unc())
-            .is_view(false)
-            .build());
+        context.view_config = None;
+        testing_env!(context.clone());
         assert!(contract.add_staking_pool(account_pool()));
 
         // Checking it's whitelisted now
-        testing_env!(VMContextBuilder::new()
-            .current_account_id(account_whitelist())
-            .predecessor_account_id(account_unc())
-            .is_view(true)
-            .build());
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
+        testing_env!(context.clone());
         assert!(contract.is_whitelisted(account_pool()));
 
         // Adding again. Should return false
-        testing_env!(VMContextBuilder::new()
-            .current_account_id(account_whitelist())
-            .predecessor_account_id(account_unc())
-            .is_view(false)
-            .build());
+        context.view_config = None;
+        testing_env!(context.clone());
         assert!(!contract.add_staking_pool(account_pool()));
 
         // Checking the pool is still whitelisted
-        testing_env!(VMContextBuilder::new()
-            .current_account_id(account_whitelist())
-            .predecessor_account_id(account_unc())
-            .is_view(true)
-            .build());
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
+        testing_env!(context.clone());
         assert!(contract.is_whitelisted(account_pool()));
 
         // Removing from the whitelist.
-        testing_env!(VMContextBuilder::new()
-            .current_account_id(account_whitelist())
-            .predecessor_account_id(account_unc())
-            .is_view(false)
-            .build());
+        context.view_config = None;
+        testing_env!(context.clone());
         assert!(contract.remove_staking_pool(account_pool()));
 
         // Checking the pool is not whitelisted anymore
-        testing_env!(VMContextBuilder::new()
-            .current_account_id(account_whitelist())
-            .predecessor_account_id(account_unc())
-            .is_view(true)
-            .build());
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
+        testing_env!(context.clone());
         assert!(!contract.is_whitelisted(account_pool()));
 
         // Removing again from the whitelist, should return false.
-        testing_env!(VMContextBuilder::new()
-            .current_account_id(account_whitelist())
-            .predecessor_account_id(account_unc())
-            .is_view(false)
-            .build());
+        context.view_config = None;
+        testing_env!(context.clone());
         assert!(!contract.remove_staking_pool(account_pool()));
 
         // Checking the pool is still not whitelisted
-        testing_env!(VMContextBuilder::new()
-            .current_account_id(account_whitelist())
-            .predecessor_account_id(account_unc())
-            .is_view(true)
-            .build());
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
+        testing_env!(context.clone());
         assert!(!contract.is_whitelisted(account_pool()));
 
         // Adding again after it was removed. Should return true
-        testing_env!(VMContextBuilder::new()
-            .current_account_id(account_whitelist())
-            .predecessor_account_id(account_unc())
-            .is_view(false)
-            .build());
+        context.view_config = None;
+        testing_env!(context.clone());
         assert!(contract.add_staking_pool(account_pool()));
 
         // Checking the pool is now whitelisted again
-        testing_env!(VMContextBuilder::new()
-            .current_account_id(account_whitelist())
-            .predecessor_account_id(account_unc())
-            .is_view(true)
-            .build());
+        context.view_config = Some(ViewConfig { max_gas_burnt: 200000000000000 });
+        testing_env!(context.clone());
         assert!(contract.is_whitelisted(account_pool()));
     }
 
@@ -343,50 +317,50 @@ mod tests {
 
         // Adding to whitelist by foundation
         testing_env!(VMContextBuilder::new()
-        .current_account_id(account_whitelist())
-        .predecessor_account_id(account_factory())
-        .is_view(false)
-        .build());
+            .current_account_id(account_whitelist())
+            .predecessor_account_id(account_factory())
+            .is_view(false)
+            .build());
         assert!(contract.add_staking_pool(account_pool()));
 
         // Checking it's whitelisted now
         testing_env!(VMContextBuilder::new()
-        .current_account_id(account_whitelist())
-        .predecessor_account_id(account_factory())
-        .is_view(true)
-        .build());
+            .current_account_id(account_whitelist())
+            .predecessor_account_id(account_factory())
+            .is_view(true)
+            .build());
         assert!(contract.is_whitelisted(account_pool()));
 
         // Removing the pool from the whitelisted by the UNC foundation.
         testing_env!(VMContextBuilder::new()
-        .current_account_id(account_whitelist())
-        .predecessor_account_id(account_unc())
-        .is_view(false)
-        .build());
+            .current_account_id(account_whitelist())
+            .predecessor_account_id(account_unc())
+            .is_view(false)
+            .build());
         assert!(contract.remove_staking_pool(account_pool()));
 
         // Checking the pool is not whitelisted anymore
         testing_env!(VMContextBuilder::new()
-        .current_account_id(account_whitelist())
-        .predecessor_account_id(account_unc())
-        .is_view(true)
-        .build());
+            .current_account_id(account_whitelist())
+            .predecessor_account_id(account_unc())
+            .is_view(true)
+            .build());
         assert!(!contract.is_whitelisted(account_pool()));
 
         // Removing the factory
         testing_env!(VMContextBuilder::new()
-        .current_account_id(account_whitelist())
-        .predecessor_account_id(account_unc())
-        .is_view(false)
-        .build());
+            .current_account_id(account_whitelist())
+            .predecessor_account_id(account_unc())
+            .is_view(false)
+            .build());
         assert!(contract.remove_factory(account_factory()));
 
         // Check the factory is not whitelisted anymore
         testing_env!(VMContextBuilder::new()
-        .current_account_id(account_whitelist())
-        .predecessor_account_id(account_unc())
-        .is_view(true)
-        .build());
+            .current_account_id(account_whitelist())
+            .predecessor_account_id(account_unc())
+            .is_view(true)
+            .build());
         assert!(!contract.is_factory_whitelisted(account_factory()));
     }
 }
