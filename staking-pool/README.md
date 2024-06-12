@@ -196,7 +196,7 @@ rustup target add wasm32-unknown-unknown
 Commands to deploy and initialize a staking contract:
 
 ```bash
-unc create_account my_validator --masterAccount=owner
+unc account create-account fund-later use-auto-generation save-to-folder $HOME/.unc-credentials/implicit
 unc deploy --accountId=my_validator --wasmFile=res/staking_pool.wasm
 # Initialize staking pool at account `my_validator` for the owner account ID `owner`, given staking pool and 10% reward fee.
 unc call my_validator new '{"owner_id": "owner", "stake_public_key": "CE3QAXyVLeScmY9YeEyR3Tw9yXfjBPzFLzroTranYtVb", "reward_fee_fraction": {"numerator": 10, "denominator": 100}}' --account_id owner
@@ -392,11 +392,11 @@ npm install -g unc-cli
 
 ##### If not logged into the browser, recover your account with the seed phrase first
 
-<https://wallet.betanet.utility.com/create/>
+<https://wallet.testnet.utility.com/create/>
 
 ```bash
-#Set the UNC environment to the target network (betanet,testnet,mainnet)
-export UNC_ENV=betanet
+#Set the UNC environment to the target network (testnet,testnet,mainnet)
+export UNC_ENV=testnet
 
 unc login
 ```
@@ -405,7 +405,7 @@ unc login
 
 ```bash
 #If you staked to your validator unstake, there is no withdraw
-unc stake unckat.betanet <staking public key> 0
+unc stake unckat.testnet <staking public key> 0
 
 #If you staked to a contract get the staked balance
 unc view my_validator get_account_staked_balance '{"account_id": "user1"}'
@@ -479,18 +479,18 @@ unc deploy --accountId=my_validator --wasmFile=res/staking_pool.wasm
 ##### Stop your node
 
 ```bash
-uncup stop
+unc-node stop
 ```
 
-##### Move your ~/.unc/betanet folder, to remove references to any previous validator node
+##### Move your ~/.unc/testnet folder, to remove references to any previous validator node
 
 ```bash
-mv ~/.unc/betanet ~/.unc/betanet_old
+mv ~/.unc/testnet ~/.unc/testnet_old
 ```
 
 ##### Launch your new node
 
-With the command uncup betanet. Modify the launch command according to your actual validator configuration (e.g. using --nodocker and --binary-path)
+With the command unc-node testnet. Modify the launch command according to your actual validator configuration (e.g. using --nodocker and --binary-path)
 
 ##### Set your validator ID
 
@@ -499,7 +499,7 @@ Put your staking pool account (the one we called my_validator in the steps above
 ##### Copy your validator public key, or issue the command (before the next step)
 
 ```bash
-cat ~/.unc/betanet/validator_key.json |grep "public_key"
+cat ~/.unc/testnet/validator_key.json |grep "public_key"
 ```
 
 #### Initialize staking pool at account `my_validator` for the owner account ID `owner`, given staking pool and 10% reward fee
@@ -516,7 +516,7 @@ unc validators next| grep "seat price"
 
 #### Register a delegator account (repeat these steps for additional delegators)
 
--- <https://wallet.betanet.utnet.org>
+-- <https://wallet.testnet.utnet.org>
 -- backup your seed phrase
 -- transfer UNC from your MasterAccount to the delegator account
 

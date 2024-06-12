@@ -111,7 +111,6 @@ pub enum StorageKeys {
 #[derive(PanicOnDefault)]
 #[unc(contract_state)]
 pub struct MultiSigContract {
-    /// Fix: Members of the multisig. use Set instead of Vec to avoid duplicates.
     members: IterableSet<MultisigMember>,
     /// Number of confirmations required.
     num_confirmations: u32,
