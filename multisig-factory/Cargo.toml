@@ -9,4 +9,4 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
-unc-sdk = "2.2.1"
+unc-sdk = "2.3.0"

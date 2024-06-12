@@ -375,7 +375,7 @@ In case of successful withdrawal, the unvested balance will become `0` and the o
 - Add a new view method to `get_balance` of the account, that includes all tokens on this account and all tokens deposited to a staking pool.
 - Cover foundation termination flow with the integration tests.
 - Cover release schedule flow with integration tests.
-- Updated `unc-sdk` to `2.2.1`
+- Updated `unc-sdk` to `2.3.0`
 
 - Introduced optional release duration
 - Introduced optional absolute lockup timestamp.

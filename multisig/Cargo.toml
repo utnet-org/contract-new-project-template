@@ -13,7 +13,7 @@ publish = false
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-unc-sdk = { version = "2.2.1", features = ["unit-testing", "unstable"] }
+unc-sdk = { version = "2.3.0", features = ["unit-testing", "unstable"] }
 
 [dev-dependencies]
 lazy_static = "1.4.0"

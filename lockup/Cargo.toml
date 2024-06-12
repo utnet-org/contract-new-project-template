@@ -9,7 +9,7 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-unc-sdk = { version = "2.2.1", features = ["unit-testing", "unstable"] }
+unc-sdk = { version = "2.3.0", features = ["unit-testing", "unstable"] }
 uint = { version = "0.9.5", default-features = false }
 
 [dev-dependencies]

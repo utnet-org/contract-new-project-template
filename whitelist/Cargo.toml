@@ -10,7 +10,7 @@ publish = false
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-unc-sdk = { version = "2.2.1", features = ["unit-testing", "unstable"] }
+unc-sdk = { version = "2.3.0", features = ["unit-testing", "unstable"] }
 
 [dev-dependencies]
 unc-primitives-core = "0.10.2"

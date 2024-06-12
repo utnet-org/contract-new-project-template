@@ -6261,7 +6261,7 @@ dependencies = [
 
 [[package]]
 name = "unc-contract-standards"
-version = "2.2.1"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39fa5b70666dd454e3a23291770af37b391cec429c1babaf9c9c9483d3a23e94"
 dependencies = [
@@ -6503,9 +6503,9 @@ dependencies = [
 
 [[package]]
 name = "unc-sdk"
-version = "2.2.1"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d51361621082ba79a031f251f8f02850993cd745e8113d275b42a1e98daca06"
+checksum = "0e6f2067ae2b7762f57f3406d831a6fcd0aca43b388c72ab2d2a004da13a3a9d"
 dependencies = [
  "base64 0.22.1",
  "borsh 1.3.1",
@@ -6528,7 +6528,7 @@ dependencies = [
 
 [[package]]
 name = "unc-sdk-macros"
-version = "2.2.1"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7535c1034775e2bd802c547e798f59aa9f4cdb5f9a2d7d6f419490feaff5ffda"
 dependencies = [
@@ -6551,7 +6551,7 @@ checksum = "0c90e798e06d502656ae3ce8a302b157100d424d2e6959f218d52918928192a4"
 
 [[package]]
 name = "unc-sys"
-version = "2.2.1"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "938e99e1cdcd081195969cb25173e845ac7d9bb5f56e272fde8241fd04343d49"
 
