@@ -1,21 +1,18 @@
 use anyhow::Result;
 use serde_json::json;
-use std::collections::HashMap;
-use std::fs;
+use unc_sdk::json_types::U128;
 use utility_workspaces::network::Sandbox;
 use utility_workspaces::types::UncToken;
 use utility_workspaces::{Account, Contract, Worker};
 
-const CONTRACT_ID: &str = "wrapunc";
-const LEGACY_BYTE_COST: Balance = 10_000_000_000_000_000_000;
-
-const STORAGE_BALANCE: Balance = 125 * LEGACY_BYTE_COST;
+const LEGACY_BYTE_COST: u128 = 10_000_000_000_000_000_000;
+const STORAGE_BALANCE: u128 = 125 * LEGACY_BYTE_COST;
 
 //Environment Variables: UNC_ENABLE_SANDBOX_LOG = 1
 /// Sanity check that we can `set` and `get` a value.
 #[tokio::test]
 async fn test_ft_transfer() -> Result<()> {
-    let (_, contract, user) = init_contract_and_user().await?;
+    let (worker, contract, user) = init_contract_and_user().await?;
 
     let user_id = user.id().to_string();
     let args = json!({
@@ -29,38 +26,31 @@ async fn test_ft_transfer() -> Result<()> {
         .await?
         .into_result()?;
 
-    let result = user
+    let result_alice_balance = user
         .view(contract.id(), "ft_balance_of")
         .args_json(json!({ "account_id": user_id }))
         .await?
-        .json::<HashMap<String, String>>()?;
-    let alice_balance = result
-    .get(&user_id)
-    .unwrap();
-    assert_eq!(alice_balance.0, to_atto("10"));
+        .json::<U128>()?;
+    assert_eq!(result_alice_balance.0, to_atto(10));
 
     let second_user = worker.dev_create_account().await?;
     let bob = second_user.id().to_string();
     //TODO: call ft_transfer(bob.valid_account_id(), to_atto("5").into(), None),
     let result = user
-        .view(contract.id(), "ft_transfer")
+        .call(contract.id(), "ft_transfer")
+        .args_json(json!({ "account_id": bob }))
+        .transact()
+        .await?;
+
+    assert!(result.is_success());
+
+    let result_bob_balance = user
+        .view(contract.id(), "ft_balance_of")
         .args_json(json!({ "account_id": bob }))
         .await?
-        .json::<HashMap<String, String>>()?;
+        .json::<U128>()?;
 
-
-    let result = user
-    .view(contract.id(), "ft_balance_of")
-    .args_json(json!({ "account_id": bob }))
-    .await?
-    .json::<HashMap<String, String>>()?;
-
-    let bob_balance = result
-        .get(&bob)
-        .unwrap();
-    assert_eq!(bob_balance.0, to_atto("5"));
-
-    assert_eq!(name, result_name);
+    assert_eq!(result_bob_balance.0, to_atto(5));
 
     Ok(())
 }
@@ -81,15 +71,13 @@ async fn test_wrap_without_storage_deposit() -> Result<()> {
         .await?
         .into_result()?;
 
-    let result = user
+    let result_alice_balance = user
         .view(contract.id(), "ft_balance_of")
         .args_json(json!({ "account_id": user_id }))
         .await?
-        .json::<HashMap<String, String>>()?;
-    let alice_balance = result
-    .get(&user_id)
-    .unwrap();
-    assert_eq!(alice_balance.0, to_atto("10") - STORAGE_BALANCE);
+        .json::<U128>()?;
+
+    assert_eq!(result_alice_balance.0, to_atto(10) - STORAGE_BALANCE);
 
     Ok(())
 }
@@ -113,4 +101,8 @@ async fn init_contract_and_user() -> Result<(Worker<Sandbox>, Contract, Account)
         .await?
         .into_result()?;
     Ok((worker, contract, user))
+}
+
+pub fn to_atto(unc_balance: u128) -> u128 {
+    unc_balance * 10u128.pow(24)
 }

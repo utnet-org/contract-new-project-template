@@ -15,7 +15,7 @@ fn main() {
     );
     // Run build_local.sh
     let status = std::process::Command::new("bash")
-        .arg("social-web3/build.sh")
+        .arg("../build.sh")
         .current_dir(&workspace_dir)
         .status()
         .expect("failed to execute build.sh");

@@ -9,7 +9,7 @@ use utility_workspaces::network::Sandbox;
 use utility_workspaces::types::UncToken;
 use utility_workspaces::{Account, Contract, Worker};
 
-static CONTRACT_WASM_FILEPATH: &str = "./res/social_web3.wasm";
+static CONTRACT_WASM_FILEPATH: &str = "../../res/social_web3.wasm";
 
 //Environment Variables: UNC_ENABLE_SANDBOX_LOG = 1
 /// Tests the `set` method.
