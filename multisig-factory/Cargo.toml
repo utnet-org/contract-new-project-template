@@ -5,8 +5,17 @@ authors = ["Utility Inc <hello@utnet.org>"]
 edition = "2021"
 publish = false
 
+[profile.release]
+codegen-units = 1
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true
+
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-unc-sdk = "2.3.0"
+unc-sdk = "2.3.1"

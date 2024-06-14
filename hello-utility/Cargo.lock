@@ -1149,25 +1149,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "env_logger"
-version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44533bbbb3bb3c1fa17d9f2e4e38bbbaf8396ba82193c4cb1b6445d711445d36"
-dependencies = [
- "log",
-]
-
-[[package]]
-name = "env_logger"
-version = "0.8.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a19187fea3ac7e84da7dacf48de0c45d63c6a76f9490dae389aead16c243fce3"
-dependencies = [
- "log",
- "regex",
-]
-
-[[package]]
 name = "equivalent"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1515,6 +1496,14 @@ name = "heck"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
+
+[[package]]
+name = "hello"
+version = "0.1.0"
+dependencies = [
+ "uint",
+ "unc-sdk",
+]
 
 [[package]]
 name = "hermit-abi"
@@ -2664,28 +2653,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "quickcheck"
-version = "1.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "588f6378e4dd99458b60ec275b4477add41ce4fa9f64dcba6f15adccb19b50d6"
-dependencies = [
- "env_logger 0.8.4",
- "log",
- "rand 0.8.5",
-]
-
-[[package]]
-name = "quickcheck_macros"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b22a693222d716a9587786f37ac3f6b4faedb5b80c23914e7303ff5a1d8016e9"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
 name = "quote"
 version = "1.0.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3377,21 +3344,6 @@ name = "stable_deref_trait"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
-
-[[package]]
-name = "staking-pool-factory"
-version = "0.1.0"
-dependencies = [
- "borsh 1.5.1",
- "env_logger 0.7.1",
- "lazy_static",
- "log",
- "quickcheck",
- "quickcheck_macros",
- "unc-crypto",
- "unc-primitives",
- "unc-sdk",
-]
 
 [[package]]
 name = "static_assertions"
@@ -4156,9 +4108,9 @@ dependencies = [
 
 [[package]]
 name = "unc-sdk-macros"
-version = "2.3.1"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c70a078c1796517c6196d5888c507fb479732228d09495565a4dd7b164f35c6"
+checksum = "8236abc4c4764a86947246f211bbfa960daaa01507258121879b4837aedb1abe"
 dependencies = [
  "Inflector",
  "darling",
@@ -4179,9 +4131,9 @@ checksum = "0c90e798e06d502656ae3ce8a302b157100d424d2e6959f218d52918928192a4"
 
 [[package]]
 name = "unc-sys"
-version = "2.3.1"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f945184401250510d92392d3aa6b6fc383030f6eebcb932e8214d9b99a12b56c"
+checksum = "3087f4efb08bf1045c699ee78deda0b05a4135ad10046f24d144e686a2f78c14"
 
 [[package]]
 name = "unc-token"

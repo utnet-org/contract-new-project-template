@@ -127,13 +127,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "airdrop"
-version = "0.1.0"
-dependencies = [
- "unc-sdk",
-]
-
-[[package]]
 name = "android-tzdata"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -646,11 +639,11 @@ dependencies = [
 
 [[package]]
 name = "borsh"
-version = "1.3.1"
+version = "1.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f58b559fd6448c6e2fd0adb5720cd98a2506594cafa4737ff98c396f3e82f667"
+checksum = "a6362ed55def622cddc70a4746a68554d7b687713770de539e59a739b249f8ed"
 dependencies = [
- "borsh-derive 1.3.1",
+ "borsh-derive 1.5.1",
  "cfg_aliases",
 ]
 
@@ -669,9 +662,9 @@ dependencies = [
 
 [[package]]
 name = "borsh-derive"
-version = "1.3.1"
+version = "1.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7aadb5b6ccbd078890f6d7003694e33816e6b784358f18e15e7e6d9f065a57cd"
+checksum = "c3ef8005764f53cd4dca619f5bf64cafd4664dada50ece25e4d81de54c80cc0b"
 dependencies = [
  "once_cell",
  "proc-macro-crate 3.1.0",
@@ -850,7 +843,7 @@ dependencies = [
  "colored",
  "derive_more",
  "dunce",
- "env_logger 0.9.3",
+ "env_logger",
  "inquire",
  "interactive-clap",
  "interactive-clap-derive",
@@ -942,9 +935,9 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "cfg_aliases"
-version = "0.1.1"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd16c4719339c4530435d38e511904438d07cce7950afa3718a84ac36c10e89e"
+checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
 name = "chrono"
@@ -1092,15 +1085,6 @@ name = "constant_time_eq"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "245097e9a4535ee1e3e3931fcfcd55a796a44c643e8596ff6566d68f09b87bbc"
-
-[[package]]
-name = "contract"
-version = "0.1.0"
-dependencies = [
- "unc-contract-standards",
- "unc-sdk",
- "unc-sys",
-]
 
 [[package]]
 name = "convert_case"
@@ -1854,25 +1838,6 @@ dependencies = [
 
 [[package]]
 name = "env_logger"
-version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44533bbbb3bb3c1fa17d9f2e4e38bbbaf8396ba82193c4cb1b6445d711445d36"
-dependencies = [
- "log",
-]
-
-[[package]]
-name = "env_logger"
-version = "0.8.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a19187fea3ac7e84da7dacf48de0c45d63c6a76f9490dae389aead16c243fce3"
-dependencies = [
- "log",
- "regex",
-]
-
-[[package]]
-name = "env_logger"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a12e6657c4c97ebab115a42dcee77225f7f482cdd841cf7088c657a42e9e00e7"
@@ -2439,14 +2404,6 @@ name = "heck"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
-
-[[package]]
-name = "hello"
-version = "0.1.0"
-dependencies = [
- "uint",
- "unc-sdk",
-]
 
 [[package]]
 name = "hermit-abi"
@@ -3085,17 +3042,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "lazy-static-include"
-version = "3.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67f771f5073e25401d245cf2bfca1e43574ecb1128556213f534a15d751763e3"
-dependencies = [
- "lazy_static",
- "manifest-dir-macros",
- "syn 2.0.66",
-]
-
-[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3205,26 +3151,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "lockup-contract"
-version = "0.1.0"
-dependencies = [
- "lazy-static-include",
- "quickcheck",
- "quickcheck_macros",
- "uint",
- "unc-primitives-core",
- "unc-sdk",
-]
-
-[[package]]
-name = "lockup-factory"
-version = "0.1.0"
-dependencies = [
- "hex",
- "unc-sdk",
-]
-
-[[package]]
 name = "log"
 version = "0.4.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3269,18 +3195,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "manifest-dir-macros"
-version = "0.1.18"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c6d40de1ccdbf8bde2eaa0750595478a368f7b3a3f89c426e3454f64e29f593"
-dependencies = [
- "once_cell",
- "proc-macro2",
- "quote",
- "syn 2.0.66",
-]
-
-[[package]]
 name = "matchers"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3291,9 +3205,9 @@ dependencies = [
 
 [[package]]
 name = "memchr"
-version = "2.7.2"
+version = "2.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c8640c5d730cb13ebd907d8d04b52f55ac9a2eec55b440c8892f40d56c76c1d"
+checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
 
 [[package]]
 name = "memfd"
@@ -3418,21 +3332,6 @@ name = "multimap"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e5ce46fe64a9d73be07dcbe690a38ce1b293be448fd8ce1e6c1b8062c9f72c6a"
-
-[[package]]
-name = "multisig"
-version = "0.1.0"
-dependencies = [
- "lazy_static",
- "unc-sdk",
-]
-
-[[package]]
-name = "multisig-factory"
-version = "0.1.0"
-dependencies = [
- "unc-sdk",
-]
 
 [[package]]
 name = "names"
@@ -4409,28 +4308,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "quickcheck"
-version = "1.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "588f6378e4dd99458b60ec275b4477add41ce4fa9f64dcba6f15adccb19b50d6"
-dependencies = [
- "env_logger 0.8.4",
- "log",
- "rand 0.8.5",
-]
-
-[[package]]
-name = "quickcheck_macros"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b22a693222d716a9587786f37ac3f6b4faedb5b80c23914e7303ff5a1d8016e9"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
 name = "quote"
 version = "1.0.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4514,15 +4391,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ca3129af7b92a17112d59ad498c6f81eaf463253766b90396d39ea7a39d6613c"
 dependencies = [
  "rand_core 0.5.1",
-]
-
-[[package]]
-name = "rand_xorshift"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d25bf25ec5ae4a3f1b92f929810509a2f53d7dca2f50b794ff57e3face536c8f"
-dependencies = [
- "rand_core 0.6.4",
 ]
 
 [[package]]
@@ -5452,17 +5320,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b7c388c1b5e93756d0c740965c41e8822f866621d41acbdf6336a6a168f8840c"
 
 [[package]]
-name = "social-integration-tests"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "serde_json",
- "tokio",
- "unc-units",
- "utility-workspaces",
-]
-
-[[package]]
 name = "socket2"
 version = "0.4.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5515,54 +5372,6 @@ name = "stable_deref_trait"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
-
-[[package]]
-name = "staking-pool"
-version = "0.1.0"
-dependencies = [
- "env_logger 0.7.1",
- "lazy_static",
- "log",
- "quickcheck",
- "quickcheck_macros",
- "uint",
- "unc-crypto",
- "unc-primitives",
- "unc-sdk",
-]
-
-[[package]]
-name = "staking-pool-factory"
-version = "0.1.0"
-dependencies = [
- "borsh 1.3.1",
- "env_logger 0.7.1",
- "lazy_static",
- "log",
- "quickcheck",
- "quickcheck_macros",
- "unc-crypto",
- "unc-primitives",
- "unc-sdk",
-]
-
-[[package]]
-name = "state-manipulation"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "arbitrary",
- "base64 0.22.1",
- "borsh 1.3.1",
- "rand 0.8.5",
- "rand_xorshift",
- "serde",
- "serde_json",
- "tokio",
- "unc-sys",
- "utility-workspaces",
- "wee_alloc",
-]
 
 [[package]]
 name = "static_assertions"
@@ -6304,11 +6113,11 @@ dependencies = [
 
 [[package]]
 name = "unc-abi"
-version = "0.10.2"
+version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5f64943872acd361b1580b486ba2d8d73ad00aa58e19a3e0b18dd78a91d376d"
+checksum = "c6e09fe5e2b313ce1361002abec8633b643287dc5464cdc214b13f70c4ec5cb0"
 dependencies = [
- "borsh 1.3.1",
+ "borsh 1.5.1",
  "schemars",
  "semver 1.0.23",
  "serde",
@@ -6360,7 +6169,7 @@ version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9cd52d4b96d80bba758f7baae4e833fadc5548d76e75e040a3d292617ab7ab71"
 dependencies = [
- "borsh 1.3.1",
+ "borsh 1.5.1",
  "serde",
 ]
 
@@ -6401,9 +6210,9 @@ dependencies = [
 
 [[package]]
 name = "unc-contract-standards"
-version = "2.3.0"
+version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "086f8637dbbae16c6181965dfbcea9924d1468ff51226ea801c5c822c3b14856"
+checksum = "9a0964d9b3b26272e3e0cadf7e87803f1a58520de76218e02f8385b0e53ce05d"
 dependencies = [
  "unc-sdk",
 ]
@@ -6415,7 +6224,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7d69dcc0b44915e4e574de315550f3209b33c05ee4ecab2a1c89737516f20ce8"
 dependencies = [
  "blake2",
- "borsh 1.3.1",
+ "borsh 1.5.1",
  "bs58 0.4.0",
  "c2-chacha",
  "curve25519-dalek 4.1.2",
@@ -6452,7 +6261,7 @@ version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fbf87c5ab473b65d134c3d1d7ef28960072c8751db6c2737fa5ae766c6f230c3"
 dependencies = [
- "borsh 1.3.1",
+ "borsh 1.5.1",
  "interactive-clap",
  "schemars",
  "serde",
@@ -6464,7 +6273,7 @@ version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32ebcd47fb5565acd637b6f35c784df23bfd4951cf3a4860cab70d194f730be9"
 dependencies = [
- "borsh 1.3.1",
+ "borsh 1.5.1",
  "lazy_static",
  "log",
  "reqwest",
@@ -6528,7 +6337,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39e7422b4e661df624afbe9645932587dc8fa75f340f372a951e3fdbad2a5ae4"
 dependencies = [
  "assert_matches",
- "borsh 1.3.1",
+ "borsh 1.5.1",
  "enum-map",
  "num-rational 0.3.2",
  "serde",
@@ -6548,7 +6357,7 @@ checksum = "a2796b5c34701518b673a9650adb5a402813b098631bac5de218291262e1699e"
 dependencies = [
  "arbitrary",
  "base64 0.21.7",
- "borsh 1.3.1",
+ "borsh 1.5.1",
  "bytesize",
  "cfg-if 1.0.0",
  "chrono",
@@ -6590,7 +6399,7 @@ checksum = "a6ead63ae1431c0a541fd462485119d0754bc98e96cce002e726e1e16fec1142"
 dependencies = [
  "arbitrary",
  "base64 0.21.7",
- "borsh 1.3.1",
+ "borsh 1.5.1",
  "bs58 0.4.0",
  "derive_more",
  "enum-map",
@@ -6643,34 +6452,29 @@ dependencies = [
 
 [[package]]
 name = "unc-sdk"
-version = "2.3.0"
+version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e6f2067ae2b7762f57f3406d831a6fcd0aca43b388c72ab2d2a004da13a3a9d"
+checksum = "212e38191eaf304e63043ba0a32c7fcb56ee6cb4566b7af56bc840e1cade6304"
 dependencies = [
  "base64 0.22.1",
- "borsh 1.3.1",
+ "borsh 1.5.1",
  "bs58 0.5.1",
  "once_cell",
  "serde",
  "serde_json",
  "unc-account-id",
- "unc-crypto",
  "unc-gas",
- "unc-parameters",
- "unc-primitives",
- "unc-primitives-core",
  "unc-sdk-macros",
  "unc-sys",
  "unc-token",
- "unc-vm-runner",
  "wee_alloc",
 ]
 
 [[package]]
 name = "unc-sdk-macros"
-version = "2.3.0"
+version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8236abc4c4764a86947246f211bbfa960daaa01507258121879b4837aedb1abe"
+checksum = "5c70a078c1796517c6196d5888c507fb479732228d09495565a4dd7b164f35c6"
 dependencies = [
  "Inflector",
  "darling",
@@ -6691,9 +6495,9 @@ checksum = "0c90e798e06d502656ae3ce8a302b157100d424d2e6959f218d52918928192a4"
 
 [[package]]
 name = "unc-sys"
-version = "2.3.0"
+version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3087f4efb08bf1045c699ee78deda0b05a4135ad10046f24d144e686a2f78c14"
+checksum = "f945184401250510d92392d3aa6b6fc383030f6eebcb932e8214d9b99a12b56c"
 
 [[package]]
 name = "unc-token"
@@ -6701,7 +6505,7 @@ version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "452da397f4ff70873fe4dbaf55e6ff2053216a2393f800d54857526ed961ada2"
 dependencies = [
- "borsh 1.3.1",
+ "borsh 1.5.1",
  "interactive-clap",
  "serde",
 ]
@@ -6812,7 +6616,7 @@ checksum = "18e354f56dfd6ca2a81a3e240be9da4a5ac165af0113d62df15b0afadc695969"
 dependencies = [
  "anyhow",
  "base64 0.21.7",
- "borsh 1.3.1",
+ "borsh 1.5.1",
  "ed25519-dalek 2.1.1",
  "enum-map",
  "finite-wasm",
@@ -7121,29 +6925,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a02e4885ed3bc0f2de90ea6dd45ebcbb66dacffe03547fadbb0eeae2770887d"
 
 [[package]]
-name = "voting-contract"
-version = "0.2.0"
-dependencies = [
- "unc-sdk",
-]
-
-[[package]]
-name = "wUNC-integration-tests"
+name = "w_unc"
 version = "1.0.0"
 dependencies = [
  "anyhow",
  "serde_json",
  "tokio",
- "unc-units",
- "utility-workspaces",
-]
-
-[[package]]
-name = "w_unc"
-version = "1.0.0"
-dependencies = [
  "unc-contract-standards",
  "unc-sdk",
+ "unc-units",
+ "utility-workspaces",
 ]
 
 [[package]]
@@ -7750,14 +7541,6 @@ dependencies = [
  "home",
  "once_cell",
  "rustix 0.38.34",
-]
-
-[[package]]
-name = "whitelist"
-version = "0.1.0"
-dependencies = [
- "unc-primitives-core",
- "unc-sdk",
 ]
 
 [[package]]

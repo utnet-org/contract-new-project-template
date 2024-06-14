@@ -1,6 +1,3 @@
-mod get_workspace_dir;
-
-use crate::get_workspace_dir::get_workspace_dir;
 use anyhow::Result;
 use serde_json::json;
 use std::collections::HashMap;
@@ -9,23 +6,14 @@ use utility_workspaces::network::Sandbox;
 use utility_workspaces::types::UncToken;
 use utility_workspaces::{Account, Contract, Worker};
 
-static CONTRACT_WASM_FILEPATH: &str = "./res/w_unc.wasm";
-
 const CONTRACT_ID: &str = "wrapunc";
 const LEGACY_BYTE_COST: Balance = 10_000_000_000_000_000_000;
 
 const STORAGE_BALANCE: Balance = 125 * LEGACY_BYTE_COST;
 
 //Environment Variables: UNC_ENABLE_SANDBOX_LOG = 1
-/// Tests the `set` method.
-#[tokio::main]
-async fn main() -> Result<()> {
-    test_ft_transfer().await?;
-    test_wrap_without_storage_deposit().await?;
-    Ok(())
-}
-
 /// Sanity check that we can `set` and `get` a value.
+#[tokio::test]
 async fn test_ft_transfer() -> Result<()> {
     let (_, contract, user) = init_contract_and_user().await?;
 
@@ -77,7 +65,7 @@ async fn test_ft_transfer() -> Result<()> {
     Ok(())
 }
 
-
+#[tokio::test]
 async fn test_wrap_without_storage_deposit() -> Result<()> {
     let (_, contract, user) = init_contract_and_user().await?;
 
@@ -107,19 +95,14 @@ async fn test_wrap_without_storage_deposit() -> Result<()> {
 }
 
 async fn init_contract_and_user() -> Result<(Worker<Sandbox>, Contract, Account)> {
-    let workspace_dir = get_workspace_dir();
-    let wasm_filepath = workspace_dir.join(CONTRACT_WASM_FILEPATH);
-
     // Create a sandboxed environment.
     // NOTE: Each call will create a new sandboxed environment
     let worker = utility_workspaces::sandbox().await?;
     // or for testnet:
     //let worker = utility_workspaces::testnet().await?;
-    let wasm = fs::read(wasm_filepath)?;
+    let contract_wasm = utility_workspaces::compile_project("./").await?;
 
-    //let wasm = utility_workspaces::compile_project(wasm_filepath.).await?;
-
-    let contract = worker.dev_deploy(&wasm).await?;
+    let contract = worker.dev_deploy(&contract_wasm).await?;
     contract.call("new").transact().await?.into_result()?;
 
     let account = worker.dev_create_account().await?;

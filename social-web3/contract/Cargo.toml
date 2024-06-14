@@ -8,6 +8,15 @@ license = "GPL-2.0-or-later"
 [lib]
 crate-type = ["cdylib"]
 
+[profile.release]
+codegen-units = 1
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true
+
 [dependencies]
 unc-sdk = "2.0.6"
 unc-contract-standards = "2.0.6"

@@ -1,0 +1,30 @@
+[package]
+name = "w_unc"
+version = "1.0.0"
+authors = ["Utility Inc <hello@utnet.org>", "Jongun <jongun@gmail.com>"]
+license = "GPL-2.0-or-later"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+codegen-units = 1
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true
+
+[dependencies]
+unc-sdk = "2.3.1"
+unc-contract-standards = "2.3.1"
+
+[dev-dependencies]
+anyhow = "1.0"
+unc-units = "0.1.0"
+# arbitrary_precision enabled for u128 types that workspaces requires for Balance types
+serde_json = { version = "1.0", features = ["arbitrary_precision"] }
+tokio = { version = "1.18.1", features = ["full"] }
+utility-workspaces = { version = "0.12.4", features = ["unstable"] }

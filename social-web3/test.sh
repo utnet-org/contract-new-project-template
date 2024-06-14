@@ -4,5 +4,9 @@ set -e
 
 cd "$(dirname $0)"
 
+pushd integration-tests
+
 export UNC_ENABLE_SANDBOX_LOG=1
 cargo run --example set_method
+
+popd
