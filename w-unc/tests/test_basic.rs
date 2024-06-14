@@ -12,21 +12,21 @@ const STORAGE_BALANCE: u128 = 125 * LEGACY_BYTE_COST;
 /// Sanity check that we can `set` and `get` a value.
 #[tokio::test]
 async fn test_ft_transfer() -> Result<()> {
-    let (worker, contract, user) = init_contract_and_user().await?;
+    let (worker, contract, user1) = init_contract_and_user().await?;
 
-    let user_id = user.id().to_string();
+    let user_id = user1.id().to_string();
     let args = json!({
         "account_id": user_id
     });
 
-    user.call(contract.id(), "unc_deposit")
+    user1.call(contract.id(), "unc_deposit")
         .args_json(args)
-        .deposit(UncToken::from_attounc(10u128))
+        .deposit(UncToken::from_unc(10u128))
         .transact()
         .await?
         .into_result()?;
 
-    let result_alice_balance = user
+    let result_alice_balance = user1
         .view(contract.id(), "ft_balance_of")
         .args_json(json!({ "account_id": user_id }))
         .await?
@@ -34,9 +34,16 @@ async fn test_ft_transfer() -> Result<()> {
     assert_eq!(result_alice_balance.0, to_atto(10));
 
     let second_user = worker.dev_create_account().await?;
+    let _user2 = second_user
+        .create_subaccount("bob")
+        .initial_balance(UncToken::from_unc(100))
+        .transact()
+        .await?
+        .into_result()?;
     let bob = second_user.id().to_string();
+
     //TODO: call ft_transfer(bob.valid_account_id(), to_atto("5").into(), None),
-    let result = user
+    let result = user1
         .call(contract.id(), "ft_transfer")
         .args_json(json!({ "account_id": bob }))
         .transact()
@@ -44,7 +51,7 @@ async fn test_ft_transfer() -> Result<()> {
 
     assert!(result.is_success());
 
-    let result_bob_balance = user
+    let result_bob_balance = user1
         .view(contract.id(), "ft_balance_of")
         .args_json(json!({ "account_id": bob }))
         .await?
@@ -66,7 +73,7 @@ async fn test_wrap_without_storage_deposit() -> Result<()> {
 
     user.call(contract.id(), "unc_deposit")
         .args_json(args)
-        .deposit(UncToken::from_attounc(10u128))
+        .deposit(UncToken::from_unc(10u128))
         .transact()
         .await?
         .into_result()?;
@@ -96,7 +103,7 @@ async fn init_contract_and_user() -> Result<(Worker<Sandbox>, Contract, Account)
     let account = worker.dev_create_account().await?;
     let user = account
         .create_subaccount("alice")
-        .initial_balance(UncToken::from_attounc(100))
+        .initial_balance(UncToken::from_unc(200))
         .transact()
         .await?
         .into_result()?;
