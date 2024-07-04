@@ -3,6 +3,8 @@
 ## contracts template
 
 - [Hello / OnBoarding contract](./hello-utility/)
+- [FT / Fungible-Token contract](./fungible-token/)
+- [NFT / Non-Fungible-Token contract](./non-fungible-token/)
 - [Drop / Base contract](./airdrop/)
 - [Social / Web3 contract](./social-web3/)
 - [Lockup / Vesting contract](./lockup/)
