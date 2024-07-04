@@ -8,5 +8,5 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-unc-sdk = { path = "../../../unc-sdk", features = ["unit-testing"] }
-unc-contract-standards = { path = "../../../unc-contract-standards" }
+unc-sdk = { version = "2.3.2", features = ["unit-testing"] }
+unc-contract-standards = { version = "2.3.2" }
