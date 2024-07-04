@@ -1,0 +1,12 @@
+[package]
+name = "fungible-token"
+version = "0.1.0"
+authors = ["Utility Inc <hello@utnet.org>"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+unc-sdk = { path = "../../../unc-sdk", features = ["unit-testing"] }
+unc-contract-standards = { path = "../../../unc-contract-standards" }

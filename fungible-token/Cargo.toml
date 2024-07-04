@@ -1,0 +1,27 @@
+[package]
+name = "fungible-token-wrapper"
+version = "0.1.0"
+authors = ["Utility Inc <hello@utnet.org>"]
+edition = "2021"
+
+[dev-dependencies]
+anyhow = "1.0"
+unc-sdk = { version = "2.3.2", features = ["unit-testing"] }
+tokio = { version = "1.14", features = ["full"] }
+utility-workspaces = { version = "0.12.4", default-features = false, features = ["install"] }
+
+[profile.release]
+codegen-units = 1
+# Tell `rustc` to optimize for small code size.
+opt-level = "z"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true
+
+[workspace]
+# remember to include a member for each contract
+members = [
+  "ft",
+  "test-contract-defi",
+]

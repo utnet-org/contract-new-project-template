@@ -1,0 +1,25 @@
+[package]
+name = "lockable-fungible-token"
+version = "0.1.0"
+authors = ["Utility Inc <hello@utnet.org>"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+unc-sdk = { version = "2.3.2", features = ["legacy"] }
+
+[dev-dependencies]
+anyhow = "1.0"
+tokio = { version = "1.14", features = ["full"] }
+unc-sdk = { version = "2.3.2", features = ["unit-testing"] }
+utility-workspaces = { version = "0.12.4", default-features = false, features = ["install"] }
+
+[profile.release]
+codegen-units = 1
+# Tell `rustc` to optimize for small code size.
+opt-level = "z"
+lto = true
+debug = false
+panic = "abort"
