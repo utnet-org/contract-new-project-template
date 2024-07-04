@@ -38,7 +38,7 @@ pub struct Contract {
     metadata: LazyOption<FungibleTokenMetadata>,
 }
 
-const DATA_IMAGE_SVG_UNC_ICON: &str = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' stroke='black' stroke-width='3' fill='red' /%3E%3C/svg%3E";
+const DATA_IMAGE_SVG_UNC_ICON: &str = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 288 288'%3E%3Cg id='l' data-name='l'%3E%3Cpath d='M144,0a144,144,0,1,0,144,144A144,144,0,0,0,144,0ZM72,144a72,72,0,1,1,72,72A72,72,0,0,1,72,144Z'/%3E%3C/g%3E%3C/svg%3E";
 
 #[derive(BorshSerialize, BorshStorageKey)]
 #[borsh(crate = "unc_sdk::borsh")]
